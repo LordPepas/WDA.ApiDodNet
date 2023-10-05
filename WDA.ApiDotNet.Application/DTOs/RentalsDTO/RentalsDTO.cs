@@ -15,6 +15,7 @@
         public DateTime RentalDate { get; private set; }
         public DateTime PrevisionDate { get; private set; }
         public DateTime? ReturnDate { get; private set; }
+        public string Status { get; private set; }
     }
     public class BookRentalDTO
     {

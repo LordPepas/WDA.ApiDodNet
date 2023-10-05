@@ -1,5 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using WDA.ApiDodNet.Application.Repositories.Interface;
+using WDA.ApiDodNet.Data.Models;
 using WDA.ApiDotNet.Application.DTOs;
+using WDA.ApiDotNet.Application.Helpers;
 using WDA.ApiDotNet.Application.Services.Interface;
 
 namespace WDA.ApiDotNet.Api.Controllers
@@ -8,17 +11,19 @@ namespace WDA.ApiDotNet.Api.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
-        private readonly IUsersService _usersService;
+        private readonly IUsersService _service;
+        private readonly IUsersRepository _repository;
 
-        public UsersController(IUsersService usersService)
+        public UsersController(IUsersService usersService,IUsersRepository repository)
         {
-            _usersService = usersService;
+            _service = usersService;
+            _repository = repository;
         }
 
         [HttpPost]
         public async Task<ActionResult> Post([FromBody] UsersCreateDTO usersDTO)
         {
-            var result = await _usersService.CreateAsync(usersDTO);
+            var result = await _service.CreateAsync(usersDTO);
 
             if (result.IsSucess)
                 return Ok(result);
@@ -26,18 +31,22 @@ namespace WDA.ApiDotNet.Api.Controllers
         }
         [HttpGet]
 
-        public async Task<ActionResult> GetAsync()
+        public async Task<ActionResult> GetAsync([FromQuery] string? value, [FromQuery] PageParams pageParams)
         {
-            var result = await _usersService.GetAsync();
+            var users = await _repository.GetAllAsync(pageParams, value);
+            var result = await _service.GetAsync(pageParams, value);
             if (result.IsSucess)
+            {
+                Response.AddPagination(users.CurrentPage, users.PageSize, users.TotalCount, users.TotalPages);
                 return Ok(result);
+            }
             return BadRequest(result);
         }
 
         [HttpGet("{id:int}")]
         public async Task<ActionResult> GetByIdAsync(int id)
         {
-            var result = await _usersService.GetByIdAsync(id);
+            var result = await _service.GetByIdAsync(id);
             if (result.IsSucess)
                 return Ok(result);
             return BadRequest(result);
@@ -45,7 +54,7 @@ namespace WDA.ApiDotNet.Api.Controllers
         [HttpPut]
         public async Task<ActionResult> UpdateAsync([FromBody] UsersUpdateDTO usersDTO)
         {
-            var result = await _usersService.UpdateAsync(usersDTO);
+            var result = await _service.UpdateAsync(usersDTO);
 
             if (result.IsSucess)
                 return Ok(result);
@@ -55,7 +64,7 @@ namespace WDA.ApiDotNet.Api.Controllers
         [HttpDelete("{id:int}")]
         public async Task<ActionResult> DeleteAsync(int id)
         {
-            var result = await _usersService.DeleteAsync(id);
+            var result = await _service.DeleteAsync(id);
             if (result.IsSucess)
                 return Ok(result);
             return BadRequest(result);

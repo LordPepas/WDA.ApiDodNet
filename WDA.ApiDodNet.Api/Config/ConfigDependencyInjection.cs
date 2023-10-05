@@ -3,7 +3,7 @@ using WDA.ApiDodNet.Application.Services;
 using WDA.ApiDotNet.Application.Profiles;
 using WDA.ApiDotNet.Application.Services;
 using WDA.ApiDotNet.Application.Services.Interface;
-using WDA.ApiDodNet.Data.Repositories.Interface;
+using WDA.ApiDodNet.Application.Repositories.Interface;
 using WDA.ApiDotNet.Infra.Data.Context;
 using WDA.ApiDotNet.Infra.Data.Repository;
 

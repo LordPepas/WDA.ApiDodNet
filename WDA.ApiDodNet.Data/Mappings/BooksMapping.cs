@@ -31,6 +31,10 @@ namespace WDA.ApiDotNet.Infra.Data.Maps
             builder.Property(x => x.Launch)
                 .IsRequired()
                 .HasColumnType("integer");
+
+            builder.Property(x => x.Rented)
+             .IsRequired()
+             .HasColumnType("integer");
         }
     }
 }

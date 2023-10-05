@@ -1,7 +1,8 @@
-﻿
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
+using WDA.ApiDodNet.Application.Repositories.Interface;
 using WDA.ApiDotNet.Application.DTOs.RentalsDTO;
+using WDA.ApiDotNet.Application.Helpers;
 using WDA.ApiDotNet.Application.Services.Interface;
 
 namespace WDA.ApiDotNet.Api.Controllers
@@ -11,18 +12,19 @@ namespace WDA.ApiDotNet.Api.Controllers
 
     public class RentalsController : ControllerBase
     {
-        private readonly IRentalsService _rentalsService;
+        private readonly IRentalsService _service;
+        private readonly IRentalsRepository _repository;
 
         public RentalsController(IRentalsService rentalsService)
         {
-            _rentalsService = rentalsService;
+            _service = rentalsService;
         }
 
         [HttpPost]
         [SwaggerOperation(Summary = "Create Rental")]
         public async Task<ActionResult> Post([FromBody] RentalsCreateDTO rentalsDTO)
         {
-            var result = await _rentalsService.CreateAsync(rentalsDTO);
+            var result = await _service.CreateAsync(rentalsDTO);
 
             if (result.IsSucess)
                 return Ok(result);
@@ -30,11 +32,15 @@ namespace WDA.ApiDotNet.Api.Controllers
         }
         [HttpGet]
         [SwaggerOperation(Summary = "List Rentals")]
-        public async Task<ActionResult> GetAsync()
+        public async Task<ActionResult> GetAsync([FromQuery] string? value, [FromQuery] PageParams pageParams)
         {
-            var result = await _rentalsService.GetAsync();
+            var rentals = await _repository.GetAllAsync(pageParams, value);
+            var result = await _service.GetAsync(pageParams, value);
             if (result.IsSucess)
+            {
+                Response.AddPagination(rentals.CurrentPage, rentals.PageSize, rentals.TotalCount, rentals.TotalPages);
                 return Ok(result);
+            }
             return BadRequest(result);
         }
 
@@ -42,7 +48,7 @@ namespace WDA.ApiDotNet.Api.Controllers
         [SwaggerOperation(Summary = "List Rental")]
         public async Task<ActionResult> GetByIdAsync(int id)
         {
-            var result = await _rentalsService.GetByIdAsync(id);
+            var result = await _service.GetByIdAsync(id);
             if (result.IsSucess)
                 return Ok(result);
             return BadRequest(result);
@@ -53,12 +59,12 @@ namespace WDA.ApiDotNet.Api.Controllers
         public async Task<ActionResult> Put([FromBody] RentalsUpdateDTO rentalsUpdateDTO)
         {
 
-            var result = await _rentalsService.UpdateAsync(rentalsUpdateDTO);
+            var result = await _service.UpdateAsync(rentalsUpdateDTO);
 
             if (result.IsSucess)
-                return Ok(result); // Retorna o DTO atualizado
+                return Ok(result);
 
-            return BadRequest(result.Message); // Retorna uma mensagem de erro
+            return BadRequest(result.Message);
         }
 
 
@@ -67,7 +73,7 @@ namespace WDA.ApiDotNet.Api.Controllers
         [SwaggerOperation(Summary = "Delete Rental")]
         public async Task<ActionResult> DeleteAsync(int id)
         {
-            var result = await _rentalsService.DeleteAsync(id);
+            var result = await _service.DeleteAsync(id);
             if (result.IsSucess)
                 return Ok(result);
             return BadRequest(result);

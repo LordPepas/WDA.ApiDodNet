@@ -1,5 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using WDA.ApiDodNet.Application.Repositories.Interface;
+using WDA.ApiDodNet.Data.Models;
 using WDA.ApiDotNet.Application.DTOs.PublishersDTO;
+using WDA.ApiDotNet.Application.Helpers;
 using WDA.ApiDotNet.Application.Services.Interface;
 
 namespace WDA.ApiDotNet.Api.Controllers
@@ -8,36 +11,43 @@ namespace WDA.ApiDotNet.Api.Controllers
     [ApiController]
     public class PublishersController : ControllerBase
     {
-        private readonly IPublishersService _publisherService;
+        private readonly IPublishersService _service;
+        private readonly IPublishersRepository _repository;
 
-        public PublishersController(IPublishersService publisherService)
+        public PublishersController(IPublishersService publisherService, IPublishersRepository publishersRepository)
         {
-            _publisherService = publisherService;
+            _service = publisherService;
+            _repository = publishersRepository;
         }
 
         [HttpPost]
         public async Task<ActionResult> Post([FromBody] PublishersCreateDTO publisherDTO)
         {
-            var result = await _publisherService.CreateAsync(publisherDTO);
+            var result = await _service.CreateAsync(publisherDTO);
 
             if (result.IsSucess)
                 return Ok(result);
             return BadRequest(result);
         }
         [HttpGet]
-
-        public async Task<ActionResult> GetAsync()
+        public async Task<ActionResult> GetAsync([FromQuery] string? value, [FromQuery] PageParams pageParams)
         {
-            var result = await _publisherService.GetAsync();
+            var publishers = await _repository.GetAllAsync(pageParams, value);
+            var result = await _service.GetAsync(value, pageParams);
+
+
             if (result.IsSucess)
+            {
+                Response.AddPagination(publishers.CurrentPage, publishers.PageSize, publishers.TotalCount, publishers.TotalPages);
                 return Ok(result);
+            }
+
             return BadRequest(result);
         }
-
         [HttpGet("{id:int}")]
         public async Task<ActionResult> GetByIdAsync(int id)
         {
-            var result = await _publisherService.GetByIdAsync(id);
+            var result = await _service.GetByIdAsync(id);
             if (result.IsSucess)
                 return Ok(result);
             return BadRequest(result);
@@ -45,7 +55,7 @@ namespace WDA.ApiDotNet.Api.Controllers
         [HttpPut]
         public async Task<ActionResult> UpdateAsync([FromBody] PublishersUpdateDTO publisherDTO)
         {
-            var result = await _publisherService.UpdateAsync(publisherDTO);
+            var result = await _service.UpdateAsync(publisherDTO);
 
             if (result.IsSucess)
                 return Ok(result);
@@ -55,7 +65,7 @@ namespace WDA.ApiDotNet.Api.Controllers
         [HttpDelete("{id:int}")]
         public async Task<ActionResult> DeleteAsync(int id)
         {
-            var result = await _publisherService.DeleteAsync(id);
+            var result = await _service.DeleteAsync(id);
             if (result.IsSucess)
                 return Ok(result);
             return BadRequest(result);

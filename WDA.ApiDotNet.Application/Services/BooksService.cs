@@ -1,11 +1,12 @@
 ﻿using AutoMapper;
+using WDA.ApiDodNet.Application.Repositories.Interface;
 using WDA.ApiDodNet.Data.Models;
-using WDA.ApiDotNet.Application.DTOs.Validations;
-using WDA.ApiDotNet.Application.Services.Interface;
-using WDA.ApiDodNet.Data.Repositories.Interface;
+using WDA.ApiDotNet.Application.DTOs;
 using WDA.ApiDotNet.Application.DTOs.BooksDTO;
 using WDA.ApiDotNet.Application.DTOs.PublishersDTO;
-using WDA.ApiDotNet.Application.DTOs;
+using WDA.ApiDotNet.Application.DTOs.Validations;
+using WDA.ApiDotNet.Application.Helpers;
+using WDA.ApiDotNet.Application.Services.Interface;
 
 namespace WDA.ApiDotNet.Application.Services
 {
@@ -16,7 +17,7 @@ namespace WDA.ApiDotNet.Application.Services
         private readonly IRentalsRepository _rentalsRepository;
         private readonly IMapper _mapper;
 
-        public BooksService(IBooksRepository booksRepository, IPublishersRepository publishersRepository,IRentalsRepository rentalsRepository, IMapper mapper)
+        public BooksService(IBooksRepository booksRepository, IPublishersRepository publishersRepository, IRentalsRepository rentalsRepository, IMapper mapper)
         {
             _booksRepository = booksRepository;
             _publishersRepository = publishersRepository;
@@ -64,11 +65,10 @@ namespace WDA.ApiDotNet.Application.Services
             return ResultService.Ok($"Livro com id: {id} foi deletado");
         }
 
-        public async Task<ResultService<ICollection<BooksDTO>>> GetAsync()
+        public async Task<ResultService<List<BooksDTO>>> GetAsync(PageParams pageParams, string? value)
         {
-            var books = await _booksRepository.GetByBooksAsync();
-
-            return ResultService.Ok<ICollection<BooksDTO>>(_mapper.Map<ICollection<BooksDTO>>(books));
+            var books = await _booksRepository.GetAllAsync(pageParams, value);
+            return ResultService.Ok<List<BooksDTO>>(_mapper.Map<List<BooksDTO>>(books));
         }
 
         public async Task<ResultService<BooksDTO>> GetByIdAsync(int id)

@@ -4,7 +4,7 @@ namespace WDA.ApiDodNet.Data.Models
 {
     public class Books
     {
-        public Books(int id, int publisherId, string name, string author, int launch, int quantity)
+        public Books(int id, int publisherId, string name, string author, int launch, int quantity,int rented)
         {
             Id = id;
             PublisherId = publisherId;
@@ -12,6 +12,8 @@ namespace WDA.ApiDodNet.Data.Models
             Author = author;
             Launch = launch;
             Quantity = quantity;
+            Rented = rented;
+
         }
 
         [Key]
@@ -22,5 +24,6 @@ namespace WDA.ApiDodNet.Data.Models
         public string Author { get; private set; }
         public int Launch { get; private set; }
         public int Quantity { get; set; }
+        public int Rented { get; set; }
     }
 }

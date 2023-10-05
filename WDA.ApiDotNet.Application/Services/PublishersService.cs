@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
-using WDA.ApiDodNet.Data.Repositories.Interface;
+using WDA.ApiDodNet.Application.Repositories.Interface;
 using WDA.ApiDodNet.Data.Models;
-using WDA.ApiDotNet.Application.DTOs.Validations;
-using WDA.ApiDotNet.Application.Services.Interface;
 using WDA.ApiDotNet.Application.DTOs.PublishersDTO;
+using WDA.ApiDotNet.Application.DTOs.Validations;
+using WDA.ApiDotNet.Application.Helpers;
+using WDA.ApiDotNet.Application.Services.Interface;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace WDA.ApiDotNet.Application.Services
 {
@@ -40,11 +42,13 @@ namespace WDA.ApiDotNet.Application.Services
             return ResultService.Ok<PublishersCreateDTO>(_mapper.Map<PublishersCreateDTO>(data));
         }
 
-        public async Task<ResultService<ICollection<PublishersDTO>>> GetAsync()
+        public async Task<ResultService<ICollection<PublishersDTO>>> GetAsync(string value, PageParams pageParams)
         {
-            var publishers = await _publishersRepository.GetByIdAsync();
+            var publishers = await _publishersRepository.GetAllAsync(pageParams, value);
+
             return ResultService.Ok<ICollection<PublishersDTO>>(_mapper.Map<ICollection<PublishersDTO>>(publishers));
         }
+
 
         public async Task<ResultService<PublishersDTO>> GetByIdAsync(int id)
         {

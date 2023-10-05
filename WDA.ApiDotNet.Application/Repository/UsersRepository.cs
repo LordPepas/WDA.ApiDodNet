@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using WDA.ApiDodNet.Data.Repositories.Interface;
+using WDA.ApiDodNet.Application.Repositories.Interface;
 using WDA.ApiDodNet.Data.Models;
+using WDA.ApiDotNet.Application.Helpers;
 using WDA.ApiDotNet.Infra.Data.Context;
 
 namespace WDA.ApiDotNet.Infra.Data.Repository
@@ -32,9 +33,26 @@ namespace WDA.ApiDotNet.Infra.Data.Repository
             return await _db.Users.FirstOrDefaultAsync(x => x.Id == id);
         }
 
-        public async Task<ICollection<Users>> GetByUsersAsync()
+        public async Task<PageList<Users>> GetAllAsync(PageParams pageParams, string? value)
         {
-            return await _db.Users.ToListAsync();
+            IQueryable<Users> query = _db.Users
+                .AsNoTracking()
+                .OrderBy(b => b.Id);
+
+            if (!string.IsNullOrWhiteSpace(value))
+            {
+                query = query.Where(p =>
+                p.Id.ToString().ToUpper().Contains(value) ||
+                p.Name.ToUpper().Contains(value) ||
+                p.City.ToUpper().Contains(value) ||
+                p.Address.ToUpper().Contains(value) ||
+                p.Email.ToUpper().Contains(value)
+                );
+            };
+
+            query = query.OrderBy(b => b.Id);
+
+            return await PageList<Users>.CreateAsync(query, pageParams.PageNumber, pageParams.PageSize);
         }
         public async Task DeleteAsync(Users user)
         {

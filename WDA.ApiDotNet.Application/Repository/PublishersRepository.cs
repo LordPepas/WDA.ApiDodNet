@@ -1,7 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using WDA.ApiDodNet.Data.Repositories.Interface;
+using WDA.ApiDodNet.Application.Repositories.Interface;
 using WDA.ApiDodNet.Data.Models;
+using WDA.ApiDotNet.Application.Helpers;
 using WDA.ApiDotNet.Infra.Data.Context;
+
 
 namespace WDA.ApiDotNet.Infra.Data.Repository
 {
@@ -27,16 +29,30 @@ namespace WDA.ApiDotNet.Infra.Data.Repository
             await _db.SaveChangesAsync();
             return publisher;
         }
-        public async Task<Publishers>GetByIdAsync(int id)
+
+        public async Task<Publishers> GetByIdAsync(int id)
         {
             return await _db.Publishers.FirstOrDefaultAsync(x => x.Id == id);
         }
 
-
-        public async Task<ICollection<Publishers>> GetByIdAsync()
+        public async Task<PageList<Publishers>> GetAllAsync(PageParams pageParams, string? value)
         {
-            return await _db.Publishers.ToListAsync();
+            IQueryable<Publishers> query = _db.Publishers
+                .AsNoTracking()
+                .OrderBy(b => b.Id);
+
+            if (!string.IsNullOrWhiteSpace(value))
+            {
+                query = query.Where(p =>
+                p.Id.ToString().ToUpper().Contains(value) ||
+                p.Name.ToUpper().Contains(value) ||
+                p.City.ToUpper().Contains(value)
+                );
+            };
+
+            return await PageList<Publishers>.CreateAsync(query, pageParams.PageNumber, pageParams.PageSize);
         }
+
         public async Task DeleteAsync(Publishers publisher)
         {
             _db.Remove(publisher);

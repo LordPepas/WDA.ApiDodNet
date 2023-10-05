@@ -1,11 +1,12 @@
 ﻿using AutoMapper;
+using WDA.ApiDodNet.Application.Repositories.Interface;
 using WDA.ApiDodNet.Data.Models;
 using WDA.ApiDotNet.Application.DTOs;
+using WDA.ApiDotNet.Application.DTOs.PublishersDTO;
 using WDA.ApiDotNet.Application.DTOs.Validations;
+using WDA.ApiDotNet.Application.Helpers;
 using WDA.ApiDotNet.Application.Services;
 using WDA.ApiDotNet.Application.Services.Interface;
-using WDA.ApiDodNet.Data.Repositories.Interface;
-using WDA.ApiDotNet.Application.DTOs.PublishersDTO;
 
 namespace WDA.ApiDodNet.Application.Services
 {
@@ -41,9 +42,9 @@ namespace WDA.ApiDodNet.Application.Services
             return ResultService.Ok(_mapper.Map<UsersCreateDTO>(data));
         }
 
-        public async Task<ResultService<ICollection<UsersDTO>>> GetAsync()
+        public async Task<ResultService<ICollection<UsersDTO>>> GetAsync(PageParams pageParams, string? value)
         {
-            var users = await _usersRepository.GetByUsersAsync();
+            var users = await _usersRepository.GetAllAsync(pageParams, value);
             return ResultService.Ok(_mapper.Map<ICollection<UsersDTO>>(users));
         }
 

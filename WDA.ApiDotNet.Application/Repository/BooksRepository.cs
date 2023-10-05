@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using WDA.ApiDodNet.Data.Repositories.Interface;
+using WDA.ApiDodNet.Application.Repositories.Interface;
 using WDA.ApiDodNet.Data.Models;
+using WDA.ApiDotNet.Application.Helpers;
 using WDA.ApiDotNet.Infra.Data.Context;
 
 namespace WDA.ApiDotNet.Infra.Data.Repository
@@ -34,12 +35,27 @@ namespace WDA.ApiDotNet.Infra.Data.Repository
              .FirstOrDefaultAsync(x => x.Id == id);
         }
 
-        public async Task<ICollection<Books>> GetByBooksAsync()
+        public async Task<PageList<Books>> GetAllAsync(PageParams pageParams, string? value)
         {
-            return await _db.Books
-               .Include(x => x.Publisher)
-               .AsNoTracking()
-               .ToListAsync();
+            IQueryable<Books> query = _db.Books.Include(x => x.Publisher)
+                 .AsNoTracking()
+                 .OrderBy(b => b.Id);
+
+            if (!string.IsNullOrWhiteSpace(value))
+            {
+                query = query.Where(p =>
+                p.Id.ToString().Contains(value) ||
+                p.Name.ToUpper().Contains(value) ||
+                p.Author.ToUpper().Contains(value) ||
+                p.PublisherId.ToString().Contains(value) ||
+                p.Publisher.Name.ToUpper().Contains(value) ||
+                p.Quantity.ToString().Contains(value) ||
+                p.Launch.ToString().Contains(value) ||
+                p.Rented.ToString().Contains(value)
+                );
+            };
+
+            return await PageList<Books>.CreateAsync(query, pageParams.PageNumber, pageParams.PageSize);
         }
 
 
