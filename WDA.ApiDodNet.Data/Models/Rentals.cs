@@ -4,7 +4,7 @@ namespace WDA.ApiDodNet.Data.Models
 {
     public class Rentals
     {
-        public Rentals(int id, int bookId, int userId, DateTime rentalDate, DateTime previsionDate, DateTime? returnDate)
+        public Rentals(int id, int bookId, int userId, DateTime rentalDate, DateTime previsionDate, DateTime? returnDate, string status)
         {
             Id = id;
             BookId = bookId;
@@ -12,6 +12,8 @@ namespace WDA.ApiDodNet.Data.Models
             RentalDate = rentalDate;
             PrevisionDate = previsionDate;
             ReturnDate = returnDate;
+            Status = status;
+
         }
 
         [Key]

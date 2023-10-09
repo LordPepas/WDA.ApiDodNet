@@ -1,8 +1,6 @@
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerUI;
 using System.Text.Json.Serialization;
-using WDA.ApiDotNet.Application.DTOs;
-using WDA.ApiDotNet.Api;
 
 namespace WDA.ApiDotNet.Api
 {
@@ -35,23 +33,47 @@ namespace WDA.ApiDotNet.Api
             {
                 options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
             });
-
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowLocalhost8080",
+                    builder =>
+                    {
+                        builder.WithOrigins("http://localhost:8080")
+                        .AllowAnyHeader()
+                        .AllowAnyMethod();
+                    });
+            });
             var app = builder.Build();
 
 
+            //if (app.Environment.IsDevelopment())
+            //{
+            //    app.UseSwagger();
+            //    app.UseSwaggerUI(c =>
+            //    {
+            //        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Bookstore V1");
+            //        c.DocExpansion(DocExpansion.None);
+            //    });
+            //}
+
+            // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
-                app.UseSwaggerUI(c =>
+                app.UseSwaggerUI(options =>
                 {
-                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Bookstore V1");
-                    c.DocExpansion(DocExpansion.None);
+                    options.InjectStylesheet("/swagger-ui/custom.css");
+                    options.DocExpansion(DocExpansion.None);
                 });
             }
 
             app.UseHttpsRedirection();
+
             app.UseAuthorization();
+
             app.MapControllers();
+
+            app.UseCors("AllowLocalhost8080");
 
             app.Run();
         }

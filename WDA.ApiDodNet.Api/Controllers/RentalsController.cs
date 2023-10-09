@@ -15,9 +15,10 @@ namespace WDA.ApiDotNet.Api.Controllers
         private readonly IRentalsService _service;
         private readonly IRentalsRepository _repository;
 
-        public RentalsController(IRentalsService rentalsService)
+        public RentalsController(IRentalsService rentalsService,IRentalsRepository rentalsRepository)
         {
             _service = rentalsService;
+            _repository = rentalsRepository;
         }
 
         [HttpPost]
@@ -32,10 +33,10 @@ namespace WDA.ApiDotNet.Api.Controllers
         }
         [HttpGet]
         [SwaggerOperation(Summary = "List Rentals")]
-        public async Task<ActionResult> GetAsync([FromQuery] string? value, [FromQuery] PageParams pageParams)
+        public async Task<ActionResult> GetAsync([FromQuery] string? search, [FromQuery] PageParams pageParams)
         {
-            var rentals = await _repository.GetAllAsync(pageParams, value);
-            var result = await _service.GetAsync(pageParams, value);
+            var rentals = await _repository.GetAllAsync(pageParams, search);
+            var result = await _service.GetAsync(pageParams, search);
             if (result.IsSucess)
             {
                 Response.AddPagination(rentals.CurrentPage, rentals.PageSize, rentals.TotalCount, rentals.TotalPages);
@@ -77,6 +78,13 @@ namespace WDA.ApiDotNet.Api.Controllers
             if (result.IsSucess)
                 return Ok(result);
             return BadRequest(result);
+        }
+
+        [HttpGet("count")]
+        public async Task<ActionResult<int>> GetBookCountAsync()
+        {
+            var bookCount = await _repository.GetTotalCountAsync();
+            return Ok(bookCount);
         }
     }
 }

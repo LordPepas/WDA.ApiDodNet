@@ -68,9 +68,9 @@ namespace WDA.ApiDotNet.Application.Services
             await _rentalsRepository.DeleteAsync(rental);
             return ResultService.Ok($"Aluguel com id: {id} foi deletado");
         }
-        public async Task<ResultService<ICollection<RentalsDTO>>> GetAsync(PageParams pageParams, string? value)
+        public async Task<ResultService<ICollection<RentalsDTO>>> GetAsync(PageParams pageParams, string? search)
         {
-            var rentals = await _rentalsRepository.GetAllAsync(pageParams, value);
+            var rentals = await _rentalsRepository.GetAllAsync(pageParams, search);
             return ResultService.Ok<ICollection<RentalsDTO>>(_mapper.Map<ICollection<RentalsDTO>>(rentals));
         }
 

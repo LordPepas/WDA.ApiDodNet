@@ -42,9 +42,9 @@ namespace WDA.ApiDodNet.Application.Services
             return ResultService.Ok(_mapper.Map<UsersCreateDTO>(data));
         }
 
-        public async Task<ResultService<ICollection<UsersDTO>>> GetAsync(PageParams pageParams, string? value)
+        public async Task<ResultService<ICollection<UsersDTO>>> GetAsync(PageParams pageParams, string? search)
         {
-            var users = await _usersRepository.GetAllAsync(pageParams, value);
+            var users = await _usersRepository.GetAllAsync(pageParams, search);
             return ResultService.Ok(_mapper.Map<ICollection<UsersDTO>>(users));
         }
 

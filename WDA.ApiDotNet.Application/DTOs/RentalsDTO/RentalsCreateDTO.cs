@@ -1,4 +1,5 @@
-﻿namespace WDA.ApiDotNet.Application.DTOs.RentalsDTO
+﻿
+namespace WDA.ApiDotNet.Application.DTOs.RentalsDTO
 {
     public class RentalsCreateDTO
     {
@@ -6,6 +7,8 @@
         {
             BookId = bookId;
             UserId = userId;
+            //RentalDate = DateTime.Parse(rentalDate).Date;
+            //PrevisionDate = DateTime.Parse(previsionDate).Date;
             RentalDate = rentalDate;
             PrevisionDate = previsionDate;
         }

@@ -14,10 +14,10 @@ namespace WDA.ApiDotNet.Api.Controllers
         private readonly IUsersService _service;
         private readonly IUsersRepository _repository;
 
-        public UsersController(IUsersService usersService,IUsersRepository repository)
+        public UsersController(IUsersService usersService,IUsersRepository usersRepository)
         {
             _service = usersService;
-            _repository = repository;
+            _repository = usersRepository;
         }
 
         [HttpPost]
@@ -31,10 +31,10 @@ namespace WDA.ApiDotNet.Api.Controllers
         }
         [HttpGet]
 
-        public async Task<ActionResult> GetAsync([FromQuery] string? value, [FromQuery] PageParams pageParams)
+        public async Task<ActionResult> GetAsync([FromQuery] string? search, [FromQuery] PageParams pageParams)
         {
-            var users = await _repository.GetAllAsync(pageParams, value);
-            var result = await _service.GetAsync(pageParams, value);
+            var users = await _repository.GetAllAsync(pageParams, search);
+            var result = await _service.GetAsync(pageParams, search);
             if (result.IsSucess)
             {
                 Response.AddPagination(users.CurrentPage, users.PageSize, users.TotalCount, users.TotalPages);
@@ -68,6 +68,13 @@ namespace WDA.ApiDotNet.Api.Controllers
             if (result.IsSucess)
                 return Ok(result);
             return BadRequest(result);
+        }
+
+        [HttpGet("count")]
+        public async Task<ActionResult<int>> GetBookCountAsync()
+        {
+            var bookCount = await _repository.GetTotalCountAsync();
+            return Ok(bookCount);
         }
     }
 }

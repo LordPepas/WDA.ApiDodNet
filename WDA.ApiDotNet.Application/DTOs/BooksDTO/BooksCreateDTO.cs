@@ -17,6 +17,7 @@
         public string Author { get; private set; }
         public int Launch { get; private set; }
         public int Quantity { get; private set; }
+        public int Rented { get; private set; } = 0;
     }
     public class PublisherBookDTO
     {

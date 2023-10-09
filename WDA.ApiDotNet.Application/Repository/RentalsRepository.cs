@@ -46,32 +46,31 @@ namespace WDA.ApiDotNet.Infra.Data.Repository
                 .FirstOrDefaultAsync(x => x.Id == id);
         }
 
-        public async Task<PageList<Rentals>> GetAllAsync(PageParams pageParams, string? value)
+        public async Task<PageList<Rentals>> GetAllAsync(PageParams pageParams, string? search)
         {
             IQueryable<Rentals> query = _db.Rentals
                 .Include(x => x.Book)
                 .Include(x => x.User)
-                .AsNoTracking()
-                .OrderBy(b => b.Id);
+                .OrderBy(b => b.Id)
+                .AsNoTracking();
 
-            //if (!string.IsNullOrWhiteSpace(value))
-            //{
-            //    query = query.Where(p =>
-            //    p.Id.ToString().Contains(value) ||
-            //    p.BookId.ToString().Contains(value) ||
-            //    p.Book.Name.ToUpper().Contains(value) ||
-            //    p.UserId.ToString().Contains(value) ||
-            //    p.User.Name.ToUpper().Contains(value) ||
-            //    p.RentalDate.ToString().Contains(value) ||
-            //    p.PrevisionDate.ToString().Contains(value) ||
-            //    p.ReturnDate.ToString().Contains(value)
-            //    );
-            //};
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                        search = search.ToUpper();
+                query = query.Where(p =>
+                p.Id.ToString().Contains(search) ||
+                p.BookId.ToString().Contains(search) ||
+                p.Book.Name.ToUpper().Contains(search) ||
+                p.UserId.ToString().Contains(search) ||
+                p.User.Name.ToUpper().Contains(search) ||
+                p.RentalDate.ToString().Contains(search) ||
+                p.PrevisionDate.ToString().Contains(search) ||
+                p.ReturnDate.ToString().Contains(search)
+                );
+            };
 
             return await PageList<Rentals>.CreateAsync(query, pageParams.PageNumber, pageParams.PageSize);
         }
-
-
         public async Task<List<Rentals>> GetByUserIdAsync(int userId)
         {
             return await _db.Rentals.Where(x => x.UserId == userId).ToListAsync();
@@ -85,21 +84,6 @@ namespace WDA.ApiDotNet.Infra.Data.Repository
             _db.Update(rental);
             await _db.SaveChangesAsync();
             return rental;
-        }
-        public async Task<bool> GetStatus(string forecastDateParam, string returnDateParam)
-        {
-            if (DateTime.TryParse(forecastDateParam, out DateTime forecastDate) && DateTime.TryParse(returnDateParam, out DateTime returnDate))
-            {
-                if (returnDate > forecastDate)
-                {
-                    return false;
-                }
-                else
-                {
-                    return true;
-                }
-            }
-            return true;
         }
 
         public async Task<bool> CheckDate(DateTime date)
@@ -140,6 +124,11 @@ namespace WDA.ApiDotNet.Infra.Data.Repository
             {
                 return true;
             }
+        }
+        public async Task<int> GetTotalCountAsync()
+        {
+            var totalCount = await _db.Rentals.CountAsync();
+            return totalCount;
         }
     }
 }

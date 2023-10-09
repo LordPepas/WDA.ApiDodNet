@@ -35,18 +35,20 @@ namespace WDA.ApiDotNet.Infra.Data.Repository
             return await _db.Publishers.FirstOrDefaultAsync(x => x.Id == id);
         }
 
-        public async Task<PageList<Publishers>> GetAllAsync(PageParams pageParams, string? value)
+        public async Task<PageList<Publishers>> GetAllAsync(PageParams pageParams, string? search)
         {
             IQueryable<Publishers> query = _db.Publishers
                 .AsNoTracking()
                 .OrderBy(b => b.Id);
 
-            if (!string.IsNullOrWhiteSpace(value))
+            if (!string.IsNullOrWhiteSpace(search))
             {
+                search = search.ToUpper();
+
                 query = query.Where(p =>
-                p.Id.ToString().ToUpper().Contains(value) ||
-                p.Name.ToUpper().Contains(value) ||
-                p.City.ToUpper().Contains(value)
+                p.Id.ToString().ToUpper().Contains(search) ||
+                p.Name.Contains(search) ||
+                p.City.Contains(search)
                 );
             };
 
@@ -62,6 +64,11 @@ namespace WDA.ApiDotNet.Infra.Data.Repository
         public async Task<List<Publishers>> GetByNameAsync(string name)
         {
             return await _db.Publishers.Where(x => x.Name == name).ToListAsync();
+        }
+        public async Task<int> GetTotalCountAsync()
+        {
+            var totalCount = await _db.Publishers.CountAsync();
+            return totalCount;
         }
     }
 }

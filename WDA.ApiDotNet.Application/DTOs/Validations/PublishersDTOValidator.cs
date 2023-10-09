@@ -10,11 +10,15 @@ namespace WDA.ApiDotNet.Application.DTOs.Validations
             RuleFor(x => x.Name)
                 .NotEmpty()
                 .NotNull()
-                .WithMessage("Nome deve ser informado!");
+                .WithMessage("Nome deve ser informado!")
+                .MinimumLength(3).WithMessage("Mínimo 3 caracteres!")
+                .MaximumLength(50).WithMessage("Máximo 50 caracteres!");
             RuleFor(x => x.City)
                 .NotEmpty()
                 .NotNull()
-                .WithMessage("Cidade deve ser informado!");
+                .WithMessage("Cidade deve ser informado!")
+                .MinimumLength(3).WithMessage("Mínimo 3 caracteres!")
+                .MaximumLength(50).WithMessage("Máximo 50 caracteres!");
         }
     }
     public class PublishersDTOValidator : AbstractValidator<PublishersUpdateDTO>
@@ -28,11 +32,15 @@ namespace WDA.ApiDotNet.Application.DTOs.Validations
             RuleFor(x => x.Name)
                 .NotEmpty()
                 .NotNull()
-                .WithMessage("Nome deve ser informado!");
+                .WithMessage("Nome deve ser informado!")
+                .MinimumLength(3).WithMessage("Mínimo 3 caracteres!")
+                .MaximumLength(50).WithMessage("Máximo 50 caracteres!");
             RuleFor(x => x.City)
                 .NotEmpty()
                 .NotNull()
-                .WithMessage("Cidade deve ser informado!");
+                .WithMessage("Cidade deve ser informado!")
+                .MinimumLength(3).WithMessage("Mínimo 3 caracteres!")
+                .MaximumLength(50).WithMessage("Máximo 50 caracteres!");
         }
     }
 }

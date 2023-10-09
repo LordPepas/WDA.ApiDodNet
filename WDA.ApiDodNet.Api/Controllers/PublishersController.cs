@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using WDA.ApiDodNet.Application.Repositories.Interface;
-using WDA.ApiDodNet.Data.Models;
 using WDA.ApiDotNet.Application.DTOs.PublishersDTO;
 using WDA.ApiDotNet.Application.Helpers;
 using WDA.ApiDotNet.Application.Services.Interface;
@@ -30,10 +29,10 @@ namespace WDA.ApiDotNet.Api.Controllers
             return BadRequest(result);
         }
         [HttpGet]
-        public async Task<ActionResult> GetAsync([FromQuery] string? value, [FromQuery] PageParams pageParams)
+        public async Task<ActionResult> GetAsync([FromQuery] string? search, [FromQuery] PageParams pageParams)
         {
-            var publishers = await _repository.GetAllAsync(pageParams, value);
-            var result = await _service.GetAsync(value, pageParams);
+            var publishers = await _repository.GetAllAsync(pageParams, search);
+            var result = await _service.GetAsync(pageParams, search);
 
 
             if (result.IsSucess)
@@ -69,6 +68,13 @@ namespace WDA.ApiDotNet.Api.Controllers
             if (result.IsSucess)
                 return Ok(result);
             return BadRequest(result);
+        }
+
+        [HttpGet("count")]
+        public async Task<ActionResult<int>> GetBookCountAsync()
+        {
+            var bookCount = await _repository.GetTotalCountAsync();
+            return Ok(bookCount);
         }
     }
 }

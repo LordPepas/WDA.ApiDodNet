@@ -33,24 +33,25 @@ namespace WDA.ApiDotNet.Infra.Data.Repository
             return await _db.Users.FirstOrDefaultAsync(x => x.Id == id);
         }
 
-        public async Task<PageList<Users>> GetAllAsync(PageParams pageParams, string? value)
+        public async Task<PageList<Users>> GetAllAsync(PageParams pageParams, string? search)
         {
             IQueryable<Users> query = _db.Users
                 .AsNoTracking()
                 .OrderBy(b => b.Id);
 
-            if (!string.IsNullOrWhiteSpace(value))
+            if (!string.IsNullOrWhiteSpace(search))
             {
+                search = search.ToUpper();
+
                 query = query.Where(p =>
-                p.Id.ToString().ToUpper().Contains(value) ||
-                p.Name.ToUpper().Contains(value) ||
-                p.City.ToUpper().Contains(value) ||
-                p.Address.ToUpper().Contains(value) ||
-                p.Email.ToUpper().Contains(value)
+                p.Id.ToString().Contains(search) ||
+                p.Name.Contains(search) ||
+                p.City.Contains(search) ||
+                p.Address.Contains(search) ||
+                p.Email.Contains(search)
                 );
             };
 
-            query = query.OrderBy(b => b.Id);
 
             return await PageList<Users>.CreateAsync(query, pageParams.PageNumber, pageParams.PageSize);
         }
@@ -63,6 +64,11 @@ namespace WDA.ApiDotNet.Infra.Data.Repository
         public async Task<List<Users>> GetByEmailAsync(string email)
         {
             return await _db.Users.Where(x => x.Email == email).ToListAsync();
+        }
+        public async Task<int> GetTotalCountAsync()
+        {
+            var totalCount = await _db.Users.CountAsync();
+            return totalCount;
         }
     }
 }

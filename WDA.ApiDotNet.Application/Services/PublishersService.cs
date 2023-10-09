@@ -5,7 +5,6 @@ using WDA.ApiDotNet.Application.DTOs.PublishersDTO;
 using WDA.ApiDotNet.Application.DTOs.Validations;
 using WDA.ApiDotNet.Application.Helpers;
 using WDA.ApiDotNet.Application.Services.Interface;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace WDA.ApiDotNet.Application.Services
 {
@@ -42,9 +41,9 @@ namespace WDA.ApiDotNet.Application.Services
             return ResultService.Ok<PublishersCreateDTO>(_mapper.Map<PublishersCreateDTO>(data));
         }
 
-        public async Task<ResultService<ICollection<PublishersDTO>>> GetAsync(string value, PageParams pageParams)
+        public async Task<ResultService<ICollection<PublishersDTO>>> GetAsync(PageParams pageParams, string search)
         {
-            var publishers = await _publishersRepository.GetAllAsync(pageParams, value);
+            var publishers = await _publishersRepository.GetAllAsync(pageParams, search);
 
             return ResultService.Ok<ICollection<PublishersDTO>>(_mapper.Map<ICollection<PublishersDTO>>(publishers));
         }

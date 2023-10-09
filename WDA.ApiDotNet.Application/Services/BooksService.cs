@@ -7,6 +7,7 @@ using WDA.ApiDotNet.Application.DTOs.PublishersDTO;
 using WDA.ApiDotNet.Application.DTOs.Validations;
 using WDA.ApiDotNet.Application.Helpers;
 using WDA.ApiDotNet.Application.Services.Interface;
+using static System.Reflection.Metadata.BlobBuilder;
 
 namespace WDA.ApiDotNet.Application.Services
 {
@@ -32,8 +33,6 @@ namespace WDA.ApiDotNet.Application.Services
             var result = new BooksCreateDTOValidator().Validate(booksDTO);
             if (!result.IsValid)
                 return ResultService.RequestError<BooksCreateDTO>("Problemas de validação", result);
-
-
 
             var book = _mapper.Map<Books>(booksDTO);
             var duplicateName = await _booksRepository.GetByNameAsync(booksDTO.Name);
@@ -65,9 +64,9 @@ namespace WDA.ApiDotNet.Application.Services
             return ResultService.Ok($"Livro com id: {id} foi deletado");
         }
 
-        public async Task<ResultService<List<BooksDTO>>> GetAsync(PageParams pageParams, string? value)
+        public async Task<ResultService<List<BooksDTO>>> GetAsync(PageParams pageParams, string? search)
         {
-            var books = await _booksRepository.GetAllAsync(pageParams, value);
+            var books = await _booksRepository.GetAllAsync(pageParams, search);
             return ResultService.Ok<List<BooksDTO>>(_mapper.Map<List<BooksDTO>>(books));
         }
 
@@ -95,6 +94,13 @@ namespace WDA.ApiDotNet.Application.Services
             book = _mapper.Map<BooksUpdateDTO, Books>(booksDTO, book);
             await _booksRepository.UpdateAsync(book);
             return ResultService.Ok("Livro Atualizado!");
+        }
+
+        public async Task<ResultService<List<BooksCountDTO>>> GetMostRentedBooks()
+        {
+            var totalCount = await _booksRepository.MostRentedBooks();
+
+            return ResultService.Ok<List<BooksCountDTO>>(_mapper.Map<List<BooksCountDTO>>(totalCount));
         }
     }
 }

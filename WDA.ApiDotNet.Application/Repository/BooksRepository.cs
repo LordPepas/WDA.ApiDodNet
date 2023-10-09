@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Xml.Linq;
 using WDA.ApiDodNet.Application.Repositories.Interface;
 using WDA.ApiDodNet.Data.Models;
 using WDA.ApiDotNet.Application.Helpers;
@@ -35,26 +36,26 @@ namespace WDA.ApiDotNet.Infra.Data.Repository
              .FirstOrDefaultAsync(x => x.Id == id);
         }
 
-        public async Task<PageList<Books>> GetAllAsync(PageParams pageParams, string? value)
+        public async Task<PageList<Books>> GetAllAsync(PageParams pageParams, string? search)
         {
             IQueryable<Books> query = _db.Books.Include(x => x.Publisher)
                  .AsNoTracking()
                  .OrderBy(b => b.Id);
 
-            if (!string.IsNullOrWhiteSpace(value))
+            if (!string.IsNullOrWhiteSpace(search))
             {
-                query = query.Where(p =>
-                p.Id.ToString().Contains(value) ||
-                p.Name.ToUpper().Contains(value) ||
-                p.Author.ToUpper().Contains(value) ||
-                p.PublisherId.ToString().Contains(value) ||
-                p.Publisher.Name.ToUpper().Contains(value) ||
-                p.Quantity.ToString().Contains(value) ||
-                p.Launch.ToString().Contains(value) ||
-                p.Rented.ToString().Contains(value)
-                );
-            };
+                search = search.ToUpper(); // Converter o valor de pesquisa para maiúsculas
 
+                query = query.Where(p =>
+                    p.Id.ToString().Contains(search) ||
+                    p.Name.ToUpper().Contains(search) ||
+                    p.Author.ToUpper().Contains(search) ||
+                    p.Quantity.ToString().Contains(search) ||
+                    p.Launch.ToString().Contains(search) ||
+                    p.Rented.ToString().Contains(search) ||
+                    p.Publisher.Name.ToUpper().Contains(search) // Pesquisar dentro do objeto Publisher
+                );
+            }
             return await PageList<Books>.CreateAsync(query, pageParams.PageNumber, pageParams.PageSize);
         }
 
@@ -74,6 +75,20 @@ namespace WDA.ApiDotNet.Infra.Data.Repository
         public async Task<List<Books>> GetByNameAsync(string name)
         {
             return await _db.Books.Where(x => x.Name == name).ToListAsync();
+        }
+        public async Task<int> GetTotalCountAsync()
+        {
+                var totalCount = await _db.Books.CountAsync();
+                return totalCount;
+        }
+        public async Task<List<Books>> MostRentedBooks()
+        {
+            var mostRentedBooks = await _db.Books
+                .Where(x => x.Rented != null)
+                .OrderByDescending(x => x.Rented)
+                .ToListAsync();
+
+            return mostRentedBooks;
         }
     }
 }

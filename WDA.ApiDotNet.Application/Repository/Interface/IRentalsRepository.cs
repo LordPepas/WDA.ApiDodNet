@@ -5,7 +5,7 @@ namespace WDA.ApiDodNet.Application.Repositories.Interface
 {
     public interface IRentalsRepository
     {
-        Task<PageList<Rentals>> GetAllAsync(PageParams pageParams, string? value);
+        Task<PageList<Rentals>> GetAllAsync(PageParams pageParams, string? search);
         Task<Rentals> GetByIdAsync(int id);
         Task<Rentals> CreateAsync(Rentals rental);
         Task<Rentals> UpdateAsync(Rentals rental);
@@ -15,5 +15,6 @@ namespace WDA.ApiDodNet.Application.Repositories.Interface
         Task<bool> CheckDate(DateTime rentalDate);
         Task<bool?> CheckPrevisionDate(DateTime forecastDate, DateTime rentalDate);
         Task<bool> GetStatus(DateTime forecastDate, DateTime returnDate);
+        Task<int> GetTotalCountAsync();
     }
 }
