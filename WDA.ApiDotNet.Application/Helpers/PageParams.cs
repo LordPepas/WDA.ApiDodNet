@@ -1,6 +1,4 @@
-﻿using System.Linq.Expressions;
-using WDA.ApiDodNet.Data.Models;
-namespace WDA.ApiDotNet.Application.Helpers
+﻿namespace WDA.ApiDotNet.Application.Helpers
 {
     public class PageParams
     {

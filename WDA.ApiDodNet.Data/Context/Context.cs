@@ -1,8 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Reflection.Emit;
-using WDA.ApiDodNet.Data.Models;
-using static System.Reflection.Metadata.BlobBuilder;
+using WDA.ApiDotNet.Application.Models;
 
 //configurar as entidades (tabelas) do banco de dados com os modelos de dados definidos
 namespace WDA.ApiDotNet.Infra.Data.Context

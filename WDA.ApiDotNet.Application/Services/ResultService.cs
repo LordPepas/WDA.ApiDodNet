@@ -6,7 +6,7 @@ namespace WDA.ApiDotNet.Application.Services
     {
         public bool IsSucess { get; set; }
         public string Message { get; set; }
-        public ICollection<ErrorValidation> Errors { get; set; }
+        public ICollection<ErrorValidation> Errors { get; set; } = new List<ErrorValidation>();
 
         public static ResultService RequestError(string message, ValidationResult validationResult)
         {

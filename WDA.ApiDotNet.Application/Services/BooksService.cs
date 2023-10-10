@@ -1,13 +1,11 @@
 ﻿using AutoMapper;
-using WDA.ApiDodNet.Application.Repositories.Interface;
-using WDA.ApiDodNet.Data.Models;
-using WDA.ApiDotNet.Application.DTOs;
-using WDA.ApiDotNet.Application.DTOs.BooksDTO;
-using WDA.ApiDotNet.Application.DTOs.PublishersDTO;
-using WDA.ApiDotNet.Application.DTOs.Validations;
 using WDA.ApiDotNet.Application.Helpers;
-using WDA.ApiDotNet.Application.Services.Interface;
-using static System.Reflection.Metadata.BlobBuilder;
+using WDA.ApiDotNet.Application.Interfaces.IRepository;
+using WDA.ApiDotNet.Application.Interfaces.IServices;
+using WDA.ApiDotNet.Application.Models;
+using WDA.ApiDotNet.Application.Models.DTOs.BooksDTO;
+using WDA.ApiDotNet.Application.Models.DTOs.PublishersDTO;
+using WDA.ApiDotNet.Application.Models.DTOs.Validations;
 
 namespace WDA.ApiDotNet.Application.Services
 {
@@ -101,6 +99,12 @@ namespace WDA.ApiDotNet.Application.Services
             var totalCount = await _booksRepository.MostRentedBooks();
 
             return ResultService.Ok<List<BooksCountDTO>>(_mapper.Map<List<BooksCountDTO>>(totalCount));
+        }
+
+        public async Task<ResultService<List<BookPublisherDTO>>> GetSelectPublishersAsync()
+        {
+            var books = await _booksRepository.GetSelectPublishersAsync();
+            return ResultService.Ok<List<BookPublisherDTO>>(_mapper.Map<List<BookPublisherDTO>>(books));
         }
     }
 }

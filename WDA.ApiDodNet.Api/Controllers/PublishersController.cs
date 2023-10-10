@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using WDA.ApiDodNet.Application.Repositories.Interface;
-using WDA.ApiDotNet.Application.DTOs.PublishersDTO;
 using WDA.ApiDotNet.Application.Helpers;
-using WDA.ApiDotNet.Application.Services.Interface;
+using WDA.ApiDotNet.Application.Interfaces.IRepository;
+using WDA.ApiDotNet.Application.Interfaces.IServices;
+using WDA.ApiDotNet.Application.Models.DTOs.PublishersDTO;
 
 namespace WDA.ApiDotNet.Api.Controllers
 {
@@ -68,13 +68,6 @@ namespace WDA.ApiDotNet.Api.Controllers
             if (result.IsSucess)
                 return Ok(result);
             return BadRequest(result);
-        }
-
-        [HttpGet("count")]
-        public async Task<ActionResult<int>> GetBookCountAsync()
-        {
-            var bookCount = await _repository.GetTotalCountAsync();
-            return Ok(bookCount);
         }
     }
 }

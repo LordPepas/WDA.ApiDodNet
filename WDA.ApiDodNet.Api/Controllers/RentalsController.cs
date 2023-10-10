@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
-using WDA.ApiDodNet.Application.Repositories.Interface;
-using WDA.ApiDotNet.Application.DTOs.RentalsDTO;
 using WDA.ApiDotNet.Application.Helpers;
-using WDA.ApiDotNet.Application.Services.Interface;
+using WDA.ApiDotNet.Application.Interfaces.IRepository;
+using WDA.ApiDotNet.Application.Interfaces.IServices;
+using WDA.ApiDotNet.Application.Models.DTOs.RentalsDTO;
 
 namespace WDA.ApiDotNet.Api.Controllers
 {
@@ -15,7 +15,7 @@ namespace WDA.ApiDotNet.Api.Controllers
         private readonly IRentalsService _service;
         private readonly IRentalsRepository _repository;
 
-        public RentalsController(IRentalsService rentalsService,IRentalsRepository rentalsRepository)
+        public RentalsController(IRentalsService rentalsService, IRentalsRepository rentalsRepository)
         {
             _service = rentalsService;
             _repository = rentalsRepository;
@@ -42,6 +42,25 @@ namespace WDA.ApiDotNet.Api.Controllers
                 Response.AddPagination(rentals.CurrentPage, rentals.PageSize, rentals.TotalCount, rentals.TotalPages);
                 return Ok(result);
             }
+            return BadRequest(result);
+        }
+        [HttpGet("selectBooks")]
+        [SwaggerOperation(Summary = "List Select Books")]
+        public async Task<ActionResult> GetSelectBooksAsync()
+        {
+            var result = await _service.GetSelectBooksAsync();
+            if (result.IsSucess)
+                return Ok(result);
+            return BadRequest(result);
+        }
+
+        [HttpGet("selectUsers")]
+        [SwaggerOperation(Summary = "List Select Users")]
+        public async Task<ActionResult> GetSelectUsersAsync()
+        {
+            var result = await _service.GetSelectUsersAsync();
+            if (result.IsSucess)
+                return Ok(result);
             return BadRequest(result);
         }
 
@@ -78,13 +97,6 @@ namespace WDA.ApiDotNet.Api.Controllers
             if (result.IsSucess)
                 return Ok(result);
             return BadRequest(result);
-        }
-
-        [HttpGet("count")]
-        public async Task<ActionResult<int>> GetBookCountAsync()
-        {
-            var bookCount = await _repository.GetTotalCountAsync();
-            return Ok(bookCount);
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using WDA.ApiDodNet.Data.Models;
+using WDA.ApiDotNet.Application.Models;
 
 namespace WDA.ApiDotNet6.Infra.Data.Maps
 {
@@ -9,9 +9,9 @@ namespace WDA.ApiDotNet6.Infra.Data.Maps
         public void Configure(EntityTypeBuilder<Rentals> builder)
         {
             builder.ToTable("Rentals");
-            builder.HasKey(x => x.Id); 
+            builder.HasKey(x => x.Id);
 
-            builder.Property(x => x.BookId) 
+            builder.Property(x => x.BookId)
                 .IsRequired();
             builder.HasOne(e => e.Book);
 

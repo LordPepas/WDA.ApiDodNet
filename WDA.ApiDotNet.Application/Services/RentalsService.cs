@@ -1,10 +1,11 @@
 ﻿using AutoMapper;
-using WDA.ApiDodNet.Application.Repositories.Interface;
-using WDA.ApiDodNet.Data.Models;
-using WDA.ApiDotNet.Application.DTOs.RentalsDTO;
-using WDA.ApiDotNet.Application.DTOs.Validations;
 using WDA.ApiDotNet.Application.Helpers;
-using WDA.ApiDotNet.Application.Services.Interface;
+using WDA.ApiDotNet.Application.Interfaces.IRepository;
+using WDA.ApiDotNet.Application.Interfaces.IServices;
+using WDA.ApiDotNet.Application.Models;
+using WDA.ApiDotNet.Application.Models.DTOs.BooksDTO;
+using WDA.ApiDotNet.Application.Models.DTOs.RentalsDTO;
+using WDA.ApiDotNet.Application.Models.DTOs.Validations;
 
 namespace WDA.ApiDotNet.Application.Services
 {
@@ -104,7 +105,7 @@ namespace WDA.ApiDotNet.Application.Services
             if (book == null)
                 return ResultService.Fail<RentalsUpdateDTO>("Livro não encontrado!");
 
-           
+
             bool dateValidate = await _rentalsRepository.CheckDate(rentalsDTO.ReturnDate);
             if (dateValidate)
                 return ResultService.Fail<RentalsUpdateDTO>("Data de devolução não pode ser diferente da data de Hoje!");
@@ -122,6 +123,16 @@ namespace WDA.ApiDotNet.Application.Services
             await _rentalsRepository.UpdateAsync(rental);
 
             return ResultService.Ok<RentalsDTO>(_mapper.Map<RentalsDTO>(rental));
+        }
+        public async Task<ResultService<List<BookRentalDTO>>> GetSelectBooksAsync()
+        {
+            var books = await _rentalsRepository.GetSelectBooksAsync();
+            return ResultService.Ok<List<BookRentalDTO>>(_mapper.Map<List<BookRentalDTO>>(books));
+        }
+        public async Task<ResultService<List<UserRentalDTO>>> GetSelectUsersAsync()
+        {
+            var books = await _rentalsRepository.GetSelectUsersAsync();
+            return ResultService.Ok<List<UserRentalDTO>>(_mapper.Map<List<UserRentalDTO>>(books));
         }
     }
 }

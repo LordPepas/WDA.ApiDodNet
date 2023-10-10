@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using WDA.ApiDodNet.Application.Repositories.Interface;
-using WDA.ApiDotNet.Application.DTOs;
 using WDA.ApiDotNet.Application.Helpers;
-using WDA.ApiDotNet.Application.Services.Interface;
+using WDA.ApiDotNet.Application.Interfaces.IRepository;
+using WDA.ApiDotNet.Application.Interfaces.IServices;
+using WDA.ApiDotNet.Application.Models.DTOs.BooksDTO;
 
 namespace WDA.ApiDotNet.Api.Controllers
 {
@@ -50,6 +50,15 @@ namespace WDA.ApiDotNet.Api.Controllers
                 return Ok(result);
             return BadRequest(result);
         }
+
+        [HttpGet("selectPublishers")]
+        public async Task<ActionResult> GetSelectPublishers()
+        {
+            var result = await _service.GetSelectPublishersAsync();
+            if (result.IsSucess)
+                return Ok(result);
+            return BadRequest(result);
+        }
         [HttpPut]
         public async Task<ActionResult> UpdateAsync([FromBody] BooksUpdateDTO booksDTO)
         {
@@ -69,18 +78,15 @@ namespace WDA.ApiDotNet.Api.Controllers
             return BadRequest(result);
         }
 
-        [HttpGet("count")]
-        public async Task<ActionResult<int>> GetBookCountAsync()
-        {
-            var bookCount = await _repository.GetTotalCountAsync();
-            return Ok(bookCount);
-        }
-
-        [HttpGet("most-rented")]
+        [HttpGet("mostRented")]
         public async Task<ActionResult> GetMostRentedBooks()
         {
-            var most = _service.GetMostRentedBooks();
-            return Ok(most);
+            var result = await _service.GetMostRentedBooks();
+            if (result.IsSucess)
+            {
+                return Ok(result);
+            }
+            return Ok(result);
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using WDA.ApiDodNet.Data.Models;
+using WDA.ApiDotNet.Application.Models;
 
 //Mapeamento da tabela publishers presente no banco de dados
 namespace WDA.ApiDotNet6.Infra.Data.Maps
@@ -11,7 +11,7 @@ namespace WDA.ApiDotNet6.Infra.Data.Maps
         {
 
             builder.HasKey(c => c.Id);
- 
+
             builder.Property(c => c.Name)
                 .IsRequired()
                 .HasColumnType("text");

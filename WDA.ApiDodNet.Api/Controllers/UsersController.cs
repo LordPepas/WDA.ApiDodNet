@@ -1,9 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using WDA.ApiDodNet.Application.Repositories.Interface;
-using WDA.ApiDodNet.Data.Models;
-using WDA.ApiDotNet.Application.DTOs;
 using WDA.ApiDotNet.Application.Helpers;
-using WDA.ApiDotNet.Application.Services.Interface;
+using WDA.ApiDotNet.Application.Interfaces.IRepository;
+using WDA.ApiDotNet.Application.Interfaces.IServices;
+using WDA.ApiDotNet.Application.Models.DTOs.UsersDTO;
 
 namespace WDA.ApiDotNet.Api.Controllers
 {
@@ -14,7 +13,7 @@ namespace WDA.ApiDotNet.Api.Controllers
         private readonly IUsersService _service;
         private readonly IUsersRepository _repository;
 
-        public UsersController(IUsersService usersService,IUsersRepository usersRepository)
+        public UsersController(IUsersService usersService, IUsersRepository usersRepository)
         {
             _service = usersService;
             _repository = usersRepository;
@@ -68,13 +67,6 @@ namespace WDA.ApiDotNet.Api.Controllers
             if (result.IsSucess)
                 return Ok(result);
             return BadRequest(result);
-        }
-
-        [HttpGet("count")]
-        public async Task<ActionResult<int>> GetBookCountAsync()
-        {
-            var bookCount = await _repository.GetTotalCountAsync();
-            return Ok(bookCount);
         }
     }
 }

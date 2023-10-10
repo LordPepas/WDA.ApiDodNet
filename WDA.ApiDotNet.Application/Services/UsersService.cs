@@ -1,12 +1,12 @@
 ﻿using AutoMapper;
-using WDA.ApiDodNet.Application.Repositories.Interface;
-using WDA.ApiDodNet.Data.Models;
-using WDA.ApiDotNet.Application.DTOs;
-using WDA.ApiDotNet.Application.DTOs.PublishersDTO;
-using WDA.ApiDotNet.Application.DTOs.Validations;
 using WDA.ApiDotNet.Application.Helpers;
+using WDA.ApiDotNet.Application.Interfaces.IRepository;
+using WDA.ApiDotNet.Application.Interfaces.IServices;
+using WDA.ApiDotNet.Application.Models;
+using WDA.ApiDotNet.Application.Models.DTOs.PublishersDTO;
+using WDA.ApiDotNet.Application.Models.DTOs.UsersDTO;
+using WDA.ApiDotNet.Application.Models.DTOs.Validations;
 using WDA.ApiDotNet.Application.Services;
-using WDA.ApiDotNet.Application.Services.Interface;
 
 namespace WDA.ApiDodNet.Application.Services
 {
@@ -82,7 +82,6 @@ namespace WDA.ApiDodNet.Application.Services
             if (user == null)
                 return ResultService.Fail<UsersDTO>("Usuário não encontrado!");
 
-            // Verifique se há usuários associados diretamente na lógica de exclusão
             var booksAssociatedWithPublisher = await _rentalsRepository.GetByUserIdAsync(id);
 
             if (booksAssociatedWithPublisher.Count > 0)

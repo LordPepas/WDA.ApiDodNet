@@ -1,10 +1,10 @@
 ﻿using AutoMapper;
-using WDA.ApiDodNet.Application.Repositories.Interface;
-using WDA.ApiDodNet.Data.Models;
-using WDA.ApiDotNet.Application.DTOs.PublishersDTO;
-using WDA.ApiDotNet.Application.DTOs.Validations;
 using WDA.ApiDotNet.Application.Helpers;
-using WDA.ApiDotNet.Application.Services.Interface;
+using WDA.ApiDotNet.Application.Interfaces.IRepository;
+using WDA.ApiDotNet.Application.Interfaces.IServices;
+using WDA.ApiDotNet.Application.Models;
+using WDA.ApiDotNet.Application.Models.DTOs.PublishersDTO;
+using WDA.ApiDotNet.Application.Models.DTOs.Validations;
 
 namespace WDA.ApiDotNet.Application.Services
 {
