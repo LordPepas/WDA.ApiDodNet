@@ -15,18 +15,16 @@ namespace WDA.ApiDotNet.Infra.Data.Repository
             _db = db;
         }
 
-        public async Task<Users> CreateAsync(Users user)
+        public async Task CreateAsync(Users user)
         {
             _db.Add(user);
             await _db.SaveChangesAsync();
-            return user;
         }
 
-        public async Task<Users> UpdateAsync(Users user)
+        public async Task UpdateAsync(Users user)
         {
             _db.Update(user);
             await _db.SaveChangesAsync();
-            return user;
         }
         public async Task<Users> GetByIdAsync(int id)
         {
@@ -53,8 +51,16 @@ namespace WDA.ApiDotNet.Infra.Data.Repository
             };
 
 
-            return await PageList<Users>.CreateAsync(query, pageParams.PageNumber, pageParams.PageSize);
+            return await PageList<Users>.GetResponseAsync(query, pageParams.PageNumber, pageParams.PageSize);
         }
+        public async Task<List<Users>> GetSummaryUsersAsync()
+        {
+            return await _db.Users
+                    .AsNoTracking()
+                    .OrderBy(b => b.Id)
+                    .ToListAsync();
+        }
+
         public async Task DeleteAsync(Users user)
         {
             _db.Remove(user);
@@ -65,5 +71,6 @@ namespace WDA.ApiDotNet.Infra.Data.Repository
         {
             return await _db.Users.Where(x => x.Email == email).ToListAsync();
         }
+
     }
 }

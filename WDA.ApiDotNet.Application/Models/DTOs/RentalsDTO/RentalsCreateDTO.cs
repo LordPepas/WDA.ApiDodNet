@@ -6,8 +6,7 @@
         {
             BookId = bookId;
             UserId = userId;
-            //RentalDate = DateTime.Parse(rentalDate).Date;
-            //PrevisionDate = DateTime.Parse(previsionDate).Date;
+
             RentalDate = rentalDate;
             PrevisionDate = previsionDate;
         }

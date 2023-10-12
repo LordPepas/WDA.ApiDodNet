@@ -1,6 +1,7 @@
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerUI;
 using System.Text.Json.Serialization;
+using WDA.ApiDotNet.Application.Services;
 
 namespace WDA.ApiDotNet.Api
 {
@@ -10,9 +11,14 @@ namespace WDA.ApiDotNet.Api
         {
             var builder = WebApplication.CreateBuilder(args);
 
+
             // Adicione serviços ao container.
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
+            builder.Services.AddControllers().ConfigureApiBehaviorOptions(options =>
+            {
+                options.SuppressModelStateInvalidFilter = true;
+            });
 
             // Configurar o Swagger
             builder.Services.AddSwaggerGen(c =>
@@ -45,16 +51,6 @@ namespace WDA.ApiDotNet.Api
             });
             var app = builder.Build();
 
-
-            //if (app.Environment.IsDevelopment())
-            //{
-            //    app.UseSwagger();
-            //    app.UseSwaggerUI(c =>
-            //    {
-            //        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Bookstore V1");
-            //        c.DocExpansion(DocExpansion.None);
-            //    });
-            //}
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())

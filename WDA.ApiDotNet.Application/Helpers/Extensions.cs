@@ -6,10 +6,10 @@ namespace WDA.ApiDotNet.Application.Helpers
 {
     public static class Extensions
     {
-        public static void AddPagination(this HttpResponse response,
-            int currentPage,int itemsPerpage, int totalitems, int totalPage)
+        public static void AddPagination<T>(this HttpResponse response,
+            int currentPage, int itemsPerpage, int totalitems, int totalPage)
         {
-            var paginationHeader = new PaginationHeader(currentPage, itemsPerpage, totalitems, totalPage);
+            var paginationHeader = new PaginationHeader<T>(currentPage, itemsPerpage, totalitems, totalPage);
 
             var camelCaseFormatter = new JsonSerializerSettings();
             camelCaseFormatter.ContractResolver = new CamelCasePropertyNamesContractResolver();

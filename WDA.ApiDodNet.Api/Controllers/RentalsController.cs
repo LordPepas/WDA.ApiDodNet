@@ -27,7 +27,7 @@ namespace WDA.ApiDotNet.Api.Controllers
         {
             var result = await _service.CreateAsync(rentalsDTO);
 
-            if (result.IsSucess)
+            if (result.IsSuccess)
                 return Ok(result);
             return BadRequest(result);
         }
@@ -37,30 +37,11 @@ namespace WDA.ApiDotNet.Api.Controllers
         {
             var rentals = await _repository.GetAllAsync(pageParams, search);
             var result = await _service.GetAsync(pageParams, search);
-            if (result.IsSucess)
+            if (result.IsSuccess)
             {
-                Response.AddPagination(rentals.CurrentPage, rentals.PageSize, rentals.TotalCount, rentals.TotalPages);
+                Response.AddPagination<RentalsDTO>(rentals.CurrentPage, rentals.PageSize, rentals.TotalCount, rentals.TotalPages);
                 return Ok(result);
             }
-            return BadRequest(result);
-        }
-        [HttpGet("selectBooks")]
-        [SwaggerOperation(Summary = "List Select Books")]
-        public async Task<ActionResult> GetSelectBooksAsync()
-        {
-            var result = await _service.GetSelectBooksAsync();
-            if (result.IsSucess)
-                return Ok(result);
-            return BadRequest(result);
-        }
-
-        [HttpGet("selectUsers")]
-        [SwaggerOperation(Summary = "List Select Users")]
-        public async Task<ActionResult> GetSelectUsersAsync()
-        {
-            var result = await _service.GetSelectUsersAsync();
-            if (result.IsSucess)
-                return Ok(result);
             return BadRequest(result);
         }
 
@@ -69,7 +50,7 @@ namespace WDA.ApiDotNet.Api.Controllers
         public async Task<ActionResult> GetByIdAsync(int id)
         {
             var result = await _service.GetByIdAsync(id);
-            if (result.IsSucess)
+            if (result.IsSuccess)
                 return Ok(result);
             return BadRequest(result);
         }
@@ -81,7 +62,7 @@ namespace WDA.ApiDotNet.Api.Controllers
 
             var result = await _service.UpdateAsync(rentalsUpdateDTO);
 
-            if (result.IsSucess)
+            if (result.IsSuccess)
                 return Ok(result);
 
             return BadRequest(result.Message);
@@ -94,7 +75,7 @@ namespace WDA.ApiDotNet.Api.Controllers
         public async Task<ActionResult> DeleteAsync(int id)
         {
             var result = await _service.DeleteAsync(id);
-            if (result.IsSucess)
+            if (result.IsSuccess)
                 return Ok(result);
             return BadRequest(result);
         }

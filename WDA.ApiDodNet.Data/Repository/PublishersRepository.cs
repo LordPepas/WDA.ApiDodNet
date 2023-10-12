@@ -16,18 +16,16 @@ namespace WDA.ApiDotNet.Infra.Data.Repository
             _db = db;
         }
 
-        public async Task<Publishers> CreateAsync(Publishers publisher)
+        public async Task CreateAsync(Publishers publisher)
         {
             _db.Add(publisher);
             await _db.SaveChangesAsync();
-            return publisher;
         }
 
-        public async Task<Publishers> UpdateAsync(Publishers publisher)
+        public async Task UpdateAsync(Publishers publisher)
         {
             _db.Update(publisher);
             await _db.SaveChangesAsync();
-            return publisher;
         }
 
         public async Task<Publishers> GetByIdAsync(int id)
@@ -52,7 +50,14 @@ namespace WDA.ApiDotNet.Infra.Data.Repository
                 );
             };
 
-            return await PageList<Publishers>.CreateAsync(query, pageParams.PageNumber, pageParams.PageSize);
+            return await PageList<Publishers>.GetResponseAsync(query, pageParams.PageNumber, pageParams.PageSize);
+        }
+        public async Task<List<Publishers>> GetSummaryPublishersAsync()
+        {
+            return await _db.Publishers
+                    .AsNoTracking()
+                    .OrderBy(b => b.Id)
+                    .ToListAsync();
         }
 
         public async Task DeleteAsync(Publishers publisher)

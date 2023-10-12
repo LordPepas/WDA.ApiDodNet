@@ -3,9 +3,9 @@ using WDA.ApiDotNet.Application.Helpers;
 using WDA.ApiDotNet.Application.Interfaces.IRepository;
 using WDA.ApiDotNet.Application.Interfaces.IServices;
 using WDA.ApiDotNet.Application.Models;
-using WDA.ApiDotNet.Application.Models.DTOs.BooksDTO;
 using WDA.ApiDotNet.Application.Models.DTOs.RentalsDTO;
 using WDA.ApiDotNet.Application.Models.DTOs.Validations;
+using WDA.ApiDotNet.Business.Helpers;
 
 namespace WDA.ApiDotNet.Application.Services
 {
@@ -25,94 +25,87 @@ namespace WDA.ApiDotNet.Application.Services
         }
         public async Task<ResultService> CreateAsync(RentalsCreateDTO rentalsDTO)
         {
-            if (rentalsDTO == null)
-                return ResultService.Fail<RentalsCreateDTO>("Objeto deve ser informado!");
-
             var result = new RentalsCreateDTOValidator().Validate(rentalsDTO);
             if (!result.IsValid)
-                return ResultService.RequestError<RentalsCreateDTO>("Problemas de validação", result);
+                return ResultService.RequestError("Problemas de validação", result);
 
             var book = await _booksRepository.GetByIdAsync(rentalsDTO.BookId);
             if (book == null)
-                return ResultService.Fail<RentalsCreateDTO>("Livro não encontrado!");
+                return ResultService.Fail("Livro não encontrado!");
 
             var user = await _usersRepository.GetByIdAsync(rentalsDTO.UserId);
             if (user == null)
-                return ResultService.Fail<RentalsCreateDTO>("Usuário não encontrado!");
+                return ResultService.Fail("Usuário não encontrado!");
 
             bool dateValidate = await _rentalsRepository.CheckDate(rentalsDTO.RentalDate);
             if (dateValidate)
-                return ResultService.Fail<RentalsCreateDTO>("Data de aluguel não pode ser diferente da data de Hoje!");
+                return ResultService.Fail("Data de aluguel não pode ser diferente da data de Hoje!");
 
             bool? forecastValidate = await _rentalsRepository.CheckPrevisionDate(rentalsDTO.PrevisionDate, rentalsDTO.RentalDate);
             if (forecastValidate == true)
-                return ResultService.Fail<RentalsCreateDTO>("Previsão maxima de 30 dias!");
+                return ResultService.Fail("Previsão maxima de 30 dias!");
             else if (forecastValidate == false)
-                return ResultService.Fail<RentalsCreateDTO>("Data de Previsão não pode ser anterior à Data do Aluguel!");
+                return ResultService.Fail("Data de Previsão não pode ser anterior à Data do Aluguel!");
 
             var rental = _mapper.Map<Rentals>(rentalsDTO);
 
             rental.Status = "Pendente";
+            await _rentalsRepository.CreateAsync(rental);
 
-            var data = await _rentalsRepository.CreateAsync(rental);
-
-            return ResultService.Ok<RentalsDTO>(_mapper.Map<RentalsDTO>(data));
+            return ResultService.Ok("Aluguel adicionado com sucesso.");
         }
-
 
         public async Task<ResultService> DeleteAsync(int id)
         {
             var rental = await _rentalsRepository.GetByIdAsync(id);
             if (rental == null)
-                return ResultService.Fail<RentalsDTO>("Aluguel não encontrado!");
+                return ResultService.Fail("Aluguel não encontrado!");
+            if (rental.Status != "Pendente")
+                return ResultService.Fail("Aluguel já devolvido!");
 
             await _rentalsRepository.DeleteAsync(rental);
             return ResultService.Ok($"Aluguel com id: {id} foi deletado");
         }
-        public async Task<ResultService<ICollection<RentalsDTO>>> GetAsync(PageParams pageParams, string? search)
+        public async Task<ResultService<PaginationResponse<RentalsDTO>>> GetAsync(PageParams pageParams, string? search)
         {
             var rentals = await _rentalsRepository.GetAllAsync(pageParams, search);
-            return ResultService.Ok<ICollection<RentalsDTO>>(_mapper.Map<ICollection<RentalsDTO>>(rentals));
+            var mappedRentals = _mapper.Map<List<RentalsDTO>>(rentals.Data);
+
+            var paginationHeader = new PaginationHeader<RentalsDTO>(
+                rentals.CurrentPage,
+                rentals.PageSize,
+                rentals.TotalCount,
+                rentals.TotalPages
+            );
+
+            var response = new PaginationResponse<RentalsDTO>
+            {
+                Header = paginationHeader,
+                Data = mappedRentals
+            };
+
+            return ResultService.Ok(response);
         }
 
         public async Task<ResultService<RentalsDTO>> GetByIdAsync(int id)
         {
             var rental = await _rentalsRepository.GetByIdAsync(id);
-            if (rental == null)
-                return ResultService.Fail<RentalsDTO>("Aluguel não encontrado!");
 
             return ResultService.Ok(_mapper.Map<RentalsDTO>(rental));
-
         }
 
         public async Task<ResultService> UpdateAsync(RentalsUpdateDTO rentalsDTO)
         {
-
-            if (rentalsDTO == null)
-                return ResultService.Fail<RentalsUpdateDTO>("Objeto deve ser informado!");
             var validation = new RentalsUpdateDTOValidator().Validate(rentalsDTO);
             if (!validation.IsValid)
-                return ResultService.RequestError<RentalsUpdateDTO>("Problemas de validação", validation);
+                return ResultService.RequestError("Problemas de validação", validation);
             var rental = await _rentalsRepository.GetByIdAsync(rentalsDTO.Id);
             if (rental.ReturnDate != null)
-                return ResultService.Fail<RentalsUpdateDTO>("Aluguel já devolvido!");
-
-            if (rental == null)
-                return ResultService.Fail<RentalsUpdateDTO>("Aluguel não encontrado!");
-
-            rental = _mapper.Map<RentalsUpdateDTO, Rentals>(rentalsDTO, rental);
-            var book = await _booksRepository.GetByIdAsync(rental.BookId);
-            if (book == null)
-                return ResultService.Fail<RentalsUpdateDTO>("Livro não encontrado!");
-
+                return ResultService.Fail("Aluguel já devolvido!");
 
             bool dateValidate = await _rentalsRepository.CheckDate(rentalsDTO.ReturnDate);
             if (dateValidate)
-                return ResultService.Fail<RentalsUpdateDTO>("Data de devolução não pode ser diferente da data de Hoje!");
-
-            var user = await _usersRepository.GetByIdAsync(rental.UserId);
-            if (user == null)
-                return ResultService.Fail<RentalsUpdateDTO>("Usuário não encontrado!");
+                return ResultService.Fail("Data de devolução não pode ser diferente da data de Hoje!");
 
             bool status = await _rentalsRepository.GetStatus(rental.PrevisionDate, rentalsDTO.ReturnDate);
             if (status)
@@ -123,16 +116,6 @@ namespace WDA.ApiDotNet.Application.Services
             await _rentalsRepository.UpdateAsync(rental);
 
             return ResultService.Ok<RentalsDTO>(_mapper.Map<RentalsDTO>(rental));
-        }
-        public async Task<ResultService<List<BookRentalDTO>>> GetSelectBooksAsync()
-        {
-            var books = await _rentalsRepository.GetSelectBooksAsync();
-            return ResultService.Ok<List<BookRentalDTO>>(_mapper.Map<List<BookRentalDTO>>(books));
-        }
-        public async Task<ResultService<List<UserRentalDTO>>> GetSelectUsersAsync()
-        {
-            var books = await _rentalsRepository.GetSelectUsersAsync();
-            return ResultService.Ok<List<UserRentalDTO>>(_mapper.Map<List<UserRentalDTO>>(books));
         }
     }
 }

@@ -15,7 +15,7 @@ namespace WDA.ApiDotNet.Infra.Data.Repository
             _db = db;
         }
 
-        public async Task<Rentals> CreateAsync(Rentals rental)
+        public async Task CreateAsync(Rentals rental)
         {
             var book = await _db.Books.FindAsync(rental.BookId);
             book.Quantity--;
@@ -23,21 +23,15 @@ namespace WDA.ApiDotNet.Infra.Data.Repository
             _db.Books.Update(book);
             _db.Add(rental);
             await _db.SaveChangesAsync();
-            return rental;
         }
-
-
-        public async Task DeleteAsync(Rentals rental)
+        public async Task UpdateAsync(Rentals rental)
         {
-            _db.Remove(rental);
+            var book = await _db.Books.FindAsync(rental.BookId);
+            book.Quantity++;
+            _db.Books.Update(book);
+            _db.Update(rental);
             await _db.SaveChangesAsync();
         }
-
-        public async Task<List<Rentals>> GetByBookIdAsync(int bookId)
-        {
-            return await _db.Rentals.Where(x => x.UserId == bookId).ToListAsync();
-        }
-
         public async Task<Rentals> GetByIdAsync(int id)
         {
             return await _db.Rentals
@@ -69,21 +63,23 @@ namespace WDA.ApiDotNet.Infra.Data.Repository
                 );
             };
 
-            return await PageList<Rentals>.CreateAsync(query, pageParams.PageNumber, pageParams.PageSize);
+            return await PageList<Rentals>.GetResponseAsync(query, pageParams.PageNumber, pageParams.PageSize);
         }
+
+        public async Task DeleteAsync(Rentals rental)
+        {
+            _db.Remove(rental);
+            await _db.SaveChangesAsync();
+        }
+
+        public async Task<List<Rentals>> GetByBookIdAsync(int bookId)
+        {
+            return await _db.Rentals.Where(x => x.UserId == bookId).ToListAsync();
+        }
+
         public async Task<List<Rentals>> GetByUserIdAsync(int userId)
         {
             return await _db.Rentals.Where(x => x.UserId == userId).ToListAsync();
-        }
-
-        public async Task<Rentals> UpdateAsync(Rentals rental)
-        {
-            var book = await _db.Books.FindAsync(rental.BookId);
-            book.Quantity++;
-            _db.Books.Update(book);
-            _db.Update(rental);
-            await _db.SaveChangesAsync();
-            return rental;
         }
 
         public async Task<bool> CheckDate(DateTime date)
@@ -124,22 +120,6 @@ namespace WDA.ApiDotNet.Infra.Data.Repository
             {
                 return true;
             }
-        }
-
-        public async Task<List<Books>> GetSelectBooksAsync()
-        {
-            return await _db.Books
-                    .AsNoTracking()
-                    .OrderBy(b => b.Id)
-                    .ToListAsync();
-        }
-
-        public async Task<List<Users>> GetSelectUsersAsync()
-        {
-            return await _db.Users
-                    .AsNoTracking()
-                    .OrderBy(b => b.Id)
-                    .ToListAsync();
         }
     }
 }

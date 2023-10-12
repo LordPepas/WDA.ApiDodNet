@@ -15,18 +15,18 @@ namespace WDA.ApiDotNet.Infra.Data.Repository
             _db = db;
         }
 
-        public async Task<Books> CreateAsync(Books book)
+        public async Task CreateAsync(Books book)
         {
-            _db.Add(book);
+            _db.AddAsync(book);
             await _db.SaveChangesAsync();
-            return book;
         }
 
-        public async Task DeleteAsync(Books book)
+        public async Task UpdateAsync(Books book)
         {
-            _db.Remove(book);
+            _db.Update(book);
             await _db.SaveChangesAsync();
         }
+
 
         public async Task<Books> GetByIdAsync(int id)
         {
@@ -55,15 +55,21 @@ namespace WDA.ApiDotNet.Infra.Data.Repository
                     p.Publisher.Name.ToUpper().Contains(search) // Pesquisar dentro do objeto Publisher
                 );
             }
-            return await PageList<Books>.CreateAsync(query, pageParams.PageNumber, pageParams.PageSize);
+
+            return await PageList<Books>.GetResponseAsync(query, pageParams.PageNumber, pageParams.PageSize);
+        }
+        public async Task<List<Books>> GetSummaryBooksAsync()
+        {
+            return await _db.Books
+                    .AsNoTracking()
+                    .OrderBy(b => b.Id)
+                    .ToListAsync();
         }
 
-
-        public async Task<Books> UpdateAsync(Books book)
+        public async Task DeleteAsync(Books book)
         {
-            _db.Update(book);
+            _db.Remove(book);
             await _db.SaveChangesAsync();
-            return book;
         }
 
         async Task<List<Books>> IBooksRepository.GetByPublishersIdAsync(int publisherId)
@@ -81,13 +87,6 @@ namespace WDA.ApiDotNet.Infra.Data.Repository
                 .Where(x => x.Rented != 0)
                 .OrderByDescending(x => x.Rented)
                 .ToListAsync();
-        }
-        public async Task<List<Publishers>> GetSelectPublishersAsync()
-        {
-            return await _db.Publishers
-                    .AsNoTracking()
-                    .OrderBy(b => b.Id)
-                    .ToListAsync();
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
 using WDA.ApiDotNet.Application.Helpers;
 using WDA.ApiDotNet.Application.Interfaces.IRepository;
 using WDA.ApiDotNet.Application.Interfaces.IServices;
@@ -20,73 +21,76 @@ namespace WDA.ApiDotNet.Api.Controllers
         }
 
         [HttpPost]
+        [SwaggerOperation(Summary = "Create Book")]
         public async Task<ActionResult> Post([FromBody] BooksCreateDTO booksDTO)
         {
             var result = await _service.CreateAsync(booksDTO);
-            if (result.IsSucess)
+            if (result.IsSuccess)
                 return Ok(result);
             return BadRequest(result);
         }
         [HttpGet]
-
+        [SwaggerOperation(Summary = "List Books")]
         public async Task<ActionResult> GetAsync([FromQuery] string? search, [FromQuery] PageParams pageParams)
         {
             var books = await _repository.GetAllAsync(pageParams, search);
             var result = await _service.GetAsync(pageParams, search);
 
-            if (result.IsSucess)
+            if (result.IsSuccess)
             {
-                Response.AddPagination(books.CurrentPage, books.PageSize, books.TotalCount, books.TotalPages);
+                Response.AddPagination<BooksDTO>(books.CurrentPage, books.PageSize, books.TotalCount, books.TotalPages);
                 return Ok(result);
             }
             return BadRequest(result);
         }
+        [HttpGet("SummaryData")]
+        [SwaggerOperation(Summary = "List Summary Books")]
+        public async Task<ActionResult> GetSelectBooksAsync()
+        {
+            var result = await _service.GetSummaryBooksAsync();
+            if (result.IsSuccess)
+                return Ok(result);
+            return BadRequest(result);
+        }
 
         [HttpGet("{id:int}")]
+        [SwaggerOperation(Summary = "List Book")]
         public async Task<ActionResult> GetByIdAsync(int id)
         {
             var result = await _service.GetByIdAsync(id);
-            if (result.IsSucess)
+            if (result.IsSuccess)
                 return Ok(result);
             return BadRequest(result);
         }
 
-        [HttpGet("selectPublishers")]
-        public async Task<ActionResult> GetSelectPublishers()
+        [HttpGet("MostRented")]
+        [SwaggerOperation(Summary = "Most Rented Books")]
+        public async Task<ActionResult> GetMostRentedBooks()
         {
-            var result = await _service.GetSelectPublishersAsync();
-            if (result.IsSucess)
+            var result = await _service.GetMostRentedBooks();
+            if (result.IsSuccess)
                 return Ok(result);
-            return BadRequest(result);
+           return BadRequest(result);
         }
         [HttpPut]
+        [SwaggerOperation(Summary = "Update Book")]
         public async Task<ActionResult> UpdateAsync([FromBody] BooksUpdateDTO booksDTO)
         {
             var result = await _service.UpdateAsync(booksDTO);
 
-            if (result.IsSucess)
+            if (result.IsSuccess)
                 return Ok(result);
             return BadRequest(result);
         }
 
         [HttpDelete("{id:int}")]
+        [SwaggerOperation(Summary = "Delete Book")]
         public async Task<ActionResult> DeleteAsync(int id)
         {
             var result = await _service.DeleteAsync(id);
-            if (result.IsSucess)
+            if (result.IsSuccess)
                 return Ok(result);
             return BadRequest(result);
-        }
-
-        [HttpGet("mostRented")]
-        public async Task<ActionResult> GetMostRentedBooks()
-        {
-            var result = await _service.GetMostRentedBooks();
-            if (result.IsSucess)
-            {
-                return Ok(result);
-            }
-            return Ok(result);
         }
     }
 }

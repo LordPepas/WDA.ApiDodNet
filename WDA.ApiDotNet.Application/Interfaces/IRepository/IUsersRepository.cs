@@ -5,11 +5,12 @@ namespace WDA.ApiDotNet.Application.Interfaces.IRepository
 {
     public interface IUsersRepository
     {
-        Task<PageList<Users>> GetAllAsync(PageParams pageParams, string? search);
+        Task CreateAsync(Users user);
+        Task UpdateAsync(Users user);
         Task<Users> GetByIdAsync(int id);
-        Task<List<Users>> GetByEmailAsync(string email);
-        Task<Users> CreateAsync(Users user);
-        Task<Users> UpdateAsync(Users user);
+        Task<PageList<Users>> GetAllAsync(PageParams pageParams, string? search);
+        Task<List<Users>> GetSummaryUsersAsync();
         Task DeleteAsync(Users user);
+        Task<List<Users>> GetByEmailAsync(string email);
     }
 }

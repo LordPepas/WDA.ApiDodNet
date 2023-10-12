@@ -1,38 +1,38 @@
 ﻿using FluentValidation.Results;
+using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace WDA.ApiDotNet.Application.Services
 {
-    public class ResultService
+    public class ResultService : IFilterMetadata
     {
-        public bool IsSucess { get; set; }
+        public bool IsSuccess { get; set; }
         public string Message { get; set; }
-        public ICollection<ErrorValidation> Errors { get; set; } = new List<ErrorValidation>();
+        public List<string> Errors { get; set; }
 
         public static ResultService RequestError(string message, ValidationResult validationResult)
         {
+            var errors = validationResult.Errors.Select(x => x.ErrorMessage).ToList();
             return new ResultService
             {
-                IsSucess = false,
+                IsSuccess = false,
                 Message = message,
-                Errors = validationResult.Errors.Select(x => new ErrorValidation { Field = x.PropertyName, Message = x.ErrorMessage }).ToList(),
+                Errors = errors
             };
         }
 
-        public static ResultService<T> RequestError<T>(string message, ValidationResult validationResult)
+        public static ResultService Fail(string message, ICollection<string> errors = null)
         {
-            return new ResultService<T>
+            var errorMessages = errors != null ? errors.ToList() : null;
+            return new ResultService
             {
-                IsSucess = false,
+                IsSuccess = false,
                 Message = message,
-                Errors = validationResult.Errors.Select(x => new ErrorValidation { Field = x.PropertyName, Message = x.ErrorMessage }).ToList(),
+                Errors = errorMessages
             };
         }
 
-        public static ResultService Fail(string message) => new() { IsSucess = false, Message = message };
-        public static ResultService<T> Fail<T>(string message) => new() { IsSucess = false, Message = message };
-
-        public static ResultService Ok(string message) => new() { IsSucess = true, Message = message };
-        public static ResultService<T> Ok<T>(T data) => new() { IsSucess = true, Data = data };
+        public static ResultService Ok(string message) => new ResultService { IsSuccess = true, Message = message };
+        public static ResultService<T> Ok<T>(T data) => new() { IsSuccess = true, Data = data };
     }
     public class ResultService<T> : ResultService
     {

@@ -3,8 +3,10 @@ using WDA.ApiDotNet.Application.Helpers;
 using WDA.ApiDotNet.Application.Interfaces.IRepository;
 using WDA.ApiDotNet.Application.Interfaces.IServices;
 using WDA.ApiDotNet.Application.Models;
+using WDA.ApiDotNet.Application.Models.DTOs.BooksDTO;
 using WDA.ApiDotNet.Application.Models.DTOs.PublishersDTO;
 using WDA.ApiDotNet.Application.Models.DTOs.Validations;
+using WDA.ApiDotNet.Business.Helpers;
 
 namespace WDA.ApiDotNet.Application.Services
 {
@@ -24,36 +26,59 @@ namespace WDA.ApiDotNet.Application.Services
         public async Task<ResultService> CreateAsync(PublishersCreateDTO publishersDTO)
         {
             if (publishersDTO == null)
-                return ResultService.Fail<PublishersCreateDTO>("Objeto deve ser informado!");
+            {
+                return ResultService.Fail("Preencha todos os campos corretamente.");
+            }
 
             var result = new PublishersCreateDTOValidator().Validate(publishersDTO);
             if (!result.IsValid)
-                return ResultService.RequestError<PublishersCreateDTO>("Problemas de validação", result);
+                return ResultService.RequestError("Problemas de validação", result);
 
             var publisher = _mapper.Map<Publishers>(publishersDTO);
 
             var name = await _publishersRepository.GetByNameAsync(publishersDTO.Name);
             if (name.Count > 0)
             {
-                return ResultService.Fail<PublishersCreateDTO>("Editora já existente");
+                return ResultService.Fail("Editora já existente");
             }
-            var data = await _publishersRepository.CreateAsync(publisher);
-            return ResultService.Ok<PublishersCreateDTO>(_mapper.Map<PublishersCreateDTO>(data));
+
+            await _publishersRepository.CreateAsync(publisher);
+            return ResultService.Ok("Livro adicionado com sucesso.");
         }
 
-        public async Task<ResultService<ICollection<PublishersDTO>>> GetAsync(PageParams pageParams, string search)
+        public async Task<ResultService<PaginationResponse<PublishersDTO>>> GetAsync(PageParams pageParams, string search)
         {
             var publishers = await _publishersRepository.GetAllAsync(pageParams, search);
 
-            return ResultService.Ok<ICollection<PublishersDTO>>(_mapper.Map<ICollection<PublishersDTO>>(publishers));
+            var mappedPublishers = _mapper.Map<List<PublishersDTO>>(publishers.Data);
+
+            var paginationHeader = new PaginationHeader<PublishersDTO>(
+                publishers.CurrentPage,
+                publishers.PageSize,
+                publishers.TotalCount,
+                publishers.TotalPages
+            );
+
+            var response = new PaginationResponse<PublishersDTO>
+            {
+                Header = paginationHeader,
+                Data = mappedPublishers
+            };
+
+            return ResultService.Ok(response);
         }
 
+        public async Task<ResultService<List<BookPublisherDTO>>> GetSummaryPublishersAsync()
+        {
+            var books = await _publishersRepository.GetSummaryPublishersAsync();
+            return ResultService.Ok<List<BookPublisherDTO>>(_mapper.Map<List<BookPublisherDTO>>(books));
+        }
 
-        public async Task<ResultService<PublishersDTO>> GetByIdAsync(int id)
+        public async Task<ResultService> GetByIdAsync(int id)
         {
             var publishers = await _publishersRepository.GetByIdAsync(id);
             if (publishers == null)
-                return ResultService.Fail<PublishersDTO>("Editora não encontrado!");
+                return ResultService.Fail("Editora não encontrado!");
 
             return ResultService.Ok(_mapper.Map<PublishersDTO>(publishers));
         }
@@ -63,17 +88,17 @@ namespace WDA.ApiDotNet.Application.Services
         public async Task<ResultService> UpdateAsync(PublishersUpdateDTO publishersDTO)
         {
             if (publishersDTO == null)
-                return ResultService.Fail<PublishersUpdateDTO>("Objeto deve ser informado!");
+                return ResultService.Fail("Objeto deve ser informado!");
             var validation = new PublishersDTOValidator().Validate(publishersDTO);
             if (!validation.IsValid)
-                return ResultService.RequestError<PublishersUpdateDTO>("Problemas de validação", validation);
+                return ResultService.RequestError("Problemas de validação", validation);
             var publishers = await _publishersRepository.GetByIdAsync(publishersDTO.Id);
             if (publishers == null)
                 return ResultService.Fail("Editora não encontrado!");
 
             publishers = _mapper.Map<PublishersUpdateDTO, Publishers>(publishersDTO, publishers);
             await _publishersRepository.UpdateAsync(publishers);
-            return ResultService.Ok("Editora atualizado");
+            return ResultService.Ok("Livro atualizado com sucesso.");
 
         }
         public async Task<ResultService> DeleteAsync(int id)
@@ -82,7 +107,7 @@ namespace WDA.ApiDotNet.Application.Services
 
             if (publisher == null)
             {
-                return ResultService.Fail<PublishersDTO>("Editora não encontrada!");
+                return ResultService.Fail("Editora não encontrada!");
             }
 
             // Verifique se há livros associados diretamente na lógica de exclusão
@@ -90,7 +115,7 @@ namespace WDA.ApiDotNet.Application.Services
 
             if (booksAssociatedWithPublisher.Count > 0)
             {
-                return ResultService.Fail<PublishersDTO>("A editora não pode ser excluída, pois está associada a livros.");
+                return ResultService.Fail("A editora não pode ser excluída, pois está associada a livros.");
             }
 
             await _publishersRepository.DeleteAsync(publisher);
