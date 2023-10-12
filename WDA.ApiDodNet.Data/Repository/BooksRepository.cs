@@ -50,7 +50,7 @@ namespace WDA.ApiDotNet.Infra.Data.Repository
                     p.Name.ToUpper().Contains(search) ||
                     p.Author.ToUpper().Contains(search) ||
                     p.Quantity.ToString().Contains(search) ||
-                    p.Launch.ToString().Contains(search) ||
+                    p.Release.ToString().Contains(search) ||
                     p.Rented.ToString().Contains(search) ||
                     p.Publisher.Name.ToUpper().Contains(search) // Pesquisar dentro do objeto Publisher
                 );

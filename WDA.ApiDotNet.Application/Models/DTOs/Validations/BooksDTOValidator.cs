@@ -25,7 +25,7 @@ namespace WDA.ApiDotNet.Application.Models.DTOs.Validations
                         .NotEmpty().WithMessage("Quantidade não informada.")
                         .GreaterThanOrEqualTo(1).WithMessage("Quantidade não informada.");
 
-                    RuleFor(x => x.Launch)
+                    RuleFor(x => x.Release)
                          .NotEmpty().WithMessage("PublisherId não informado.")
                         .GreaterThanOrEqualTo(1).WithMessage("Editora não informado.");
                 });
@@ -57,7 +57,7 @@ namespace WDA.ApiDotNet.Application.Models.DTOs.Validations
                     .WithMessage("Autor deve ser informado!")
                     .MinimumLength(3).WithMessage("Mínimo 3 caracteres!")
                     .MaximumLength(50).WithMessage("Máximo 50 caracteres!");
-                RuleFor(x => x.Launch)
+                RuleFor(x => x.Release)
                     .NotEmpty()
                     .NotNull()
                     .WithMessage("Lançamento deve ser informado!");

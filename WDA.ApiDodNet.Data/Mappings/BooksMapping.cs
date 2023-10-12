@@ -28,7 +28,7 @@ namespace WDA.ApiDotNet.Infra.Data.Maps
                 .IsRequired()
                 .HasColumnType("integer");
 
-            builder.Property(x => x.Launch)
+            builder.Property(x => x.Release)
                 .IsRequired()
                 .HasColumnType("integer");
 
