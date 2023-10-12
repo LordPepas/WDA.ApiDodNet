@@ -3,7 +3,6 @@ using WDA.ApiDotNet.Application.Helpers;
 using WDA.ApiDotNet.Application.Interfaces.IRepository;
 using WDA.ApiDotNet.Application.Interfaces.IServices;
 using WDA.ApiDotNet.Application.Models;
-using WDA.ApiDotNet.Application.Models.DTOs.PublishersDTO;
 using WDA.ApiDotNet.Application.Models.DTOs.RentalsDTO;
 using WDA.ApiDotNet.Application.Models.DTOs.UsersDTO;
 using WDA.ApiDotNet.Application.Models.DTOs.Validations;
@@ -38,7 +37,7 @@ namespace WDA.ApiDodNet.Application.Services
             {
                 return ResultService.Fail("Email já existente");
             }
-             await _usersRepository.CreateAsync(user);
+            await _usersRepository.CreateAsync(user);
             return ResultService.Ok("Usuário adicionado");
         }
 

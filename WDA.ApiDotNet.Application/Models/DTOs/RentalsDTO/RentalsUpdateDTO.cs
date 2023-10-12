@@ -1,4 +1,6 @@
-﻿namespace WDA.ApiDotNet.Application.Models.DTOs.RentalsDTO
+﻿#pragma warning disable CS8618
+
+namespace WDA.ApiDotNet.Application.Models.DTOs.RentalsDTO
 {
     public class RentalsUpdateDTO
     {

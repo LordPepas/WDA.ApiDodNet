@@ -8,23 +8,18 @@ namespace WDA.ApiDotNet.Application.Models.DTOs.Validations
         public RentalsCreateDTOValidator()
         {
             RuleFor(x => x.BookId)
-                .NotEmpty()
-                .NotNull()
-                .WithMessage("Livro deve ser informado!")
-                .GreaterThanOrEqualTo(1).WithMessage("Livro deve ser informado!");
+                .NotEmpty().WithMessage("Livro deve ser informado.")
+                .GreaterThanOrEqualTo(1).WithMessage("Livro deve ser informado.");
+
             RuleFor(x => x.UserId)
-                .NotEmpty()
-                .NotNull()
-                .WithMessage("Usuário deve ser informado!")
-                .GreaterThanOrEqualTo(1).WithMessage("Usuário deve ser informado!");
+                .NotEmpty().WithMessage("Usuário deve ser informado.")
+                .GreaterThanOrEqualTo(1).WithMessage("Usuário deve ser informado.");
+
             RuleFor(x => x.RentalDate)
-                .NotEmpty()
-                .NotNull()
-                .WithMessage("Data de aluguel deve ser informado!");
+                .NotEmpty().WithMessage("Data de aluguel deve ser informado!");
+
             RuleFor(x => x.PrevisionDate)
-                .NotEmpty()
-                .NotNull()
-                .WithMessage("Data de previsão deve ser informado!");
+                .NotEmpty().WithMessage("Data de previsão deve ser informado!");
 
         }
     }
@@ -33,9 +28,7 @@ namespace WDA.ApiDotNet.Application.Models.DTOs.Validations
         public RentalsUpdateDTOValidator()
         {
             RuleFor(x => x.ReturnDate)
-                .NotEmpty()
-                .NotNull()
-                .WithMessage("Data de devolução deve ser informado!");
+                .NotEmpty().WithMessage("Data de devolução deve ser informado!");
         }
     }
 }

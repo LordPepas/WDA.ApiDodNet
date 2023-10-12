@@ -1,9 +1,13 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿#pragma warning disable CS8618
+
+using System.ComponentModel.DataAnnotations;
 
 namespace WDA.ApiDotNet.Application.Models
 {
     public class Publishers
     {
+        public Publishers() { }
+
         public Publishers(int id, string name, string city)
         {
             Id = id;

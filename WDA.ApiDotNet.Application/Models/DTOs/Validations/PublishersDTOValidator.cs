@@ -8,17 +8,12 @@ namespace WDA.ApiDotNet.Application.Models.DTOs.Validations
         public PublishersCreateDTOValidator()
         {
             RuleFor(x => x.Name)
-                .NotEmpty()
-                .NotNull()
-                .WithMessage("Nome deve ser informado!")
-                .MinimumLength(3).WithMessage("Mínimo 3 caracteres!")
-                .MaximumLength(50).WithMessage("Máximo 50 caracteres!");
+                   .NotEmpty().WithMessage("Name deve ser informado.")
+                   .Length(3, 50).WithMessage("Name: Necessário entre 3 e 50 caracteres.");
+
             RuleFor(x => x.City)
-                .NotEmpty()
-                .NotNull()
-                .WithMessage("Cidade deve ser informado!")
-                .MinimumLength(3).WithMessage("Mínimo 3 caracteres!")
-                .MaximumLength(50).WithMessage("Máximo 50 caracteres!");
+                   .NotEmpty().WithMessage("City deve ser informado.")
+                   .Length(3, 50).WithMessage("City: Necessário entre 3 e 50 caracteres.");
         }
     }
     public class PublishersDTOValidator : AbstractValidator<PublishersUpdateDTO>
@@ -26,21 +21,15 @@ namespace WDA.ApiDotNet.Application.Models.DTOs.Validations
         public PublishersDTOValidator()
         {
             RuleFor(x => x.Id)
-               .NotEmpty()
-               .NotNull()
-               .WithMessage("Id deve ser informado!");
+                   .NotEmpty().WithMessage("Id deve ser informado!");
+
             RuleFor(x => x.Name)
-                .NotEmpty()
-                .NotNull()
-                .WithMessage("Nome deve ser informado!")
-                .MinimumLength(3).WithMessage("Mínimo 3 caracteres!")
-                .MaximumLength(50).WithMessage("Máximo 50 caracteres!");
+                   .NotEmpty().WithMessage("Name deve ser informado.")
+                   .Length(3, 50).WithMessage("Name: Necessário entre 3 e 50 caracteres.");
+
             RuleFor(x => x.City)
-                .NotEmpty()
-                .NotNull()
-                .WithMessage("Cidade deve ser informado!")
-                .MinimumLength(3).WithMessage("Mínimo 3 caracteres!")
-                .MaximumLength(50).WithMessage("Máximo 50 caracteres!");
+                   .NotEmpty().WithMessage("City deve ser informado.")
+                   .Length(3, 50).WithMessage("City: Necessário entre 3 e 50 caracteres.");
         }
     }
 }

@@ -1,4 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿#pragma warning disable CS4014 
+#pragma warning disable CS8603
+
+using Microsoft.EntityFrameworkCore;
 using WDA.ApiDotNet.Application.Helpers;
 using WDA.ApiDotNet.Application.Interfaces.IRepository;
 using WDA.ApiDotNet.Application.Models;
@@ -17,6 +20,7 @@ namespace WDA.ApiDotNet.Infra.Data.Repository
 
         public async Task CreateAsync(Books book)
         {
+
             _db.AddAsync(book);
             await _db.SaveChangesAsync();
         }

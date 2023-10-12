@@ -1,4 +1,6 @@
-﻿namespace WDA.ApiDotNet.Application.Models.DTOs.UsersDTO
+﻿#pragma warning disable CS8618
+
+namespace WDA.ApiDotNet.Application.Models.DTOs.UsersDTO
 {
     public class UsersCreateDTO
     {

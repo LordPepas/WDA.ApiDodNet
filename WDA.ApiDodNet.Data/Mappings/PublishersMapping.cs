@@ -2,7 +2,6 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using WDA.ApiDotNet.Application.Models;
 
-//Mapeamento da tabela publishers presente no banco de dados
 namespace WDA.ApiDotNet6.Infra.Data.Maps
 {
     public class PublishersMapping : IEntityTypeConfiguration<Publishers>

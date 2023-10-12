@@ -1,9 +1,12 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿#pragma warning disable CS8618
+
+using System.ComponentModel.DataAnnotations;
 
 namespace WDA.ApiDotNet.Application.Models
 {
     public class Rentals
     {
+        public Rentals() { }
         public Rentals(int id, int bookId, int userId, DateTime rentalDate, DateTime previsionDate, DateTime? returnDate)
         {
             Id = id;

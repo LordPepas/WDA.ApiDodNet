@@ -22,7 +22,7 @@ namespace WDA.ApiDotNet.Api
         }
         public static IServiceCollection AddServices(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddAutoMapper(typeof(Application.Profiles.Profile));
+            services.AddAutoMapper(typeof(Application.Profiles.Mapper));
             services.AddScoped<IBooksService, BooksService>();
             services.AddScoped<IPublishersService, PublishersService>();
             services.AddScoped<IRentalsService, RentalsService>();

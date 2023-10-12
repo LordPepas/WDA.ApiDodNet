@@ -1,4 +1,6 @@
-﻿namespace WDA.ApiDotNet.Application.Models.DTOs.BooksDTO
+﻿#pragma warning disable CS8618
+
+namespace WDA.ApiDotNet.Application.Models.DTOs.BooksDTO
 {
     public class BooksCountDTO
     {

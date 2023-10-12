@@ -7,9 +7,9 @@ using WDA.ApiDotNet.Application.Models.DTOs.UsersDTO;
 
 namespace WDA.ApiDotNet.Application.Profiles
 {
-    public class Profile : AutoMapper.Profile
+    public class Mapper : AutoMapper.Profile
     {
-        public Profile()
+        public Mapper()
         {
             CreateMap<Books, BooksDTO>().ReverseMap();
             CreateMap<Books, BooksCreateDTO>().ReverseMap();

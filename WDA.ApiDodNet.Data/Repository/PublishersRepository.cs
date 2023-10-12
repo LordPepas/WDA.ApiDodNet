@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿#pragma warning disable CS8603
+
+using Microsoft.EntityFrameworkCore;
 using WDA.ApiDotNet.Application.Models;
 using WDA.ApiDotNet.Application.Helpers;
 using WDA.ApiDotNet.Application.Interfaces.IRepository;

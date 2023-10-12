@@ -1,4 +1,6 @@
-﻿namespace WDA.ApiDotNet.Application.Models.DTOs.PublishersDTO
+﻿#pragma warning disable CS8618
+
+namespace WDA.ApiDotNet.Application.Models.DTOs.PublishersDTO
 {
     public class PublishersDTO
     {

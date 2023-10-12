@@ -2,7 +2,6 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using WDA.ApiDotNet.Application.Models;
 
-//Mapeamento da tabela users presente no banco de dados
 namespace WDA.ApiDotNet.Infra.Data.Maps
 {
     public class UsersMapping : IEntityTypeConfiguration<Users>

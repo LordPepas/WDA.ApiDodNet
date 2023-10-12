@@ -1,4 +1,6 @@
-﻿using FluentValidation.Results;
+﻿#pragma warning disable CS8601
+
+using FluentValidation.Results;
 using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace WDA.ApiDotNet.Application.Services

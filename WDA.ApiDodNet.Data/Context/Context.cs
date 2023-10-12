@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using WDA.ApiDotNet.Application.Models;
 
-//configurar as entidades (tabelas) do banco de dados com os modelos de dados definidos
 namespace WDA.ApiDotNet.Infra.Data.Context
 {
     public class ContextDb : DbContext

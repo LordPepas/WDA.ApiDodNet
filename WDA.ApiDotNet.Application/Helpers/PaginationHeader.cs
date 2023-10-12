@@ -1,5 +1,4 @@
-﻿
-namespace WDA.ApiDotNet.Application.Helpers
+﻿namespace WDA.ApiDotNet.Application.Helpers
 {
     public class PaginationHeader<T>
     {
