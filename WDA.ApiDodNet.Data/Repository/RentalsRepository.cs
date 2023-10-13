@@ -1,5 +1,6 @@
 ﻿#pragma warning disable CS8602
 #pragma warning disable CS8603
+#pragma warning disable CS1998 
 
 using Microsoft.EntityFrameworkCore;
 using WDA.ApiDotNet.Application.Helpers;
@@ -18,7 +19,7 @@ namespace WDA.ApiDotNet.Infra.Data.Repository
             _db = db;
         }
 
-        public async Task CreateAsync(Rentals rental)
+        public async Task Create(Rentals rental)
         {
             var book = await _db.Books.FindAsync(rental.BookId);
             book.Quantity--;
@@ -27,7 +28,7 @@ namespace WDA.ApiDotNet.Infra.Data.Repository
             _db.Add(rental);
             await _db.SaveChangesAsync();
         }
-        public async Task UpdateAsync(Rentals rental)
+        public async Task Update(Rentals rental)
         {
             var book = await _db.Books.FindAsync(rental.BookId);
             book.Quantity++;
@@ -35,7 +36,13 @@ namespace WDA.ApiDotNet.Infra.Data.Repository
             _db.Update(rental);
             await _db.SaveChangesAsync();
         }
-        public async Task<Rentals> GetByIdAsync(int id)
+        public async Task Delete(Rentals rental)
+        {
+            _db.Remove(rental);
+            await _db.SaveChangesAsync();
+        }
+
+        public async Task<Rentals> GetById(int? id)
         {
             return await _db.Rentals
                 .Include(x => x.Book)
@@ -43,53 +50,66 @@ namespace WDA.ApiDotNet.Infra.Data.Repository
                 .FirstOrDefaultAsync(x => x.Id == id);
         }
 
-        public async Task<PageList<Rentals>> GetAllAsync(PageParams pageParams, string? search)
+        public async Task<PageList<Rentals>> GetAll(QueryHandler queryHandler)
         {
             IQueryable<Rentals> query = _db.Rentals
                 .Include(x => x.Book)
                 .Include(x => x.User)
-                .OrderBy(b => b.Id)
                 .AsNoTracking();
 
-            if (!string.IsNullOrWhiteSpace(search))
+            if (!string.IsNullOrWhiteSpace(queryHandler.Filter.SearchValue))
             {
-                search = search.ToUpper();
+                queryHandler.Filter.SearchValue = queryHandler.Filter.SearchValue.ToUpper();
                 query = query.Where(p =>
-                p.Id.ToString().Contains(search) ||
-                p.BookId.ToString().Contains(search) ||
-                p.Book.Name.ToUpper().Contains(search) ||
-                p.UserId.ToString().Contains(search) ||
-                p.User.Name.ToUpper().Contains(search) ||
-                p.RentalDate.ToString().Contains(search) ||
-                p.PrevisionDate.ToString().Contains(search) ||
-                p.ReturnDate.ToString().Contains(search)
+                p.Id.ToString().Contains(queryHandler.Filter.SearchValue) ||
+                p.BookId.ToString().Contains(queryHandler.Filter.SearchValue) ||
+                p.Book.Name.ToUpper().Contains(queryHandler.Filter.SearchValue) ||
+                p.UserId.ToString().Contains(queryHandler.Filter.SearchValue) ||
+                p.User.Name.ToUpper().Contains(queryHandler.Filter.SearchValue) ||
+                p.RentalDate.ToString().Contains(queryHandler.Filter.SearchValue) ||
+                p.PrevisionDate.ToString().Contains(queryHandler.Filter.SearchValue) ||
+                p.ReturnDate.ToString().Contains(queryHandler.Filter.SearchValue)
                 );
             };
 
-            return await PageList<Rentals>.GetResponseAsync(query, pageParams.PageNumber, pageParams.PageSize);
+            if (!string.IsNullOrWhiteSpace(queryHandler.Filter.OrderBy))
+            {
+                queryHandler.Filter.OrderBy = queryHandler.Filter.OrderBy.ToUpper();
+
+                query = queryHandler.Filter.OrderBy switch
+                {
+                    "ID" => query.OrderBy(p => p.Id),
+                    "BOOK" => query.OrderBy(p => p.BookId),
+                    "USER" => query.OrderBy(p => p.UserId),
+                    "RENTALDATE" => query.OrderBy(p => p.RentalDate),
+                    "PREVISIONDATE" => query.OrderBy(p => p.PrevisionDate),
+                    "RETURNDATE" => query.OrderBy(p => p.ReturnDate),
+                    _ => query.OrderBy(p => p.Id),
+                };
+            }
+            else
+            {
+                query = query.OrderBy(p => p.Id);
+            }
+
+            return await PageList<Rentals>.GetResponseAsync(query, queryHandler.Paging.PageNumber, queryHandler.Paging.PageSize);
         }
 
-        public async Task DeleteAsync(Rentals rental)
-        {
-            _db.Remove(rental);
-            await _db.SaveChangesAsync();
-        }
-
-        public async Task<List<Rentals>> GetByBookIdAsync(int bookId)
+        public async Task<List<Rentals>> GetByBookId(int bookId)
         {
             return await _db.Rentals.Where(x => x.UserId == bookId).ToListAsync();
         }
 
-        public async Task<List<Rentals>> GetByUserIdAsync(int userId)
+        public async Task<List<Rentals>> GetByUserId(int userId)
         {
             return await _db.Rentals.Where(x => x.UserId == userId).ToListAsync();
         }
 
         public async Task<bool> CheckDate(DateTime date)
         {
-            DateTime today = DateTime.Now.Date;
+            DateTime today = DateTime.Now;
 
-            if (date.Date != today)
+            if (date != today)
             {
                 return await Task.FromResult(true);
             }

@@ -18,51 +18,73 @@ namespace WDA.ApiDotNet.Infra.Data.Repository
             _db = db;
         }
 
-        public async Task CreateAsync(Books book)
+        public async Task Create(Books book)
         {
-
             _db.AddAsync(book);
             await _db.SaveChangesAsync();
         }
 
-        public async Task UpdateAsync(Books book)
+        public async Task Update(Books book)
         {
             _db.Update(book);
             await _db.SaveChangesAsync();
         }
 
+        public async Task Delete(Books book)
+        {
+            _db.Remove(book);
+            await _db.SaveChangesAsync();
+        }
 
-        public async Task<Books> GetByIdAsync(int id)
+        public async Task<PageList<Books>> GetAll(QueryHandler queryHandler)
+        {
+            IQueryable<Books> query = _db.Books.Include(x => x.Publisher)
+                 .AsNoTracking();
+
+            if (!string.IsNullOrWhiteSpace(queryHandler.Filter.SearchValue))
+            {
+                queryHandler.Filter.SearchValue = queryHandler.Filter.SearchValue.ToUpper();
+
+                query = query.Where(p =>
+                    p.Id.ToString().Contains(queryHandler.Filter.SearchValue) ||
+                    p.Name.ToUpper().Contains(queryHandler.Filter.SearchValue) ||
+                    p.Author.ToUpper().Contains(queryHandler.Filter.SearchValue) ||
+                    p.Quantity.ToString().Contains(queryHandler.Filter.SearchValue) ||
+                    p.Release.ToString().Contains(queryHandler.Filter.SearchValue) ||
+                    p.Rented.ToString().Contains(queryHandler.Filter.SearchValue) ||
+                    p.Publisher.Name.ToUpper().Contains(queryHandler.Filter.SearchValue)
+                );
+            }
+            if (!string.IsNullOrWhiteSpace(queryHandler.Filter.OrderBy))
+            {
+                queryHandler.Filter.OrderBy = queryHandler.Filter.OrderBy.ToUpper();
+
+                query = queryHandler.Filter.OrderBy switch
+                {
+                    "ID" => query.OrderBy(p => p.Id),
+                    "NAME" => query.OrderBy(p => p.Name),
+                    "AUTHOR" => query.OrderBy(p => p.Author),
+                    "QUANTITY" => query.OrderBy(p => p.Quantity),
+                    "REALESE" => query.OrderBy(p => p.Release),
+                    "PUBLISHER" => query.OrderBy(p => p.PublisherId),
+                    _ => query.OrderBy(p => p.Id),
+                };
+            }
+            else
+            {
+                query = query.OrderBy(p => p.Id);
+            }
+
+            return await PageList<Books>.GetResponseAsync(query, queryHandler.Paging.PageNumber, queryHandler.Paging.PageSize);
+        }
+        public async Task<Books> GetById(int? id)
         {
             return await _db.Books
               .Include(x => x.Publisher)
              .FirstOrDefaultAsync(x => x.Id == id);
         }
 
-        public async Task<PageList<Books>> GetAllAsync(PageParams pageParams, string? search)
-        {
-            IQueryable<Books> query = _db.Books.Include(x => x.Publisher)
-                 .AsNoTracking()
-                 .OrderBy(b => b.Id);
-
-            if (!string.IsNullOrWhiteSpace(search))
-            {
-                search = search.ToUpper(); // Converter o valor de pesquisa para maiúsculas
-
-                query = query.Where(p =>
-                    p.Id.ToString().Contains(search) ||
-                    p.Name.ToUpper().Contains(search) ||
-                    p.Author.ToUpper().Contains(search) ||
-                    p.Quantity.ToString().Contains(search) ||
-                    p.Release.ToString().Contains(search) ||
-                    p.Rented.ToString().Contains(search) ||
-                    p.Publisher.Name.ToUpper().Contains(search) // Pesquisar dentro do objeto Publisher
-                );
-            }
-
-            return await PageList<Books>.GetResponseAsync(query, pageParams.PageNumber, pageParams.PageSize);
-        }
-        public async Task<List<Books>> GetSummaryBooksAsync()
+        public async Task<List<Books>> GetSummaryBooks()
         {
             return await _db.Books
                     .AsNoTracking()
@@ -70,27 +92,21 @@ namespace WDA.ApiDotNet.Infra.Data.Repository
                     .ToListAsync();
         }
 
-        public async Task DeleteAsync(Books book)
+        public async Task<List<Books>> GetByName(string name)
         {
-            _db.Remove(book);
-            await _db.SaveChangesAsync();
+            return await _db.Books.Where(x => x.Name == name).ToListAsync();
         }
-
-        async Task<List<Books>> IBooksRepository.GetByPublishersIdAsync(int publisherId)
+        async Task<List<Books>> IBooksRepository.GetByPublishersId(int publisherId)
         {
             return await _db.Books.Where(x => x.PublisherId == publisherId).ToListAsync();
         }
 
-        public async Task<List<Books>> GetByNameAsync(string name)
-        {
-            return await _db.Books.Where(x => x.Name == name).ToListAsync();
-        }
         public async Task<List<Books>> MostRentedBooks()
         {
-           return await _db.Books
-                .Where(x => x.Rented != 0)
-                .OrderByDescending(x => x.Rented)
-                .ToListAsync();
+            return await _db.Books
+                 .Where(x => x.Rented != 0)
+                 .OrderByDescending(x => x.Rented)
+                 .ToListAsync();
         }
     }
 }

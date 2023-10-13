@@ -1,4 +1,5 @@
-﻿#pragma warning disable CS8601
+﻿#pragma warning disable CS8618
+#pragma warning disable CS8625
 
 using FluentValidation.Results;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -22,18 +23,22 @@ namespace WDA.ApiDotNet.Application.Services
             };
         }
 
-        public static ResultService Fail(string message, ICollection<string> errors = null)
+        public static ResultService Fail(string errorMessage = null, ICollection<string> errors = null)
         {
-            var errorMessages = errors != null ? errors.ToList() : null;
+            var errorMessages = errors != null ? errors.ToList() : new List<string>();
+            if (!string.IsNullOrEmpty(errorMessage))
+            {
+                errorMessages.Add(errorMessage);
+            }
+
             return new ResultService
             {
                 IsSuccess = false,
-                Message = message,
                 Errors = errorMessages
             };
         }
 
-        public static ResultService Ok(string message) => new ResultService { IsSuccess = true, Message = message };
+        public static ResultService Ok(string message) => new() { IsSuccess = true, Message = message };
         public static ResultService<T> Ok<T>(T data) => new() { IsSuccess = true, Data = data };
     }
     public class ResultService<T> : ResultService

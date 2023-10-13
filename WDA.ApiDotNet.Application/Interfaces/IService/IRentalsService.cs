@@ -8,7 +8,7 @@ namespace WDA.ApiDotNet.Application.Interfaces.IServices
     public interface IRentalsService
     {
         Task<ResultService> CreateAsync(RentalsCreateDTO rentalsDTO);
-        Task<ResultService<PaginationResponse<RentalsDTO>>> GetAsync(PageParams pageParams, string? search);
+        Task<ResultService<PaginationResponse<RentalsDTO>>> GetAsync(QueryHandler queryHandler);
         Task<ResultService<RentalsDTO>> GetByIdAsync(int id);
         Task<ResultService> UpdateAsync(RentalsUpdateDTO rentalsUpdateDTO);
         Task<ResultService> DeleteAsync(int id);

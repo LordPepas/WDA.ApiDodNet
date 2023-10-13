@@ -5,12 +5,12 @@ namespace WDA.ApiDotNet.Application.Interfaces.IRepository
 {
     public interface IPublishersRepository
     {
-        Task CreateAsync(Publishers publisher);
-        Task UpdateAsync(Publishers publisher);
-        Task<Publishers> GetByIdAsync(int id);
-        Task<PageList<Publishers>> GetAllAsync(PageParams pageParams, string? search);
-        Task DeleteAsync(Publishers publisher);
-        Task<List<Publishers>> GetSummaryPublishersAsync();
-        Task<List<Publishers>> GetByNameAsync(string name);
+        Task Create(Publishers publisher);
+        Task Update(Publishers publisher);
+        Task Delete(Publishers publisher);
+        Task<PageList<Publishers>> GetAll(QueryHandler queryHandler);
+        Task<Publishers> GetById(int? id);
+        Task<List<Publishers>> GetSummaryPublishers();
+        Task<List<Publishers>> GetByName(string name);
     }
 }

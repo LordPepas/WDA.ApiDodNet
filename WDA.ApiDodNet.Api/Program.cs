@@ -8,7 +8,7 @@ namespace WDA.ApiDotNet.Api
     public class Program
     {
         public static void Main(string[] args)
-        {
+       {
             var builder = WebApplication.CreateBuilder(args);
 
 
@@ -27,7 +27,7 @@ namespace WDA.ApiDotNet.Api
                 {
                     Title = "Bookstore",
                     Version = "v1",
-                    Description = "Bookstore with REST API",
+                    Description = "Bookstore API with .NET",
                 });
 
                 c.EnableAnnotations();

@@ -2,12 +2,9 @@
 
 namespace WDA.ApiDotNet.Application.Models.DTOs.BooksDTO
 {
-    public class BooksCountDTO
+    public class MostRentedBooksDTO
     {
-        public BooksCountDTO()
-        {
-
-        }
+        public MostRentedBooksDTO() { }
 
         public int Id { get; set; }
         public string Name { get; set; }

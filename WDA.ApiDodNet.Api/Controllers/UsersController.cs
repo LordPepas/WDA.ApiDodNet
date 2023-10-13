@@ -30,12 +30,13 @@ namespace WDA.ApiDotNet.Api.Controllers
                 return Ok(result);
             return BadRequest(result);
         }
+
         [HttpGet]
         [SwaggerOperation(Summary = "List Books")]
-        public async Task<ActionResult> GetAsync([FromQuery] string? search, [FromQuery] PageParams pageParams)
+        public async Task<ActionResult> Get([FromQuery] QueryHandler queryHandler)
         {
-            var users = await _repository.GetAllAsync(pageParams, search);
-            var result = await _service.GetAsync(pageParams, search);
+            var users = await _repository.GetAll(queryHandler);
+            var result = await _service.GetAsync(queryHandler);
             if (result.IsSuccess)
             {
                 Response.AddPagination<UsersDTO>(users.CurrentPage, users.PageSize, users.TotalCount, users.TotalPages);
@@ -46,7 +47,7 @@ namespace WDA.ApiDotNet.Api.Controllers
 
         [HttpGet("SummaryData")]
         [SwaggerOperation(Summary = "List Summary Users")]
-        public async Task<ActionResult> GetSelectUsersAsync()
+        public async Task<ActionResult> GetSummary()
         {
             var result = await _service.GetSummaryUsersAsync();
             if (result.IsSuccess)
@@ -56,7 +57,7 @@ namespace WDA.ApiDotNet.Api.Controllers
 
         [HttpGet("{id:int}")]
         [SwaggerOperation(Summary = "List Book")]
-        public async Task<ActionResult> GetByIdAsync(int id)
+        public async Task<ActionResult> GetById(int id)
         {
             var result = await _service.GetByIdAsync(id);
             if (result.IsSuccess)
@@ -67,7 +68,7 @@ namespace WDA.ApiDotNet.Api.Controllers
         [HttpPut]
         [SwaggerOperation(Summary = "Update Book")]
 
-        public async Task<ActionResult> UpdateAsync([FromBody] UsersUpdateDTO usersDTO)
+        public async Task<ActionResult> Put([FromBody] UsersUpdateDTO usersDTO)
         {
             var result = await _service.UpdateAsync(usersDTO);
 
@@ -78,7 +79,7 @@ namespace WDA.ApiDotNet.Api.Controllers
 
         [HttpDelete("{id:int}")]
         [SwaggerOperation(Summary = "Delete Book")]
-        public async Task<ActionResult> DeleteAsync(int id)
+        public async Task<ActionResult> Delete(int id)
         {
             var result = await _service.DeleteAsync(id);
             if (result.IsSuccess)

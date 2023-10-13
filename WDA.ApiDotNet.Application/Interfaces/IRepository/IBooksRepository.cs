@@ -5,14 +5,14 @@ namespace WDA.ApiDotNet.Application.Interfaces.IRepository
 {
     public interface IBooksRepository
     {
-        Task CreateAsync(Books book);
-        Task UpdateAsync(Books book);
-        Task<PageList<Books>> GetAllAsync(PageParams pageParams, string? search);
-        Task<Books> GetByIdAsync(int id);
-        Task<List<Books>> GetSummaryBooksAsync();
-        Task DeleteAsync(Books book);
-        Task<List<Books>> GetByNameAsync(string name);
-        Task<List<Books>> GetByPublishersIdAsync(int publisherId);
+        Task Create(Books book);
+        Task Update(Books book);
+        Task Delete(Books book);
+        Task<PageList<Books>> GetAll(QueryHandler queryHandler);
+        Task<Books> GetById(int? id);
+        Task<List<Books>> GetSummaryBooks();
+        Task<List<Books>> GetByName(string name);
+        Task<List<Books>> GetByPublishersId(int publisherId);
         Task<List<Books>> MostRentedBooks();
     }
 }

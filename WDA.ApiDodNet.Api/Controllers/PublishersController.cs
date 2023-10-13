@@ -30,12 +30,13 @@ namespace WDA.ApiDotNet.Api.Controllers
                 return Ok(result);
             return BadRequest(result);
         }
+
         [HttpGet]
         [SwaggerOperation(Summary = "List Publishers")]
-        public async Task<ActionResult> GetAsync([FromQuery] string? search, [FromQuery] PageParams pageParams)
+        public async Task<ActionResult> Get([FromQuery] QueryHandler queryHandler)
         {
-            var publishers = await _repository.GetAllAsync(pageParams, search);
-            var result = await _service.GetAsync(pageParams, search);
+            var publishers = await _repository.GetAll(queryHandler);
+            var result = await _service.GetAsync(queryHandler);
 
 
             if (result.IsSuccess)
@@ -49,7 +50,7 @@ namespace WDA.ApiDotNet.Api.Controllers
 
         [HttpGet("SummaryData")]
         [SwaggerOperation(Summary = "List Summary Publishers")]
-        public async Task<ActionResult> GetSummaryPublishers()
+        public async Task<ActionResult> GetSummary()
         {
             var result = await _service.GetSummaryPublishersAsync();
             if (result.IsSuccess)
@@ -59,16 +60,17 @@ namespace WDA.ApiDotNet.Api.Controllers
 
         [HttpGet("{id:int}")]
         [SwaggerOperation(Summary = "List Publisher")]
-        public async Task<ActionResult> GetByIdAsync(int id)
+        public async Task<ActionResult> GetById(int id)
         {
             var result = await _service.GetByIdAsync(id);
             if (result.IsSuccess)
                 return Ok(result);
             return BadRequest(result);
         }
+
         [HttpPut]
         [SwaggerOperation(Summary = "Update Publisher")]
-        public async Task<ActionResult> UpdateAsync([FromBody] PublishersUpdateDTO publisherDTO)
+        public async Task<ActionResult> Put([FromBody] PublishersUpdateDTO publisherDTO)
         {
             var result = await _service.UpdateAsync(publisherDTO);
 
@@ -79,8 +81,7 @@ namespace WDA.ApiDotNet.Api.Controllers
 
         [HttpDelete("{id:int}")]
         [SwaggerOperation(Summary = "Delete Publisher")]
-
-        public async Task<ActionResult> DeleteAsync(int id)
+        public async Task<ActionResult> Delete(int id)
         {
             var result = await _service.DeleteAsync(id);
             if (result.IsSuccess)

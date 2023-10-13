@@ -4,7 +4,7 @@ namespace WDA.ApiDotNet.Application.Models.DTOs.UsersDTO
 {
     public class UsersUpdateDTO
     {
-        public UsersUpdateDTO(int id, string name, string city, string address, string email)
+        public UsersUpdateDTO(int? id, string name, string city, string address, string email)
         {
             Id = id;
             Name = name;
@@ -13,7 +13,7 @@ namespace WDA.ApiDotNet.Application.Models.DTOs.UsersDTO
             Email = email;
         }
 
-        public int Id { get; set; }
+        public int? Id { get; set; }
         public string Name { get; private set; }
         public string City { get; private set; }
         public string Address { get; private set; }

@@ -37,7 +37,8 @@ namespace WDA.ApiDotNet.Application.Models.DTOs.Validations
 
         {
             RuleFor(x => x.Id)
-                .NotEmpty().WithMessage("Id deve ser informado!");
+                .GreaterThan(0).WithMessage("Id deve ser ser informado.");
+
             RuleFor(x => x.Name)
                 .NotEmpty().WithMessage("Nome deve ser informado.")
                 .Length(3, 50).WithMessage("Nome: Necessário entre 3 e 50 caracteres.");

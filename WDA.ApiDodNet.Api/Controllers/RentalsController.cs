@@ -31,12 +31,13 @@ namespace WDA.ApiDotNet.Api.Controllers
                 return Ok(result);
             return BadRequest(result);
         }
+
         [HttpGet]
         [SwaggerOperation(Summary = "List Rentals")]
-        public async Task<ActionResult> GetAsync([FromQuery] string? search, [FromQuery] PageParams pageParams)
+        public async Task<ActionResult> Get([FromQuery] QueryHandler queryHandler)
         {
-            var rentals = await _repository.GetAllAsync(pageParams, search);
-            var result = await _service.GetAsync(pageParams, search);
+            var rentals = await _repository.GetAll(queryHandler);
+            var result = await _service.GetAsync(queryHandler);
             if (result.IsSuccess)
             {
                 Response.AddPagination<RentalsDTO>(rentals.CurrentPage, rentals.PageSize, rentals.TotalCount, rentals.TotalPages);
@@ -47,7 +48,7 @@ namespace WDA.ApiDotNet.Api.Controllers
 
         [HttpGet("{id:int}")]
         [SwaggerOperation(Summary = "List Rental")]
-        public async Task<ActionResult> GetByIdAsync(int id)
+        public async Task<ActionResult> GetById(int id)
         {
             var result = await _service.GetByIdAsync(id);
             if (result.IsSuccess)
@@ -65,14 +66,12 @@ namespace WDA.ApiDotNet.Api.Controllers
             if (result.IsSuccess)
                 return Ok(result);
 
-            return BadRequest(result.Message);
+            return BadRequest(result);
         }
-
-
 
         [HttpDelete("{id:int}")]
         [SwaggerOperation(Summary = "Delete Rental")]
-        public async Task<ActionResult> DeleteAsync(int id)
+        public async Task<ActionResult> Delete(int id)
         {
             var result = await _service.DeleteAsync(id);
             if (result.IsSuccess)

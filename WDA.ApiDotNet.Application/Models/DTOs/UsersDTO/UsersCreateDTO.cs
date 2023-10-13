@@ -12,7 +12,7 @@ namespace WDA.ApiDotNet.Application.Models.DTOs.UsersDTO
             Email = email;
         }
 
-        public int Id { get; private set; }
+        public int? Id { get; private set; }
         public string Name { get; private set; }
         public string City { get; private set; }
         public string Address { get; private set; }

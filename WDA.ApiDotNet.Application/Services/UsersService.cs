@@ -3,7 +3,6 @@ using WDA.ApiDotNet.Application.Helpers;
 using WDA.ApiDotNet.Application.Interfaces.IRepository;
 using WDA.ApiDotNet.Application.Interfaces.IServices;
 using WDA.ApiDotNet.Application.Models;
-using WDA.ApiDotNet.Application.Models.DTOs.RentalsDTO;
 using WDA.ApiDotNet.Application.Models.DTOs.UsersDTO;
 using WDA.ApiDotNet.Application.Models.DTOs.Validations;
 using WDA.ApiDotNet.Application.Services;
@@ -32,18 +31,18 @@ namespace WDA.ApiDodNet.Application.Services
                 return ResultService.RequestError("Problemas de validação", result);
 
             var user = _mapper.Map<Users>(usersDTO);
-            var email = await _usersRepository.GetByEmailAsync(usersDTO.Email);
+            var email = await _usersRepository.GetByEmail(usersDTO.Email);
             if (email.Count > 0)
             {
-                return ResultService.Fail("Email já existente");
+                return ResultService.Fail("Email já existente!");
             }
-            await _usersRepository.CreateAsync(user);
-            return ResultService.Ok("Usuário adicionado");
+            await _usersRepository.Create(user);
+            return ResultService.Ok("Usuário adicionado com sucesso.");
         }
 
-        public async Task<ResultService<PaginationResponse<UsersDTO>>> GetAsync(PageParams pageParams, string? search)
+        public async Task<ResultService<PaginationResponse<UsersDTO>>> GetAsync(QueryHandler queryHandler)
         {
-            var users = await _usersRepository.GetAllAsync(pageParams, search);
+            var users = await _usersRepository.GetAll(queryHandler);
             var mappedPublishers = _mapper.Map<List<UsersDTO>>(users.Data);
 
             var paginationHeader = new PaginationHeader<UsersDTO>(
@@ -62,19 +61,19 @@ namespace WDA.ApiDodNet.Application.Services
             return ResultService.Ok(response);
         }
 
+        public async Task<ResultService<List<UsersSummaryDTO>>> GetSummaryUsersAsync()
+        {
+            var books = await _usersRepository.GetSummaryUsers();
+            return ResultService.Ok<List<UsersSummaryDTO>>(_mapper.Map<List<UsersSummaryDTO>>(books));
+        }
+
         public async Task<ResultService> GetByIdAsync(int id)
         {
-            var user = await _usersRepository.GetByIdAsync(id);
+            var user = await _usersRepository.GetById(id);
             if (user == null)
                 return ResultService.Fail("Usuário não encontrado!");
 
             return ResultService.Ok(_mapper.Map<UsersDTO>(user));
-        }
-
-        public async Task<ResultService<List<UserRentalDTO>>> GetSummaryUsersAsync()
-        {
-            var books = await _usersRepository.GetSummaryUsersAsync();
-            return ResultService.Ok<List<UserRentalDTO>>(_mapper.Map<List<UserRentalDTO>>(books));
         }
 
         public async Task<ResultService> UpdateAsync(UsersUpdateDTO usersDTO)
@@ -82,31 +81,30 @@ namespace WDA.ApiDodNet.Application.Services
             var validation = new UsersDTOValidator().Validate(usersDTO);
             if (!validation.IsValid)
                 return ResultService.RequestError("Problemas de validação", validation);
-            var user = await _usersRepository.GetByIdAsync(usersDTO.Id);
+            var user = await _usersRepository.GetById(usersDTO.Id);
             if (user == null)
                 return ResultService.Fail("Usuário não encontrado!");
 
             user = _mapper.Map(usersDTO, user);
-            await _usersRepository.UpdateAsync(user);
-            return ResultService.Ok("Usuário atualizado");
-
+            await _usersRepository.Update(user);
+            return ResultService.Ok("Usuário atualizado.");
         }
 
         public async Task<ResultService> DeleteAsync(int id)
         {
-            var user = await _usersRepository.GetByIdAsync(id);
+            var user = await _usersRepository.GetById(id);
             if (user == null)
                 return ResultService.Fail("Usuário não encontrado!");
 
-            var booksAssociatedWithPublisher = await _rentalsRepository.GetByUserIdAsync(id);
+            var booksAssociatedWithPublisher = await _rentalsRepository.GetByUserId(id);
 
             if (booksAssociatedWithPublisher.Count > 0)
             {
-                return ResultService.Fail("O usuário não pode ser excluída, pois está associada a aluguéis.");
+                return ResultService.Fail("O usuário não pode ser excluída, pois está associada a aluguéis!");
             }
 
-            await _usersRepository.DeleteAsync(user);
-            return ResultService.Ok($"Usuário com id: {id} foi deletado!");
+            await _usersRepository.Delete(user);
+            return ResultService.Ok($"Usuário com id: {id} foi deletado.");
         }
     }
 }

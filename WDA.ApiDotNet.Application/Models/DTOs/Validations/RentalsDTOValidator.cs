@@ -27,6 +27,9 @@ namespace WDA.ApiDotNet.Application.Models.DTOs.Validations
     {
         public RentalsUpdateDTOValidator()
         {
+            RuleFor(x => x.Id)
+                .GreaterThan(0).WithMessage("Id deve ser ser informado.");
+
             RuleFor(x => x.ReturnDate)
                 .NotEmpty().WithMessage("Data de devolução deve ser informado!");
         }

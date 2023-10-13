@@ -9,11 +9,11 @@ namespace WDA.ApiDotNet.Application.Interfaces.IServices
     public interface IBooksService
     {
         Task<ResultService> CreateAsync(BooksCreateDTO booksDTO);
-        Task<ResultService<PaginationResponse<BooksDTO>>> GetAsync(PageParams pageParams, string? search);
+        Task<ResultService<PaginationResponse<BooksDTO>>> GetAsync(QueryHandler queryHandler);
+        Task<ResultService<List<BooksSummaryDTO>>> GetSummaryBooksAsync();
         Task<ResultService> GetByIdAsync(int id);
-        Task<ResultService<List<BookRentalDTO>>> GetSummaryBooksAsync();
+        Task<ResultService<List<MostRentedBooksDTO>>> GetMostRentedBooks();
         Task<ResultService> UpdateAsync(BooksUpdateDTO booksDTO);
         Task<ResultService> DeleteAsync(int id);
-        Task<ResultService<List<BooksCountDTO>>> GetMostRentedBooks();
     }
 }

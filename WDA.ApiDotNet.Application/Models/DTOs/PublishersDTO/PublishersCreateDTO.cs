@@ -10,7 +10,7 @@ namespace WDA.ApiDotNet.Application.Models.DTOs.PublishersDTO
             City = city;
         }
 
-        public int Id { get; private set; }
+        public int? Id { get; private set; }
         public string Name { get; private set; }
         public string City { get; private set; }
     }
