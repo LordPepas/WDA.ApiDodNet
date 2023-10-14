@@ -6,7 +6,6 @@ using WDA.ApiDotNet.Application.Models;
 using WDA.ApiDotNet.Application.Models.DTOs.UsersDTO;
 using WDA.ApiDotNet.Application.Models.DTOs.Validations;
 using WDA.ApiDotNet.Application.Services;
-using WDA.ApiDotNet.Business.Helpers;
 
 namespace WDA.ApiDodNet.Application.Services
 {
@@ -40,10 +39,10 @@ namespace WDA.ApiDodNet.Application.Services
             return ResultService.Ok("Usuário adicionado com sucesso.");
         }
 
-        public async Task<ResultService<PaginationResponse<UsersDTO>>> GetAsync(QueryHandler queryHandler)
+        public async Task<ResultService<UsersDTO>> GetAsync(QueryHandler queryHandler)
         {
             var users = await _usersRepository.GetAll(queryHandler);
-            var mappedPublishers = _mapper.Map<List<UsersDTO>>(users.Data);
+            var mappedUsers = _mapper.Map<List<UsersDTO>>(users.Data);
 
             var paginationHeader = new PaginationHeader<UsersDTO>(
                 users.CurrentPage,
@@ -52,13 +51,19 @@ namespace WDA.ApiDodNet.Application.Services
                 users.TotalPages
             );
 
-            var response = new PaginationResponse<UsersDTO>
-            {
-                Header = paginationHeader,
-                Data = mappedPublishers
-            };
+            CustomHeaders<UsersDTO> customHeaders = null;
 
-            return ResultService.Ok(response);
+            if (!string.IsNullOrWhiteSpace(queryHandler.Filter.OrderBy) || !string.IsNullOrWhiteSpace(queryHandler.Filter.SearchValue))
+            {
+                customHeaders = new CustomHeaders<UsersDTO>(
+                    queryHandler.Filter.OrderBy,
+                    queryHandler.Filter.SearchValue
+                );
+            }
+
+            var result = ResultService.OKPage<UsersDTO>(paginationHeader, mappedUsers, customHeaders);
+
+            return result;
         }
 
         public async Task<ResultService<List<UsersSummaryDTO>>> GetSummaryUsersAsync()

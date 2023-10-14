@@ -1,14 +1,11 @@
 ﻿using AutoMapper;
-using FluentValidation;
 using WDA.ApiDotNet.Application.Helpers;
 using WDA.ApiDotNet.Application.Interfaces.IRepository;
 using WDA.ApiDotNet.Application.Interfaces.IServices;
 using WDA.ApiDotNet.Application.Models;
-using WDA.ApiDotNet.Application.Models.DTOs.BooksDTO;
 using WDA.ApiDotNet.Application.Models.DTOs.PublishersDTO;
 using WDA.ApiDotNet.Application.Models.DTOs.RentalsDTO;
 using WDA.ApiDotNet.Application.Models.DTOs.Validations;
-using WDA.ApiDotNet.Business.Helpers;
 
 namespace WDA.ApiDotNet.Application.Services
 {
@@ -61,7 +58,7 @@ namespace WDA.ApiDotNet.Application.Services
             return ResultService.Ok("Aluguel adicionado com sucesso.");
         }
 
-        public async Task<ResultService<PaginationResponse<RentalsDTO>>> GetAsync(QueryHandler queryHandler)
+        public async Task<ResultService<RentalsDTO>> GetAsync(QueryHandler queryHandler)
         {
             var rentals = await _rentalsRepository.GetAll(queryHandler);
             var mappedRentals = _mapper.Map<List<RentalsDTO>>(rentals.Data);
@@ -73,13 +70,19 @@ namespace WDA.ApiDotNet.Application.Services
                 rentals.TotalPages
             );
 
-            var response = new PaginationResponse<RentalsDTO>
-            {
-                Header = paginationHeader,
-                Data = mappedRentals
-            };
+            CustomHeaders<RentalsDTO> customHeaders = null;
 
-            return ResultService.Ok(response);
+            if (!string.IsNullOrWhiteSpace(queryHandler.Filter.OrderBy) || !string.IsNullOrWhiteSpace(queryHandler.Filter.SearchValue))
+            {
+                customHeaders = new CustomHeaders<RentalsDTO>(
+                    queryHandler.Filter.OrderBy,
+                    queryHandler.Filter.SearchValue
+                );
+            }
+
+            var result = ResultService.OKPage<RentalsDTO>(paginationHeader, mappedRentals, customHeaders);
+
+            return result;
         }
 
         public async Task<ResultService<RentalsDTO>> GetByIdAsync(int id)
@@ -115,7 +118,7 @@ namespace WDA.ApiDotNet.Application.Services
             else
                 rental.Status = "Atrasado";
 
-            rental = _mapper.Map(rentalDTO,rental);
+            rental = _mapper.Map(rentalDTO, rental);
 
             await _rentalsRepository.Update(rental);
 

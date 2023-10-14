@@ -7,7 +7,6 @@ using WDA.ApiDotNet.Application.Interfaces.IServices;
 using WDA.ApiDotNet.Application.Models;
 using WDA.ApiDotNet.Application.Models.DTOs.BooksDTO;
 using WDA.ApiDotNet.Application.Models.DTOs.Validations;
-using WDA.ApiDotNet.Business.Helpers;
 
 namespace WDA.ApiDotNet.Application.Services
 {
@@ -49,7 +48,7 @@ namespace WDA.ApiDotNet.Application.Services
             return ResultService.Ok("Livro adicionado com sucesso.");
         }
 
-        public async Task<ResultService<PaginationResponse<BooksDTO>>> GetAsync(QueryHandler queryHandler)
+        public async Task<ResultService<BooksDTO>> GetAsync(QueryHandler queryHandler)
         {
             var books = await _booksRepository.GetAll(queryHandler);
             var mappedBooks = _mapper.Map<List<BooksDTO>>(books.Data);
@@ -66,18 +65,8 @@ namespace WDA.ApiDotNet.Application.Services
                 );
             }
 
-            var response = new PaginationResponse<BooksDTO>
-            {
-                Header = paginationHeader,
-                Data = mappedBooks
-            };
 
-            if (customHeaders != null)
-            {
-                response.CustomHeader = customHeaders;
-            }
-
-            return ResultService.Ok(response);
+            return ResultService.OKPage<BooksDTO>(paginationHeader, mappedBooks, customHeaders);
         }
 
         public async Task<ResultService<List<BooksSummaryDTO>>> GetSummaryBooksAsync()
@@ -102,7 +91,6 @@ namespace WDA.ApiDotNet.Application.Services
 
             return ResultService.Ok<List<MostRentedBooksDTO>>(_mapper.Map<List<MostRentedBooksDTO>>(books));
         }
-
 
         public async Task<ResultService> UpdateAsync(BooksUpdateDTO bookDTO)
         {

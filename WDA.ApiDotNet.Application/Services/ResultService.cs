@@ -3,6 +3,7 @@
 
 using FluentValidation.Results;
 using Microsoft.AspNetCore.Mvc.Filters;
+using WDA.ApiDotNet.Application.Helpers;
 
 namespace WDA.ApiDotNet.Application.Services
 {
@@ -11,6 +12,7 @@ namespace WDA.ApiDotNet.Application.Services
         public bool IsSuccess { get; set; }
         public string Message { get; set; }
         public List<string> Errors { get; set; }
+
 
         public static ResultService RequestError(string message, ValidationResult validationResult)
         {
@@ -38,11 +40,48 @@ namespace WDA.ApiDotNet.Application.Services
             };
         }
 
-        public static ResultService Ok(string message) => new() { IsSuccess = true, Message = message };
-        public static ResultService<T> Ok<T>(T data) => new() { IsSuccess = true, Data = data };
+        public static ResultService Ok(string message) => new ()
+        {
+            IsSuccess = true,
+            Message = message
+        };
+
+
+        public static ResultService<T> OKPage<T>(PaginationHeader<T> header, List<T> data, CustomHeaders<T> customHeader)
+        {
+            return new ResultService<T>
+            {
+                IsSuccess = true,
+                Header = header,
+                Data = data,
+                CustomHeader = customHeader
+            };
+        }
+
+
+        public static ResultService<T> Ok<T>(T data)
+        {
+            return new ResultService<T>
+            {
+                IsSuccess = true,
+                SingleData = data,
+            };
+        }
+        public static ResultService<T> Ok<T>(List<T> data)
+        {
+            return new ResultService<T>
+            {
+                IsSuccess = true,
+                Data = data,
+            };
+        }
     }
+
     public class ResultService<T> : ResultService
     {
-        public T Data { get; set; }
+        public List<T> Data { get; set; }
+        public T SingleData { get; set; }
+        public PaginationHeader<T>? Header { get; set; }
+        public CustomHeaders<T>? CustomHeader { get; set; }
     }
 }

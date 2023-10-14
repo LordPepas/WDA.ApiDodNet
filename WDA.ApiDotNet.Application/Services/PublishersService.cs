@@ -7,7 +7,6 @@ using WDA.ApiDotNet.Application.Interfaces.IServices;
 using WDA.ApiDotNet.Application.Models;
 using WDA.ApiDotNet.Application.Models.DTOs.PublishersDTO;
 using WDA.ApiDotNet.Application.Models.DTOs.Validations;
-using WDA.ApiDotNet.Business.Helpers;
 
 namespace WDA.ApiDotNet.Application.Services
 {
@@ -43,7 +42,7 @@ namespace WDA.ApiDotNet.Application.Services
             return ResultService.Ok("Editora adicionado com sucesso.");
         }
 
-        public async Task<ResultService<PaginationResponse<PublishersDTO>>> GetAsync(QueryHandler queryHandler)
+        public async Task<ResultService<PublishersDTO>> GetAsync(QueryHandler queryHandler)
         {
             var publishers = await _publishersRepository.GetAll(queryHandler);
 
@@ -66,18 +65,9 @@ namespace WDA.ApiDotNet.Application.Services
                 );
             }
 
-            var response = new PaginationResponse<PublishersDTO>
-            {
-                Header = paginationHeader,
-                Data = mappedPublishers
-            };
+            var result = ResultService.OKPage<PublishersDTO>(paginationHeader, mappedPublishers, customHeaders);
 
-            if (customHeaders != null)
-            {
-                response.CustomHeader = customHeaders;
-            }
-
-            return ResultService.Ok(response);
+            return result;
         }
 
         public async Task<ResultService<List<PublishersSummaryDTO>>> GetSummaryPublishersAsync()
