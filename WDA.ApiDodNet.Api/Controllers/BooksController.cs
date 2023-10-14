@@ -22,16 +22,24 @@ namespace WDA.ApiDotNet.Api.Controllers
 
         [HttpPost]
         [SwaggerOperation(Summary = "Create Book")]
+        [SwaggerResponse(201, "Created")]
+        [SwaggerResponse(400, "Bad Request")]
+        [SwaggerResponse(404, "Not Found")]
         public async Task<ActionResult> Post([FromBody] BooksCreateDTO booksDTO)
         {
             var result = await _service.CreateAsync(booksDTO);
+
             if (result.IsSuccess)
-                return Ok(result);
-            return BadRequest(result);
+                return StatusCode(201, result);
+
+            return StatusCode(400, result);
         }
 
         [HttpGet]
         [SwaggerOperation(Summary = "List Books")]
+        [SwaggerResponse(200, "OK")]
+        [SwaggerResponse(400, "Bad Request")]
+        [SwaggerResponse(404, "Not Found")]
         public async Task<ActionResult> GetAll([FromQuery] QueryHandler queryHandler)
         {
             var books = await _repository.GetAll(queryHandler);
@@ -40,60 +48,81 @@ namespace WDA.ApiDotNet.Api.Controllers
             if (result.IsSuccess)
             {
                 Response.AddPagination<BooksDTO>(books.CurrentPage, books.PageSize, books.TotalCount, books.TotalPages);
-                return Ok(result);
+                return StatusCode(200, result);
             }
-            return BadRequest(result);
+            return StatusCode(400, result);
         }
 
         [HttpGet("SummaryData")]
-        [SwaggerOperation(Summary = "List Summary Books")]
+        [SwaggerResponse(200, "OK")]
+        [SwaggerResponse(400, "Bad Request")]
+        [SwaggerResponse(404, "Not Found")]
         public async Task<ActionResult> GetSummary()
         {
             var result = await _service.GetSummaryBooksAsync();
             if (result.IsSuccess)
                 return Ok(result);
-            return BadRequest(result);
+
+            return StatusCode(404, result);
         }
 
         [HttpGet("{id:int}")]
-        [SwaggerOperation(Summary = "List Book")]
+        [SwaggerResponse(200, "OK")]
+        [SwaggerResponse(400, "Bad Request")]
+        [SwaggerResponse(404, "Not Found")]
         public async Task<ActionResult> GetByIdAsync(int id)
         {
             var result = await _service.GetByIdAsync(id);
             if (result.IsSuccess)
                 return Ok(result);
-            return BadRequest(result);
+
+            return StatusCode(404, result);
         }
 
         [HttpGet("MostRented")]
         [SwaggerOperation(Summary = "Most Rented Books")]
+        [SwaggerResponse(200, "OK")]
+        [SwaggerResponse(400, "Bad Request")]
+        [SwaggerResponse(404, "Not Found")]
         public async Task<ActionResult> GetMostRented()
         {
             var result = await _service.GetMostRentedBooks();
+
             if (result.IsSuccess)
-                return Ok(result);
-           return BadRequest(result);
+                return StatusCode(200, result);
+
+            return StatusCode(404, result);
         }
 
         [HttpPut]
         [SwaggerOperation(Summary = "Update Book")]
+        [SwaggerResponse(200, "OK")]
+        [SwaggerResponse(400, "Bad Request")]
+        [SwaggerResponse(404, "Not Found")]
         public async Task<ActionResult> Put([FromBody] BooksUpdateDTO booksDTO)
         {
             var result = await _service.UpdateAsync(booksDTO);
 
             if (result.IsSuccess)
-                return Ok(result);
-            return BadRequest(result);
+                return StatusCode(200, result);
+
+            return StatusCode(400, result);
         }
 
         [HttpDelete("{id:int}")]
         [SwaggerOperation(Summary = "Delete Book")]
+        [SwaggerResponse(200, "OK")]
+        [SwaggerResponse(400, "Bad Request")]
+        [SwaggerResponse(404, "Not Found")]
         public async Task<ActionResult> Delete(int id)
         {
+
             var result = await _service.DeleteAsync(id);
+
             if (result.IsSuccess)
-                return Ok(result);
-            return BadRequest(result);
+                return StatusCode(200, result);
+
+            return StatusCode(400, result);
         }
     }
 }

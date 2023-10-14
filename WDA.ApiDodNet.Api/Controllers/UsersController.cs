@@ -22,17 +22,24 @@ namespace WDA.ApiDotNet.Api.Controllers
 
         [HttpPost]
         [SwaggerOperation(Summary = "Create User")]
+        [SwaggerResponse(201, "Created")]
+        [SwaggerResponse(400, "Bad Request")]
+        [SwaggerResponse(404, "Not Found")]
         public async Task<ActionResult> Post([FromBody] UsersCreateDTO usersDTO)
         {
             var result = await _service.CreateAsync(usersDTO);
 
             if (result.IsSuccess)
-                return Ok(result);
-            return BadRequest(result);
+                return StatusCode(201, result);
+
+            return StatusCode(400, result);
         }
 
         [HttpGet]
-        [SwaggerOperation(Summary = "List Books")]
+        [SwaggerOperation(Summary = "List Users")]
+        [SwaggerResponse(200, "Ok")]
+        [SwaggerResponse(400, "Bad Request")]
+        [SwaggerResponse(404, "Not Found")]
         public async Task<ActionResult> Get([FromQuery] QueryHandler queryHandler)
         {
             var users = await _repository.GetAll(queryHandler);
@@ -40,51 +47,66 @@ namespace WDA.ApiDotNet.Api.Controllers
             if (result.IsSuccess)
             {
                 Response.AddPagination<UsersDTO>(users.CurrentPage, users.PageSize, users.TotalCount, users.TotalPages);
-                return Ok(result);
+                return StatusCode(200, result);
             }
-            return BadRequest(result);
+            return StatusCode(404, result);
         }
 
         [HttpGet("SummaryData")]
         [SwaggerOperation(Summary = "List Summary Users")]
+        [SwaggerResponse(200, "Ok")]
+        [SwaggerResponse(400, "Bad Request")]
+        [SwaggerResponse(404, "Not Found")]
         public async Task<ActionResult> GetSummary()
         {
             var result = await _service.GetSummaryUsersAsync();
             if (result.IsSuccess)
-                return Ok(result);
-            return BadRequest(result);
+                return StatusCode(200,result);
+
+            return StatusCode(404, result);
         }
 
         [HttpGet("{id:int}")]
-        [SwaggerOperation(Summary = "List Book")]
+        [SwaggerOperation(Summary = "List User")]
+        [SwaggerResponse(200, "Ok")]
+        [SwaggerResponse(400, "Bad Request")]
+        [SwaggerResponse(404, "Not Found")]
         public async Task<ActionResult> GetById(int id)
         {
             var result = await _service.GetByIdAsync(id);
             if (result.IsSuccess)
-                return Ok(result);
-            return BadRequest(result);
+                return StatusCode(200, result);
+
+            return StatusCode(404,result);
         }
 
         [HttpPut]
-        [SwaggerOperation(Summary = "Update Book")]
-
+        [SwaggerOperation(Summary = "Update User")]
+        [SwaggerResponse(200, "Ok")]
+        [SwaggerResponse(400, "Bad Request")]
+        [SwaggerResponse(404, "Not Found")]
         public async Task<ActionResult> Put([FromBody] UsersUpdateDTO usersDTO)
         {
             var result = await _service.UpdateAsync(usersDTO);
 
             if (result.IsSuccess)
-                return Ok(result);
-            return BadRequest(result);
+                return StatusCode(200, result);
+
+            return StatusCode(400, result);
         }
 
         [HttpDelete("{id:int}")]
-        [SwaggerOperation(Summary = "Delete Book")]
+        [SwaggerOperation(Summary = "Delete User")]
+        [SwaggerResponse(200, "Ok")]
+        [SwaggerResponse(400, "Bad Request")]
+        [SwaggerResponse(404, "Not Found")]
         public async Task<ActionResult> Delete(int id)
         {
             var result = await _service.DeleteAsync(id);
             if (result.IsSuccess)
-                return Ok(result);
-            return BadRequest(result);
+                return StatusCode(200, result);
+
+            return StatusCode(201, result);
         }
     }
 }

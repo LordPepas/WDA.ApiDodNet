@@ -23,17 +23,24 @@ namespace WDA.ApiDotNet.Api.Controllers
 
         [HttpPost]
         [SwaggerOperation(Summary = "Create Rental")]
+        [SwaggerResponse(201, "Created")]
+        [SwaggerResponse(400, "Bad Request")]
+        [SwaggerResponse(404, "Not Found")]
         public async Task<ActionResult> Post([FromBody] RentalsCreateDTO rentalsDTO)
         {
             var result = await _service.CreateAsync(rentalsDTO);
 
             if (result.IsSuccess)
-                return Ok(result);
-            return BadRequest(result);
+                return StatusCode(201, result);
+
+            return StatusCode(400, result);
         }
 
         [HttpGet]
         [SwaggerOperation(Summary = "List Rentals")]
+        [SwaggerResponse(200, "Ok")]
+        [SwaggerResponse(400, "Bad Request")]
+        [SwaggerResponse(404, "Not Found")]
         public async Task<ActionResult> Get([FromQuery] QueryHandler queryHandler)
         {
             var rentals = await _repository.GetAll(queryHandler);
@@ -41,42 +48,53 @@ namespace WDA.ApiDotNet.Api.Controllers
             if (result.IsSuccess)
             {
                 Response.AddPagination<RentalsDTO>(rentals.CurrentPage, rentals.PageSize, rentals.TotalCount, rentals.TotalPages);
-                return Ok(result);
+                return StatusCode(200, result);
             }
-            return BadRequest(result);
+            return StatusCode(404, result);
         }
 
         [HttpGet("{id:int}")]
         [SwaggerOperation(Summary = "List Rental")]
+        [SwaggerResponse(200, "Ok")]
+        [SwaggerResponse(400, "Bad Request")]
+        [SwaggerResponse(404, "Not Found")]
         public async Task<ActionResult> GetById(int id)
         {
             var result = await _service.GetByIdAsync(id);
             if (result.IsSuccess)
-                return Ok(result);
-            return BadRequest(result);
+                return StatusCode(200, result);
+
+            return StatusCode(404, result);
         }
 
         [HttpPut]
         [SwaggerOperation(Summary = "Update rental")]
+        [SwaggerResponse(200, "Ok")]
+        [SwaggerResponse(400, "Bad Request")]
+        [SwaggerResponse(404, "Not Found")]
         public async Task<ActionResult> Put([FromBody] RentalsUpdateDTO rentalsUpdateDTO)
         {
 
             var result = await _service.UpdateAsync(rentalsUpdateDTO);
 
             if (result.IsSuccess)
-                return Ok(result);
+                return StatusCode(200, result);
 
-            return BadRequest(result);
+            return StatusCode(400, result);
         }
 
         [HttpDelete("{id:int}")]
         [SwaggerOperation(Summary = "Delete Rental")]
+        [SwaggerResponse(200, "Ok")]
+        [SwaggerResponse(400, "Bad Request")]
+        [SwaggerResponse(404, "Not Found")]
         public async Task<ActionResult> Delete(int id)
         {
             var result = await _service.DeleteAsync(id);
             if (result.IsSuccess)
-                return Ok(result);
-            return BadRequest(result);
+                return StatusCode(200, result);
+
+            return StatusCode(400, result);
         }
     }
 }
