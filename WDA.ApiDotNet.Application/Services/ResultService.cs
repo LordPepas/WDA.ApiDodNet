@@ -40,7 +40,7 @@ namespace WDA.ApiDotNet.Application.Services
             };
         }
 
-        public static ResultService Ok(string message) => new ()
+        public static ResultService Ok(string message) => new()
         {
             IsSuccess = true,
             Message = message

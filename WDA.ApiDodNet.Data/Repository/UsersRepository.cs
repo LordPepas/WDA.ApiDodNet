@@ -38,24 +38,24 @@ namespace WDA.ApiDotNet.Infra.Data.Repository
             IQueryable<Users> query = _db.Users
                 .AsNoTracking();
 
-            if (!string.IsNullOrWhiteSpace(queryHandler.Filter.SearchValue))
+            if (!string.IsNullOrWhiteSpace(queryHandler.SearchValue))
             {
-                queryHandler.Filter.SearchValue = queryHandler.Filter.SearchValue.ToUpper();
+                queryHandler.SearchValue = queryHandler.SearchValue.ToUpper();
 
                 query = query.Where(p =>
-                p.Id.ToString().Contains(queryHandler.Filter.SearchValue) ||
-                p.Name.Contains(queryHandler.Filter.SearchValue) ||
-                p.City.Contains(queryHandler.Filter.SearchValue) ||
-                p.Address.Contains(queryHandler.Filter.SearchValue) ||
-                p.Email.Contains(queryHandler.Filter.SearchValue)
+                p.Id.ToString().Contains(queryHandler.SearchValue) ||
+                p.Name.Contains(queryHandler.SearchValue) ||
+                p.City.Contains(queryHandler.SearchValue) ||
+                p.Address.Contains(queryHandler.SearchValue) ||
+                p.Email.Contains(queryHandler.SearchValue)
                 );
             };
 
-            if (!string.IsNullOrWhiteSpace(queryHandler.Filter.OrderBy))
+            if (!string.IsNullOrWhiteSpace(queryHandler.OrderBy))
             {
-                queryHandler.Filter.OrderBy = queryHandler.Filter.OrderBy.ToUpper();
+                queryHandler.OrderBy = queryHandler.OrderBy.ToUpper();
 
-                query = queryHandler.Filter.OrderBy switch
+                query = queryHandler.OrderBy switch
                 {
                     "ID" => query.OrderBy(p => p.Id),
                     "NAME" => query.OrderBy(p => p.Name),
@@ -69,8 +69,8 @@ namespace WDA.ApiDotNet.Infra.Data.Repository
             {
                 query = query.OrderBy(p => p.Id);
             }
-
-            return await PageList<Users>.GetResponseAsync(query, queryHandler.Paging.PageNumber, queryHandler.Paging.PageSize);
+                
+            return await PageList<Users>.GetResponseAsync(query, queryHandler.PageNumber, queryHandler.PageSize);
         }
 
         public async Task<Users> GetById(int? id)

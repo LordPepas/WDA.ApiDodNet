@@ -38,34 +38,34 @@ namespace WDA.ApiDotNet.Infra.Data.Repository
         {
             IQueryable<Publishers> query = _db.Publishers.AsNoTracking();
 
-            if (!string.IsNullOrWhiteSpace(queryHandler.Filter.SearchValue))
+            if (!string.IsNullOrWhiteSpace(queryHandler.SearchValue))
             {
-                queryHandler.Filter.SearchValue = queryHandler.Filter.SearchValue.ToUpper();
+                queryHandler.SearchValue = queryHandler.SearchValue.ToUpper();
 
                 query = query.Where(p =>
-                    p.Id.ToString().ToUpper().Contains(queryHandler.Filter.SearchValue) ||
-                    p.Name.Contains(queryHandler.Filter.SearchValue) ||
-                    p.City.Contains(queryHandler.Filter.SearchValue)
+                    p.Id.ToString().ToUpper().Contains(queryHandler.SearchValue) ||
+                    p.Name.Contains(queryHandler.SearchValue) ||
+                    p.City.Contains(queryHandler.SearchValue)
                 );
             }
-            if (!string.IsNullOrWhiteSpace(queryHandler.Filter.OrderBy))
+            if (!string.IsNullOrWhiteSpace(queryHandler.OrderBy))
             {
-                queryHandler.Filter.OrderBy = queryHandler.Filter.OrderBy.ToUpper();
+                queryHandler.OrderBy = queryHandler.OrderBy.ToUpper();
 
-                query = queryHandler.Filter.OrderBy switch
+                query = queryHandler.OrderBy switch
                 {
-                    "ID" => query.OrderBy(p => p.Id),
-                    "NAME" => query.OrderBy(p => p.Name),
-                    "CITY" => query.OrderBy(p => p.City),
-                    _ => query.OrderBy(p => p.Id),
+                    "ID" => queryHandler.OrderDesc ? query.OrderByDescending(p => p.Id) : query.OrderBy(p => p.Id),
+                    "NAME" => queryHandler.OrderDesc ? query.OrderByDescending(p => p.Id) : query.OrderBy(p => p.Name),
+                    "CITY" => queryHandler.OrderDesc ? query.OrderByDescending(p => p.Id) : query.OrderBy(p => p.City),
+                    _ => queryHandler.OrderDesc ? query.OrderByDescending(p => p.Id) : query.OrderBy(p => p.Id),
                 };
             }
             else
             {
-                query = query.OrderBy(p => p.Id);
+                query = queryHandler.OrderDesc ? query.OrderByDescending(p => p.Id) : query.OrderBy(p => p.Id);
             }
 
-            return await PageList<Publishers>.GetResponseAsync(query, queryHandler.Paging.PageNumber, queryHandler.Paging.PageSize);
+            return await PageList<Publishers>.GetResponseAsync(query, queryHandler.PageNumber, queryHandler.PageSize);
         }
 
 

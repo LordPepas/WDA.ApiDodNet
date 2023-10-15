@@ -3,7 +3,6 @@ using WDA.ApiDotNet.Application.Helpers;
 using WDA.ApiDotNet.Application.Interfaces.IRepository;
 using WDA.ApiDotNet.Application.Interfaces.IServices;
 using WDA.ApiDotNet.Application.Models;
-using WDA.ApiDotNet.Application.Models.DTOs.PublishersDTO;
 using WDA.ApiDotNet.Application.Models.DTOs.RentalsDTO;
 using WDA.ApiDotNet.Application.Models.DTOs.Validations;
 
@@ -72,11 +71,11 @@ namespace WDA.ApiDotNet.Application.Services
 
             CustomHeaders<RentalsDTO> customHeaders = null;
 
-            if (!string.IsNullOrWhiteSpace(queryHandler.Filter.OrderBy) || !string.IsNullOrWhiteSpace(queryHandler.Filter.SearchValue))
+            if (!string.IsNullOrWhiteSpace(queryHandler.OrderBy) || !string.IsNullOrWhiteSpace(queryHandler.SearchValue))
             {
                 customHeaders = new CustomHeaders<RentalsDTO>(
-                    queryHandler.Filter.OrderBy,
-                    queryHandler.Filter.SearchValue
+                    queryHandler.OrderBy,
+                    queryHandler.SearchValue
                 );
             }
 

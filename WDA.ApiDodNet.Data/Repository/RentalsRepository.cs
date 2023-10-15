@@ -57,26 +57,26 @@ namespace WDA.ApiDotNet.Infra.Data.Repository
                 .Include(x => x.User)
                 .AsNoTracking();
 
-            if (!string.IsNullOrWhiteSpace(queryHandler.Filter.SearchValue))
+            if (!string.IsNullOrWhiteSpace(queryHandler.SearchValue))
             {
-                queryHandler.Filter.SearchValue = queryHandler.Filter.SearchValue.ToUpper();
+                queryHandler.SearchValue = queryHandler.SearchValue.ToUpper();
                 query = query.Where(p =>
-                p.Id.ToString().Contains(queryHandler.Filter.SearchValue) ||
-                p.BookId.ToString().Contains(queryHandler.Filter.SearchValue) ||
-                p.Book.Name.ToUpper().Contains(queryHandler.Filter.SearchValue) ||
-                p.UserId.ToString().Contains(queryHandler.Filter.SearchValue) ||
-                p.User.Name.ToUpper().Contains(queryHandler.Filter.SearchValue) ||
-                p.RentalDate.ToString().Contains(queryHandler.Filter.SearchValue) ||
-                p.PrevisionDate.ToString().Contains(queryHandler.Filter.SearchValue) ||
-                p.ReturnDate.ToString().Contains(queryHandler.Filter.SearchValue)
+                p.Id.ToString().Contains(queryHandler.SearchValue) ||
+                p.BookId.ToString().Contains(queryHandler.SearchValue) ||
+                p.Book.Name.ToUpper().Contains(queryHandler.SearchValue) ||
+                p.UserId.ToString().Contains(queryHandler.SearchValue) ||
+                p.User.Name.ToUpper().Contains(queryHandler.SearchValue) ||
+                p.RentalDate.ToString().Contains(queryHandler.SearchValue) ||
+                p.PrevisionDate.ToString().Contains(queryHandler.SearchValue) ||
+                p.ReturnDate.ToString().Contains(queryHandler.SearchValue)
                 );
             };
 
-            if (!string.IsNullOrWhiteSpace(queryHandler.Filter.OrderBy))
+            if (!string.IsNullOrWhiteSpace(queryHandler.OrderBy))
             {
-                queryHandler.Filter.OrderBy = queryHandler.Filter.OrderBy.ToUpper();
+                queryHandler.OrderBy = queryHandler.OrderBy.ToUpper();
 
-                query = queryHandler.Filter.OrderBy switch
+                query = queryHandler.OrderBy switch
                 {
                     "ID" => query.OrderBy(p => p.Id),
                     "BOOK" => query.OrderBy(p => p.BookId),
@@ -92,7 +92,7 @@ namespace WDA.ApiDotNet.Infra.Data.Repository
                 query = query.OrderBy(p => p.Id);
             }
 
-            return await PageList<Rentals>.GetResponseAsync(query, queryHandler.Paging.PageNumber, queryHandler.Paging.PageSize);
+            return await PageList<Rentals>.GetResponseAsync(query, queryHandler.PageNumber, queryHandler.PageSize);
         }
 
         public async Task<List<Rentals>> GetByBookId(int bookId)

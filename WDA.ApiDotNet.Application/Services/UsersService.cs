@@ -53,11 +53,11 @@ namespace WDA.ApiDodNet.Application.Services
 
             CustomHeaders<UsersDTO> customHeaders = null;
 
-            if (!string.IsNullOrWhiteSpace(queryHandler.Filter.OrderBy) || !string.IsNullOrWhiteSpace(queryHandler.Filter.SearchValue))
+            if (!string.IsNullOrWhiteSpace(queryHandler.OrderBy) || !string.IsNullOrWhiteSpace(queryHandler.SearchValue))
             {
                 customHeaders = new CustomHeaders<UsersDTO>(
-                    queryHandler.Filter.OrderBy,
-                    queryHandler.Filter.SearchValue
+                    queryHandler.OrderBy,
+                    queryHandler.SearchValue
                 );
             }
 

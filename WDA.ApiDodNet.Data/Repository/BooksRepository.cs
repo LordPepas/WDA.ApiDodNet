@@ -38,44 +38,44 @@ namespace WDA.ApiDotNet.Infra.Data.Repository
 
         public async Task<PageList<Books>> GetAll(QueryHandler queryHandler)
         {
-            IQueryable<Books> query = _db.Books.Include(x => x.Publisher)
-                 .AsNoTracking();
+            IQueryable<Books> query = _db.Books.Include(x => x.Publisher).AsNoTracking();
 
-            if (!string.IsNullOrWhiteSpace(queryHandler.Filter.SearchValue))
+            if (!string.IsNullOrWhiteSpace(queryHandler.SearchValue))
             {
-                queryHandler.Filter.SearchValue = queryHandler.Filter.SearchValue.ToUpper();
+                queryHandler.SearchValue = queryHandler.SearchValue.ToUpper();
 
                 query = query.Where(p =>
-                    p.Id.ToString().Contains(queryHandler.Filter.SearchValue) ||
-                    p.Name.ToUpper().Contains(queryHandler.Filter.SearchValue) ||
-                    p.Author.ToUpper().Contains(queryHandler.Filter.SearchValue) ||
-                    p.Quantity.ToString().Contains(queryHandler.Filter.SearchValue) ||
-                    p.Release.ToString().Contains(queryHandler.Filter.SearchValue) ||
-                    p.Rented.ToString().Contains(queryHandler.Filter.SearchValue) ||
-                    p.Publisher.Name.ToUpper().Contains(queryHandler.Filter.SearchValue)
+                    p.Id.ToString().Contains(queryHandler.SearchValue) ||
+                    p.Name.ToUpper().Contains(queryHandler.SearchValue) ||
+                    p.Author.ToUpper().Contains(queryHandler.SearchValue) ||
+                    p.Quantity.ToString().Contains(queryHandler.SearchValue) ||
+                    p.Release.ToString().Contains(queryHandler.SearchValue) ||
+                    p.Rented.ToString().Contains(queryHandler.SearchValue) ||
+                    p.Publisher.Name.ToUpper().Contains(queryHandler.SearchValue)
                 );
             }
-            if (!string.IsNullOrWhiteSpace(queryHandler.Filter.OrderBy))
-            {
-                queryHandler.Filter.OrderBy = queryHandler.Filter.OrderBy.ToUpper();
 
-                query = queryHandler.Filter.OrderBy switch
+            if (!string.IsNullOrWhiteSpace(queryHandler.OrderBy))
+            {
+                queryHandler.OrderBy = queryHandler.OrderBy.ToUpper();
+
+                query = queryHandler.OrderBy switch
                 {
-                    "ID" => query.OrderBy(p => p.Id),
-                    "NAME" => query.OrderBy(p => p.Name),
-                    "AUTHOR" => query.OrderBy(p => p.Author),
-                    "QUANTITY" => query.OrderBy(p => p.Quantity),
-                    "REALESE" => query.OrderBy(p => p.Release),
-                    "PUBLISHER" => query.OrderBy(p => p.PublisherId),
-                    _ => query.OrderBy(p => p.Id),
+                    "ID" => queryHandler.OrderDesc ? query.OrderByDescending(p => p.Id) : query.OrderBy(p => p.Id),
+                    "NAME" => queryHandler.OrderDesc ? query.OrderByDescending(p => p.Name) : query.OrderBy(p => p.Name),
+                    "AUTHOR" => queryHandler.OrderDesc ? query.OrderByDescending(p => p.Author) : query.OrderBy(p => p.Author),
+                    "QUANTITY" => queryHandler.OrderDesc ? query.OrderByDescending(p => p.Quantity) : query.OrderBy(p => p.Quantity),
+                    "RELEASE" => queryHandler.OrderDesc ? query.OrderByDescending(p => p.Release) : query.OrderBy(p => p.Release),
+                    "PUBLISHER" => queryHandler.OrderDesc ? query.OrderByDescending(p => p.PublisherId) : query.OrderBy(p => p.PublisherId),
+                    _ => queryHandler.OrderDesc ? query.OrderByDescending(p => p.Id) : query.OrderBy(p => p.Id),
                 };
             }
             else
             {
-                query = query.OrderBy(p => p.Id);
+                query = queryHandler.OrderDesc ? query.OrderByDescending(p => p.Id) : query.OrderBy(p => p.Id);
             }
 
-            return await PageList<Books>.GetResponseAsync(query, queryHandler.Paging.PageNumber, queryHandler.Paging.PageSize);
+            return await PageList<Books>.GetResponseAsync(query, queryHandler.PageNumber, queryHandler.PageSize);
         }
         public async Task<Books> GetById(int? id)
         {
