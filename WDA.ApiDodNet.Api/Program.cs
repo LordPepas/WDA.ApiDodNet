@@ -11,7 +11,6 @@ namespace WDA.ApiDotNet.Api
        {
             var builder = WebApplication.CreateBuilder(args);
 
-
             // Adicione serviços ao container.
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();

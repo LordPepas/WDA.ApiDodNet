@@ -57,17 +57,17 @@ namespace WDA.ApiDotNet.Infra.Data.Repository
 
                 query = queryHandler.OrderBy switch
                 {
-                    "ID" => query.OrderBy(p => p.Id),
-                    "NAME" => query.OrderBy(p => p.Name),
-                    "CITY" => query.OrderBy(p => p.City),
-                    "ADDRESS" => query.OrderBy(p => p.Address),
-                    "EMAIL" => query.OrderBy(p => p.Email),
-                    _ => query.OrderBy(p => p.Id),
+                    "ID" => queryHandler.OrderDesc ? query.OrderByDescending(p => p.Id) : query.OrderBy(p => p.Id),
+                    "NAME" => queryHandler.OrderDesc ? query.OrderByDescending(p => p.Id) : query.OrderBy(p => p.Name),
+                    "CITY" => queryHandler.OrderDesc ? query.OrderByDescending(p => p.Id) : query.OrderBy(p => p.City),
+                    "ADDRESS" => queryHandler.OrderDesc ? query.OrderByDescending(p => p.Id) : query.OrderBy(p => p.Address),
+                    "EMAIL" => queryHandler.OrderDesc ? query.OrderByDescending(p => p.Id) : query.OrderBy(p => p.Email),
+                    _ => queryHandler.OrderDesc ? query.OrderByDescending(p => p.Id) : query.OrderBy(p => p.Id),
                 };
             }
             else
             {
-                query = query.OrderBy(p => p.Id);
+                query = queryHandler.OrderDesc ? query.OrderByDescending(p => p.Id) : query.OrderBy(p => p.Id);
             }
                 
             return await PageList<Users>.GetResponseAsync(query, queryHandler.PageNumber, queryHandler.PageSize);

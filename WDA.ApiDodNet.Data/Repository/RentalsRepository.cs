@@ -80,16 +80,16 @@ namespace WDA.ApiDotNet.Infra.Data.Repository
                 {
                     "ID" => query.OrderBy(p => p.Id),
                     "BOOK" => query.OrderBy(p => p.BookId),
-                    "USER" => query.OrderBy(p => p.UserId),
-                    "RENTALDATE" => query.OrderBy(p => p.RentalDate),
-                    "PREVISIONDATE" => query.OrderBy(p => p.PrevisionDate),
-                    "RETURNDATE" => query.OrderBy(p => p.ReturnDate),
-                    _ => query.OrderBy(p => p.Id),
+                    "USER" => queryHandler.OrderDesc ? query.OrderByDescending(p => p.Id) : query.OrderBy(p => p.UserId),
+                    "RENTALDATE" => queryHandler.OrderDesc ? query.OrderByDescending(p => p.Id) : query.OrderBy(p => p.RentalDate),
+                    "PREVISIONDATE" => queryHandler.OrderDesc ? query.OrderByDescending(p => p.Id) : query.OrderBy(p => p.PrevisionDate),
+                    "RETURNDATE" => queryHandler.OrderDesc ? query.OrderByDescending(p => p.Id) : query.OrderBy(p => p.ReturnDate),
+                    _ => queryHandler.OrderDesc ? query.OrderByDescending(p => p.Id) : query.OrderBy(p => p.Id),
                 };
             }
             else
             {
-                query = query.OrderBy(p => p.Id);
+                query = queryHandler.OrderDesc ? query.OrderByDescending(p => p.Id) : query.OrderBy(p => p.Id);
             }
 
             return await PageList<Rentals>.GetResponseAsync(query, queryHandler.PageNumber, queryHandler.PageSize);
