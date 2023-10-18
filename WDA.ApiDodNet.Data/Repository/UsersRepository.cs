@@ -51,11 +51,11 @@ namespace WDA.ApiDotNet.Infra.Data.Repository
                 );
             };
 
-            if (!string.IsNullOrWhiteSpace(queryHandler.OrderBy))
+            if (!string.IsNullOrWhiteSpace(queryHandler.OrderByProperty))
             {
-                queryHandler.OrderBy = queryHandler.OrderBy.ToUpper();
+                queryHandler.OrderByProperty = queryHandler.OrderByProperty.ToUpper();
 
-                query = queryHandler.OrderBy switch
+                query = queryHandler.OrderByProperty switch
                 {
                     "ID" => queryHandler.OrderDesc ? query.OrderByDescending(p => p.Id) : query.OrderBy(p => p.Id),
                     "NAME" => queryHandler.OrderDesc ? query.OrderByDescending(p => p.Id) : query.OrderBy(p => p.Name),
@@ -70,7 +70,7 @@ namespace WDA.ApiDotNet.Infra.Data.Repository
                 query = queryHandler.OrderDesc ? query.OrderByDescending(p => p.Id) : query.OrderBy(p => p.Id);
             }
                 
-            return await PageList<Users>.GetResponseAsync(query, queryHandler.PageNumber, queryHandler.PageSize);
+            return await PageList<Users>.GetResponseAsync(query, queryHandler.PageNumber, queryHandler.ItemsPerpage);
         }
 
         public async Task<Users> GetById(int? id)

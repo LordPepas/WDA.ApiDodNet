@@ -9,6 +9,7 @@ namespace WDA.ApiDotNet.Application.Interfaces.IServices
         Task<ResultService> CreateAsync(BooksCreateDTO booksDTO);
         Task<ResultService<BooksDTO>> GetAsync(QueryHandler queryHandler);
         Task<ResultService<List<BooksSummaryDTO>>> GetSummaryBooksAsync();
+        Task<ResultService<List<BooksAvailableDTO>>> GetSummaryAvailableBooksAsync();
         Task<ResultService> GetByIdAsync(int id);
         Task<ResultService<List<MostRentedBooksDTO>>> GetMostRentedBooks();
         Task<ResultService> UpdateAsync(BooksUpdateDTO booksDTO);

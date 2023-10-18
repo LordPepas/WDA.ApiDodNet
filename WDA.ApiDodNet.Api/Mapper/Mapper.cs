@@ -15,6 +15,7 @@ namespace WDA.ApiDotNet.Application.Profiles
             CreateMap<Books, BooksCreateDTO>().ReverseMap();
             CreateMap<Books, BooksUpdateDTO>().ReverseMap();
             CreateMap<Books, BooksSummaryDTO>().ReverseMap();
+            CreateMap<Books, BooksAvailableDTO>().ReverseMap();
             CreateMap<Books, MostRentedBooksDTO>().ReverseMap();
 
             CreateMap<Publishers, PublishersDTO>().ReverseMap();

@@ -4,8 +4,6 @@
 using FluentValidation.Results;
 using Microsoft.AspNetCore.Mvc.Filters;
 using WDA.ApiDotNet.Application.Helpers;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace WDA.ApiDotNet.Application.Services
 {
@@ -15,13 +13,12 @@ namespace WDA.ApiDotNet.Application.Services
         public string Message { get; set; }
         public List<string> Errors { get; set; }
 
-        public static ResultService RequestError(string message, ValidationResult validationResult)
+        public static ResultService RequestError(ValidationResult validationResult)
         {
             var errors = validationResult.Errors.Select(x => x.ErrorMessage).ToList();
             return new ResultService
             {
                 IsSuccess = false,
-                Message = message,
                 Errors = errors
             };
         }
@@ -56,14 +53,16 @@ namespace WDA.ApiDotNet.Application.Services
             };
         }
 
-        public static ResultService<T> OKPage<T>(PaginationHeader<T> header, List<T> data, CustomHeaders<T> customHeader)
+        public static ResultService<T> OKPage<T>(List<T> data, PaginationHeader<T> header)
         {
             return new ResultService<T>
             {
                 IsSuccess = true,
-                Header = header,
                 Data = data,
-                CustomHeader = customHeader
+                PageNumber = header.PageNumber,
+                ItemsPerpage = header.ItemsPerpage,
+                TotalItems = header.TotalItems,
+                TotalPages = header.TotalPages
             };
         }
     }
@@ -72,6 +71,9 @@ namespace WDA.ApiDotNet.Application.Services
     {
         public dynamic Data { get; set; }
         public PaginationHeader<T> Header { get; set; }
-        public CustomHeaders<T> CustomHeader { get; set; }
+        public int PageNumber { get; set; }
+        public int ItemsPerpage { get; set; }
+        public int TotalItems { get; set; }
+        public int TotalPages { get; set; }
     }
 }

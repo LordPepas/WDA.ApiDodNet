@@ -33,11 +33,14 @@ namespace WDA.ApiDotNet.Application.Services
 
             var validation = new BooksCreateDTOValidator().Validate(bookDTO);
             if (!validation.IsValid)
-                return ResultService.RequestError("Problemas de validação", validation);
+                return ResultService.RequestError(validation);
 
             var duplicateName = await _booksRepository.GetByName(mappedBook.Name);
             if (duplicateName.Count > 0)
                 return ResultService.Fail("Livro já existente");
+
+            if (bookDTO.Release > DateTime.Now.Year)
+                return ResultService.Fail("O ano de lançamento deve ser anterior ao ano atual.");
 
             var publisher = await _publishersRepository.GetById(mappedBook.PublisherId);
             if (publisher == null)
@@ -53,26 +56,20 @@ namespace WDA.ApiDotNet.Application.Services
             var books = await _booksRepository.GetAll(queryHandler);
             var mappedBooks = _mapper.Map<List<BooksDTO>>(books.Data);
 
-            var paginationHeader = new PaginationHeader<BooksDTO>(books.CurrentPage, books.PageSize, books.TotalCount, books.TotalPages);
+            var paginationHeader = new PaginationHeader<BooksDTO>(books.PageNumber, books.ItemsPerpage, books.TotalCount, books.TotalPages);
 
-            CustomHeaders<BooksDTO> customHeaders = null;
-
-            if (!string.IsNullOrWhiteSpace(queryHandler.OrderBy) || !string.IsNullOrWhiteSpace(queryHandler.SearchValue))
-            {
-                customHeaders = new CustomHeaders<BooksDTO>(
-                    queryHandler.OrderBy,
-                    queryHandler.SearchValue
-                );
-            }
-
-
-            return ResultService.OKPage<BooksDTO>(paginationHeader, mappedBooks, customHeaders);
+            return ResultService.OKPage<BooksDTO>(mappedBooks, paginationHeader);
         }
 
         public async Task<ResultService<List<BooksSummaryDTO>>> GetSummaryBooksAsync()
         {
             var books = await _booksRepository.GetSummaryBooks();
             return ResultService.Ok<List<BooksSummaryDTO>>(_mapper.Map<List<BooksSummaryDTO>>(books));
+        }
+        public async Task<ResultService<List<BooksAvailableDTO>>> GetSummaryAvailableBooksAsync()
+        {
+            var books = await _booksRepository.GetSummaryAvailableBooks();
+            return ResultService.Ok<List<BooksAvailableDTO>>(_mapper.Map<List<BooksAvailableDTO>>(books));
         }
 
         public async Task<ResultService> GetByIdAsync(int id)
@@ -99,7 +96,7 @@ namespace WDA.ApiDotNet.Application.Services
 
             var validation = new BooksDTOValidator().Validate(bookDTO);
             if (!validation.IsValid)
-                return ResultService.RequestError("Problemas de validação", validation);
+                return ResultService.RequestError(validation);
             var book = await _booksRepository.GetById(bookDTO.Id);
             if (book == null)
                 return ResultService.Fail("Livro não encontrado!");

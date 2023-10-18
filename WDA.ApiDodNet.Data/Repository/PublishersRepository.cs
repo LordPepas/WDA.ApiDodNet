@@ -48,11 +48,11 @@ namespace WDA.ApiDotNet.Infra.Data.Repository
                     p.City.Contains(queryHandler.SearchValue)
                 );
             }
-            if (!string.IsNullOrWhiteSpace(queryHandler.OrderBy))
+            if (!string.IsNullOrWhiteSpace(queryHandler.OrderByProperty))
             {
-                queryHandler.OrderBy = queryHandler.OrderBy.ToUpper();
+                queryHandler.OrderByProperty = queryHandler.OrderByProperty.ToUpper();
 
-                query = queryHandler.OrderBy switch
+                query = queryHandler.OrderByProperty switch
                 {
                     "ID" => queryHandler.OrderDesc ? query.OrderByDescending(p => p.Id) : query.OrderBy(p => p.Id),
                     "NAME" => queryHandler.OrderDesc ? query.OrderByDescending(p => p.Id) : query.OrderBy(p => p.Name),
@@ -65,7 +65,7 @@ namespace WDA.ApiDotNet.Infra.Data.Repository
                 query = queryHandler.OrderDesc ? query.OrderByDescending(p => p.Id) : query.OrderBy(p => p.Id);
             }
 
-            return await PageList<Publishers>.GetResponseAsync(query, queryHandler.PageNumber, queryHandler.PageSize);
+            return await PageList<Publishers>.GetResponseAsync(query, queryHandler.PageNumber, queryHandler.ItemsPerpage);
         }
 
 

@@ -3,18 +3,18 @@ namespace WDA.ApiDotNet.Application.Helpers
 {
     public class PageList<T> : List<T>
     {
-        public int CurrentPage { get; set; }
-        public int PageSize { get; set; }
+        public int PageNumber { get; set; }
+        public int ItemsPerpage { get; set; }
         public int TotalCount { get; set; }
         public int TotalPages { get; set; }
-        public List<T> Data => this; // Propriedade "Data" que retorna a lista
+        public List<T> Data => this;
 
-        public PageList(List<T> items, int pageNumber, int pageSize, int count)
+        public PageList(List<T> items, int pageNumber, int itemsPerPage, int count)
         {
             TotalCount = count;
-            PageSize = pageSize;
-            CurrentPage = pageNumber;
-            TotalPages = (int)Math.Ceiling(count / (double)pageSize);
+            ItemsPerpage = itemsPerPage;
+            PageNumber = pageNumber;
+            TotalPages = (int)Math.Ceiling(count / (double)itemsPerPage);
             this.AddRange(items);
         }
 

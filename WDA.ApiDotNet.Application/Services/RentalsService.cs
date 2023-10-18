@@ -3,6 +3,7 @@ using WDA.ApiDotNet.Application.Helpers;
 using WDA.ApiDotNet.Application.Interfaces.IRepository;
 using WDA.ApiDotNet.Application.Interfaces.IServices;
 using WDA.ApiDotNet.Application.Models;
+using WDA.ApiDotNet.Application.Models.DTOs.BooksDTO;
 using WDA.ApiDotNet.Application.Models.DTOs.PublishersDTO;
 using WDA.ApiDotNet.Application.Models.DTOs.RentalsDTO;
 using WDA.ApiDotNet.Application.Models.DTOs.Validations;
@@ -30,7 +31,7 @@ namespace WDA.ApiDotNet.Application.Services
 
             var result = new RentalsCreateDTOValidator().Validate(rentalDTO);
             if (!result.IsValid)
-                return ResultService.RequestError("Problemas de validação", result);
+                return ResultService.RequestError(result);
 
             var book = await _booksRepository.GetById(rentalDTO.BookId);
             if (book == null)
@@ -41,12 +42,20 @@ namespace WDA.ApiDotNet.Application.Services
                 return ResultService.Fail("Usuário não encontrado!");
 
             bool dateValidate = await _rentalsRepository.CheckDate(rentalDTO.RentalDate);
-            if (dateValidate)
+            if (dateValidate==false)
                 return ResultService.Fail("Data de aluguel não pode ser diferente da data de Hoje!");
+
+            var bookQuantity = await _booksRepository.GetById(rentalDTO.BookId);
+            if (bookQuantity.Quantity == 0)
+            {
+                return ResultService.Fail("Livro sem estoque!");
+            }
+
 
             bool? forecastValidate = await _rentalsRepository.CheckPrevisionDate(rentalDTO.PrevisionDate, rentalDTO.RentalDate);
             if (forecastValidate == true)
                 return ResultService.Fail("Previsão maxima de 30 dias!");
+
             else if (forecastValidate == false)
                 return ResultService.Fail("Data de Previsão não pode ser anterior à Data do Aluguel!");
 
@@ -64,23 +73,13 @@ namespace WDA.ApiDotNet.Application.Services
             var mappedRentals = _mapper.Map<List<RentalsDTO>>(rentals.Data);
 
             var paginationHeader = new PaginationHeader<RentalsDTO>(
-                rentals.CurrentPage,
-                rentals.PageSize,
+                rentals.PageNumber,
+                rentals.ItemsPerpage,
                 rentals.TotalCount,
                 rentals.TotalPages
             );
 
-            CustomHeaders<RentalsDTO> customHeaders = null;
-
-            if (!string.IsNullOrWhiteSpace(queryHandler.OrderBy) || !string.IsNullOrWhiteSpace(queryHandler.SearchValue))
-            {
-                customHeaders = new CustomHeaders<RentalsDTO>(
-                    queryHandler.OrderBy,
-                    queryHandler.SearchValue
-                );
-            }
-
-            var result = ResultService.OKPage<RentalsDTO>(paginationHeader, mappedRentals, customHeaders);
+            var result = ResultService.OKPage<RentalsDTO>(mappedRentals, paginationHeader);
 
             return result;
         }
@@ -99,7 +98,7 @@ namespace WDA.ApiDotNet.Application.Services
 
             var result = new RentalsUpdateDTOValidator().Validate(rentalDTO);
             if (!result.IsValid)
-                return ResultService.RequestError("Problemas de validação", result);
+                return ResultService.RequestError(result);
 
             var rental = await _rentalsRepository.GetById(rentalDTO.Id);
             if (rental == null)
@@ -109,7 +108,7 @@ namespace WDA.ApiDotNet.Application.Services
                 return ResultService.Fail("Aluguel já devolvido!");
 
             bool dateValidate = await _rentalsRepository.CheckDate(rentalDTO.ReturnDate);
-            if (dateValidate == true)
+            if (dateValidate == false)
                 return ResultService.Fail("Data de devolução não pode ser diferente da data de Hoje!");
 
             bool status = await _rentalsRepository.GetStatus(rental.PrevisionDate, rentalDTO.ReturnDate);

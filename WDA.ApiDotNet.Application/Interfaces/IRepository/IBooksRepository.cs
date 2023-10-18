@@ -11,6 +11,7 @@ namespace WDA.ApiDotNet.Application.Interfaces.IRepository
         Task<PageList<Books>> GetAll(QueryHandler queryHandler);
         Task<Books> GetById(int? id);
         Task<List<Books>> GetSummaryBooks();
+        Task<List<Books>> GetSummaryAvailableBooks();
         Task<List<Books>> GetByName(string name);
         Task<List<Books>> GetByPublishersId(int publisherId);
         Task<List<Books>> MostRentedBooks();

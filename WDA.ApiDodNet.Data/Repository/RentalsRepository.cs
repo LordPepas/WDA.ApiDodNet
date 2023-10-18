@@ -72,11 +72,11 @@ namespace WDA.ApiDotNet.Infra.Data.Repository
                 );
             };
 
-            if (!string.IsNullOrWhiteSpace(queryHandler.OrderBy))
+            if (!string.IsNullOrWhiteSpace(queryHandler.OrderByProperty))
             {
-                queryHandler.OrderBy = queryHandler.OrderBy.ToUpper();
+                queryHandler.OrderByProperty = queryHandler.OrderByProperty.ToUpper();
 
-                query = queryHandler.OrderBy switch
+                query = queryHandler.OrderByProperty switch
                 {
                     "ID" => query.OrderBy(p => p.Id),
                     "BOOK" => query.OrderBy(p => p.BookId),
@@ -84,6 +84,7 @@ namespace WDA.ApiDotNet.Infra.Data.Repository
                     "RENTALDATE" => queryHandler.OrderDesc ? query.OrderByDescending(p => p.Id) : query.OrderBy(p => p.RentalDate),
                     "PREVISIONDATE" => queryHandler.OrderDesc ? query.OrderByDescending(p => p.Id) : query.OrderBy(p => p.PrevisionDate),
                     "RETURNDATE" => queryHandler.OrderDesc ? query.OrderByDescending(p => p.Id) : query.OrderBy(p => p.ReturnDate),
+                    "STATUS" => queryHandler.OrderDesc ? query.OrderByDescending(p => p.Status) : query.OrderBy(p => p.Status),
                     _ => queryHandler.OrderDesc ? query.OrderByDescending(p => p.Id) : query.OrderBy(p => p.Id),
                 };
             }
@@ -92,7 +93,7 @@ namespace WDA.ApiDotNet.Infra.Data.Repository
                 query = queryHandler.OrderDesc ? query.OrderByDescending(p => p.Id) : query.OrderBy(p => p.Id);
             }
 
-            return await PageList<Rentals>.GetResponseAsync(query, queryHandler.PageNumber, queryHandler.PageSize);
+            return await PageList<Rentals>.GetResponseAsync(query, queryHandler.PageNumber, queryHandler.ItemsPerpage);
         }
 
         public async Task<List<Rentals>> GetByBookId(int bookId)

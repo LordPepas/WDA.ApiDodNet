@@ -55,11 +55,11 @@ namespace WDA.ApiDotNet.Infra.Data.Repository
                 );
             }
 
-            if (!string.IsNullOrWhiteSpace(queryHandler.OrderBy))
+            if (!string.IsNullOrWhiteSpace(queryHandler.OrderByProperty))
             {
-                queryHandler.OrderBy = queryHandler.OrderBy.ToUpper();
+                queryHandler.OrderByProperty = queryHandler.OrderByProperty.ToUpper();
 
-                query = queryHandler.OrderBy switch
+                query = queryHandler.OrderByProperty switch
                 {
                     "ID" => queryHandler.OrderDesc ? query.OrderByDescending(p => p.Id) : query.OrderBy(p => p.Id),
                     "NAME" => queryHandler.OrderDesc ? query.OrderByDescending(p => p.Name) : query.OrderBy(p => p.Name),
@@ -75,8 +75,9 @@ namespace WDA.ApiDotNet.Infra.Data.Repository
                 query = queryHandler.OrderDesc ? query.OrderByDescending(p => p.Id) : query.OrderBy(p => p.Id);
             }
 
-            return await PageList<Books>.GetResponseAsync(query, queryHandler.PageNumber, queryHandler.PageSize);
+            return await PageList<Books>.GetResponseAsync(query, queryHandler.PageNumber, queryHandler.ItemsPerpage);
         }
+
         public async Task<Books> GetById(int? id)
         {
             return await _db.Books
@@ -89,6 +90,15 @@ namespace WDA.ApiDotNet.Infra.Data.Repository
             return await _db.Books
                     .AsNoTracking()
                     .OrderBy(b => b.Id)
+                    .ToListAsync();
+        }
+
+        public async Task<List<Books>> GetSummaryAvailableBooks()
+        {
+            return await _db.Books
+                    .AsNoTracking()
+                    .OrderBy(b => b.Id)
+                    .Where(b => b.Quantity >= 1)
                     .ToListAsync();
         }
 

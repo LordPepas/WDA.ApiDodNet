@@ -5,6 +5,7 @@ using WDA.ApiDotNet.Application.Helpers;
 using WDA.ApiDotNet.Application.Interfaces.IRepository;
 using WDA.ApiDotNet.Application.Interfaces.IServices;
 using WDA.ApiDotNet.Application.Models;
+using WDA.ApiDotNet.Application.Models.DTOs.BooksDTO;
 using WDA.ApiDotNet.Application.Models.DTOs.PublishersDTO;
 using WDA.ApiDotNet.Application.Models.DTOs.Validations;
 
@@ -32,7 +33,7 @@ namespace WDA.ApiDotNet.Application.Services
 
             var result = new PublishersCreateDTOValidator().Validate(publisherDTO);
             if (!result.IsValid)
-                return ResultService.RequestError("Problemas de validação", result);
+                return ResultService.RequestError(result);
 
             var name = await _publishersRepository.GetByName(publisherDTO.Name);
             if (name.Count > 0)
@@ -49,23 +50,13 @@ namespace WDA.ApiDotNet.Application.Services
             var mappedPublishers = _mapper.Map<List<PublishersDTO>>(publishers.Data);
 
             var paginationHeader = new PaginationHeader<PublishersDTO>(
-                publishers.CurrentPage,
-                publishers.PageSize,
+                publishers.PageNumber,
+                publishers.ItemsPerpage,
                 publishers.TotalCount,
                 publishers.TotalPages
             );
 
-            CustomHeaders<PublishersDTO> customHeaders = null;
-
-            if (!string.IsNullOrWhiteSpace(queryHandler.OrderBy) || !string.IsNullOrWhiteSpace(queryHandler.SearchValue))
-            {
-                customHeaders = new CustomHeaders<PublishersDTO>(
-                    queryHandler.OrderBy,
-                    queryHandler.SearchValue
-                );
-            }
-
-            var result = ResultService.OKPage<PublishersDTO>(paginationHeader, mappedPublishers, customHeaders);
+            var result = ResultService.OKPage<PublishersDTO>(mappedPublishers, paginationHeader);
 
             return result;
         }
@@ -92,7 +83,7 @@ namespace WDA.ApiDotNet.Application.Services
 
             var validation = new PublishersDTOValidator().Validate(publisherDTO);
             if (!validation.IsValid)
-                return ResultService.RequestError("Problemas de validação", validation);
+                return ResultService.RequestError(validation);
 
             var publisher = await _publishersRepository.GetById(publisherDTO.Id);
             if (publisher == null)

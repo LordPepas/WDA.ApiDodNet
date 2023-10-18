@@ -3,6 +3,7 @@ using WDA.ApiDotNet.Application.Helpers;
 using WDA.ApiDotNet.Application.Interfaces.IRepository;
 using WDA.ApiDotNet.Application.Interfaces.IServices;
 using WDA.ApiDotNet.Application.Models;
+using WDA.ApiDotNet.Application.Models.DTOs.BooksDTO;
 using WDA.ApiDotNet.Application.Models.DTOs.UsersDTO;
 using WDA.ApiDotNet.Application.Models.DTOs.Validations;
 using WDA.ApiDotNet.Application.Services;
@@ -27,7 +28,7 @@ namespace WDA.ApiDodNet.Application.Services
 
             var result = new UsersCreateDTOValidator().Validate(usersDTO);
             if (!result.IsValid)
-                return ResultService.RequestError("Problemas de validação", result);
+                return ResultService.RequestError(result);
 
             var user = _mapper.Map<Users>(usersDTO);
             var email = await _usersRepository.GetByEmail(usersDTO.Email);
@@ -45,23 +46,13 @@ namespace WDA.ApiDodNet.Application.Services
             var mappedUsers = _mapper.Map<List<UsersDTO>>(users.Data);
 
             var paginationHeader = new PaginationHeader<UsersDTO>(
-                users.CurrentPage,
-                users.PageSize,
+                users.PageNumber,
+                users.ItemsPerpage,
                 users.TotalCount,
                 users.TotalPages
             );
 
-            CustomHeaders<UsersDTO> customHeaders = null;
-
-            if (!string.IsNullOrWhiteSpace(queryHandler.OrderBy) || !string.IsNullOrWhiteSpace(queryHandler.SearchValue))
-            {
-                customHeaders = new CustomHeaders<UsersDTO>(
-                    queryHandler.OrderBy,
-                    queryHandler.SearchValue
-                );
-            }
-
-            var result = ResultService.OKPage<UsersDTO>(paginationHeader, mappedUsers, customHeaders);
+            var result = ResultService.OKPage<UsersDTO>(mappedUsers, paginationHeader);
 
             return result;
         }
@@ -85,7 +76,7 @@ namespace WDA.ApiDodNet.Application.Services
         {
             var validation = new UsersDTOValidator().Validate(usersDTO);
             if (!validation.IsValid)
-                return ResultService.RequestError("Problemas de validação", validation);
+                return ResultService.RequestError(validation);
             var user = await _usersRepository.GetById(usersDTO.Id);
             if (user == null)
                 return ResultService.Fail("Usuário não encontrado!");

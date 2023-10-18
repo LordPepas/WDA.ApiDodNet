@@ -47,10 +47,10 @@ namespace WDA.ApiDotNet.Api.Controllers
 
             if (result.IsSuccess)
             {
-                Response.AddPagination<BooksDTO>(books.CurrentPage, books.PageSize, books.TotalCount, books.TotalPages);
+                Response.AddPagination<BooksDTO>(books.PageNumber, books.ItemsPerpage, books.TotalCount, books.TotalPages);
                 return StatusCode(200, result);
             }
-            return StatusCode(400, result);
+            return StatusCode(404, result);
         }
 
         [HttpGet("SummaryData")]
@@ -60,6 +60,19 @@ namespace WDA.ApiDotNet.Api.Controllers
         public async Task<ActionResult> GetSummary()
         {
             var result = await _service.GetSummaryBooksAsync();
+            if (result.IsSuccess)
+                return Ok(result);
+
+            return StatusCode(404, result);
+        }
+
+        [HttpGet("AvailableData")]
+        [SwaggerResponse(200, "OK")]
+        [SwaggerResponse(400, "Bad Request")]
+        [SwaggerResponse(404, "Not Found")]
+        public async Task<ActionResult> GetSummaryAvailable()
+        {
+            var result = await _service.GetSummaryAvailableBooksAsync();
             if (result.IsSuccess)
                 return Ok(result);
 
@@ -76,7 +89,7 @@ namespace WDA.ApiDotNet.Api.Controllers
             if (result.IsSuccess)
                 return Ok(result);
 
-            return StatusCode(404, result);
+            return NotFound(result);
         }
 
         [HttpGet("MostRented")]

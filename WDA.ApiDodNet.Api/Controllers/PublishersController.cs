@@ -30,7 +30,7 @@ namespace WDA.ApiDotNet.Api.Controllers
             var result = await _service.CreateAsync(publisherDTO);
 
             if (result.IsSuccess)
-                return  StatusCode(201, result);
+                return StatusCode(201, result);
 
             return StatusCode(400, result);
         }
@@ -48,7 +48,7 @@ namespace WDA.ApiDotNet.Api.Controllers
 
             if (result.IsSuccess)
             {
-                Response.AddPagination<PublishersDTO>(publishers.CurrentPage, publishers.PageSize, publishers.TotalCount, publishers.TotalPages);
+                Response.AddPagination<PublishersDTO>(publishers.PageNumber, publishers.ItemsPerpage, publishers.TotalCount, publishers.TotalPages);
                 return StatusCode(200, result);
             }
 
