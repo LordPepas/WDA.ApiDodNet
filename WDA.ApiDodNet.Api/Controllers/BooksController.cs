@@ -32,7 +32,7 @@ namespace WDA.ApiDotNet.Api.Controllers
             if (result.IsSuccess)
                 return StatusCode(201, result);
 
-            return StatusCode(400, result);
+            return BadRequest(result);
         }
 
         [HttpGet]
@@ -48,9 +48,9 @@ namespace WDA.ApiDotNet.Api.Controllers
             if (result.IsSuccess)
             {
                 Response.AddPagination<BooksDTO>(books.PageNumber, books.ItemsPerpage, books.TotalCount, books.TotalPages);
-                return StatusCode(200, result);
+                return Ok(result);
             }
-            return StatusCode(404, result);
+            return BadRequest(result);
         }
 
         [HttpGet("SummaryData")]
@@ -63,7 +63,7 @@ namespace WDA.ApiDotNet.Api.Controllers
             if (result.IsSuccess)
                 return Ok(result);
 
-            return StatusCode(404, result);
+            return BadRequest(result);
         }
 
         [HttpGet("AvailableData")]
@@ -76,7 +76,7 @@ namespace WDA.ApiDotNet.Api.Controllers
             if (result.IsSuccess)
                 return Ok(result);
 
-            return StatusCode(404, result);
+            return BadRequest(result);
         }
 
         [HttpGet("{id:int}")]
@@ -102,9 +102,9 @@ namespace WDA.ApiDotNet.Api.Controllers
             var result = await _service.GetMostRentedBooks();
 
             if (result.IsSuccess)
-                return StatusCode(200, result);
+                return Ok(result);
 
-            return StatusCode(404, result);
+            return NotFound(result);
         }
 
         [HttpPut]
@@ -117,9 +117,9 @@ namespace WDA.ApiDotNet.Api.Controllers
             var result = await _service.UpdateAsync(booksDTO);
 
             if (result.IsSuccess)
-                return StatusCode(200, result);
+                return Ok(result);
 
-            return StatusCode(400, result);
+            return BadRequest(result);
         }
 
         [HttpDelete("{id:int}")]
@@ -133,9 +133,9 @@ namespace WDA.ApiDotNet.Api.Controllers
             var result = await _service.DeleteAsync(id);
 
             if (result.IsSuccess)
-                return StatusCode(200, result);
+                return Ok(result);
 
-            return StatusCode(400, result);
+            return NotFound(result);
         }
     }
 }

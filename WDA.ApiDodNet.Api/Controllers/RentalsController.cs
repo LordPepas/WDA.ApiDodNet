@@ -33,7 +33,7 @@ namespace WDA.ApiDotNet.Api.Controllers
             if (result.IsSuccess)
                 return StatusCode(201, result);
 
-            return StatusCode(400, result);
+            return BadRequest(result);
         }
 
         [HttpGet]
@@ -47,11 +47,12 @@ namespace WDA.ApiDotNet.Api.Controllers
             var result = await _service.GetAsync(queryHandler);
             if (result.IsSuccess)
             {
-                Response.AddPagination<RentalsDTO>(rentals.CurrentPage, rentals.PageSize, rentals.TotalCount, rentals.TotalPages);
-                return StatusCode(200, result);
+                Response.AddPagination<RentalsDTO>(rentals.PageNumber, rentals.ItemsPerpage, rentals.TotalCount, rentals.TotalPages);
+                return Ok(result);
             }
-            return StatusCode(404, result);
-        }
+
+            return BadRequest(result);
+            }
 
         [HttpGet("{id:int}")]
         [SwaggerOperation(Summary = "List Rental")]
@@ -62,9 +63,9 @@ namespace WDA.ApiDotNet.Api.Controllers
         {
             var result = await _service.GetByIdAsync(id);
             if (result.IsSuccess)
-                return StatusCode(200, result);
+                return Ok(result);
 
-            return StatusCode(404, result);
+            return NotFound(result);
         }
 
         [HttpPut]
@@ -78,9 +79,9 @@ namespace WDA.ApiDotNet.Api.Controllers
             var result = await _service.UpdateAsync(rentalsUpdateDTO);
 
             if (result.IsSuccess)
-                return StatusCode(200, result);
+                return Ok(result);
 
-            return StatusCode(400, result);
+            return BadRequest(result);
         }
 
         [HttpDelete("{id:int}")]
@@ -92,9 +93,9 @@ namespace WDA.ApiDotNet.Api.Controllers
         {
             var result = await _service.DeleteAsync(id);
             if (result.IsSuccess)
-                return StatusCode(200, result);
+                return Ok(result);
 
-            return StatusCode(400, result);
+            return NotFound(result);
         }
     }
 }

@@ -32,7 +32,7 @@ namespace WDA.ApiDotNet.Api.Controllers
             if (result.IsSuccess)
                 return StatusCode(201, result);
 
-            return StatusCode(400, result);
+            return BadRequest(result);
         }
 
         [HttpGet]
@@ -46,11 +46,12 @@ namespace WDA.ApiDotNet.Api.Controllers
             var result = await _service.GetAsync(queryHandler);
             if (result.IsSuccess)
             {
-                Response.AddPagination<UsersDTO>(users.CurrentPage, users.PageSize, users.TotalCount, users.TotalPages);
-                return StatusCode(200, result);
+                Response.AddPagination<UsersDTO>(users.PageNumber, users.ItemsPerpage, users.TotalCount, users.TotalPages);
+                return Ok(result);
             }
-            return StatusCode(404, result);
-        }
+
+            return BadRequest(result);
+            }
 
         [HttpGet("SummaryData")]
         [SwaggerOperation(Summary = "List Summary Users")]
@@ -61,9 +62,9 @@ namespace WDA.ApiDotNet.Api.Controllers
         {
             var result = await _service.GetSummaryUsersAsync();
             if (result.IsSuccess)
-                return StatusCode(200,result);
+                return Ok(result);
 
-            return StatusCode(404, result);
+            return BadRequest(result);
         }
 
         [HttpGet("{id:int}")]
@@ -75,9 +76,9 @@ namespace WDA.ApiDotNet.Api.Controllers
         {
             var result = await _service.GetByIdAsync(id);
             if (result.IsSuccess)
-                return StatusCode(200, result);
+                return Ok(result);
 
-            return StatusCode(404,result);
+            return NotFound(result);
         }
 
         [HttpPut]
@@ -90,9 +91,9 @@ namespace WDA.ApiDotNet.Api.Controllers
             var result = await _service.UpdateAsync(usersDTO);
 
             if (result.IsSuccess)
-                return StatusCode(200, result);
+                return Ok(result);
 
-            return StatusCode(400, result);
+            return BadRequest(result);
         }
 
         [HttpDelete("{id:int}")]
@@ -104,9 +105,9 @@ namespace WDA.ApiDotNet.Api.Controllers
         {
             var result = await _service.DeleteAsync(id);
             if (result.IsSuccess)
-                return StatusCode(200, result);
+                return Ok(result);
 
-            return StatusCode(201, result);
+            return NotFound(result);
         }
     }
 }

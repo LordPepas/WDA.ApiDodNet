@@ -32,7 +32,7 @@ namespace WDA.ApiDotNet.Api.Controllers
             if (result.IsSuccess)
                 return StatusCode(201, result);
 
-            return StatusCode(400, result);
+            return BadRequest(result);
         }
 
         [HttpGet]
@@ -49,10 +49,10 @@ namespace WDA.ApiDotNet.Api.Controllers
             if (result.IsSuccess)
             {
                 Response.AddPagination<PublishersDTO>(publishers.PageNumber, publishers.ItemsPerpage, publishers.TotalCount, publishers.TotalPages);
-                return StatusCode(200, result);
+                return Ok(result);
             }
 
-            return StatusCode(404, result);
+            return BadRequest(result);
         }
 
         [HttpGet("SummaryData")]
@@ -64,9 +64,9 @@ namespace WDA.ApiDotNet.Api.Controllers
         {
             var result = await _service.GetSummaryPublishersAsync();
             if (result.IsSuccess)
-                return StatusCode(200, result);
+                return Ok(result);
 
-            return StatusCode(404, result);
+            return BadRequest(result);
         }
 
         [HttpGet("{id:int}")]
@@ -78,9 +78,9 @@ namespace WDA.ApiDotNet.Api.Controllers
         {
             var result = await _service.GetByIdAsync(id);
             if (result.IsSuccess)
-                return StatusCode(200, result);
+                return Ok(result);
 
-            return StatusCode(404, result);
+            return NotFound(result);
         }
 
         [HttpPut]
@@ -93,9 +93,9 @@ namespace WDA.ApiDotNet.Api.Controllers
             var result = await _service.UpdateAsync(publisherDTO);
 
             if (result.IsSuccess)
-                return StatusCode(200, result);
+                return Ok(result);
 
-            return StatusCode(400, result);
+            return BadRequest(result);
         }
 
         [HttpDelete("{id:int}")]
@@ -107,9 +107,9 @@ namespace WDA.ApiDotNet.Api.Controllers
         {
             var result = await _service.DeleteAsync(id);
             if (result.IsSuccess)
-                return StatusCode(200, result);
+                return Ok(result);
 
-            return StatusCode(400, result);
+            return NotFound(result);
         }
     }
 }
