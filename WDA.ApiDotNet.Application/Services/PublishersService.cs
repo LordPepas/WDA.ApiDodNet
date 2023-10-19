@@ -27,20 +27,20 @@ namespace WDA.ApiDotNet.Application.Services
         public async Task<ResultService> CreateAsync(PublishersCreateDTO publisherDTO)
         {
             if (publisherDTO == null)
-                return ResultService.Fail("Objeto deve ser informado corretamente!");
+                return ResultService.BadRequest("Objeto deve ser informado corretamente!");
 
             var mappedPublisher = _mapper.Map<Publishers>(publisherDTO);
 
             var result = new PublishersCreateDTOValidator().Validate(publisherDTO);
             if (!result.IsValid)
-                return ResultService.RequestError(result);
+                return ResultService.BadRequest(result);
 
             var name = await _publishersRepository.GetByName(publisherDTO.Name);
             if (name.Count > 0)
-                return ResultService.Fail("Editora já existente!");
+                return ResultService.BadRequest("Editora já existente!");
 
             await _publishersRepository.Create(mappedPublisher);
-            return ResultService.Ok("Editora adicionado com sucesso.");
+            return ResultService.Created("Editora adicionado com sucesso.");
         }
 
         public async Task<ResultService<PublishersDTO>> GetAsync(QueryHandler queryHandler)
@@ -71,7 +71,7 @@ namespace WDA.ApiDotNet.Application.Services
         {
             var publishers = await _publishersRepository.GetById(id);
             if (publishers == null)
-                return ResultService.Fail("Editora não encontrado!");
+                return ResultService.NotFound("Editora não encontrado!");
 
             return ResultService.Ok(_mapper.Map<PublishersDTO>(publishers));
         }
@@ -79,15 +79,15 @@ namespace WDA.ApiDotNet.Application.Services
         public async Task<ResultService> UpdateAsync(PublishersUpdateDTO publisherDTO)
         {
             if (publisherDTO == null)
-                return ResultService.Fail("Objeto deve ser informado corretamente!");
+                return ResultService.BadRequest("Objeto deve ser informado corretamente!");
 
             var validation = new PublishersDTOValidator().Validate(publisherDTO);
             if (!validation.IsValid)
-                return ResultService.RequestError(validation);
+                return ResultService.BadRequest(validation);
 
             var publisher = await _publishersRepository.GetById(publisherDTO.Id);
             if (publisher == null)
-                return ResultService.Fail("Editora não encontrado!");
+                return ResultService.NotFound("Editora não encontrado!");
 
             publisher = _mapper.Map(publisherDTO, publisher);
             await _publishersRepository.Update(publisher);
@@ -100,12 +100,12 @@ namespace WDA.ApiDotNet.Application.Services
             var publisher = await _publishersRepository.GetById(id);
 
             if (publisher == null)
-                return ResultService.Fail("Editora não encontrada!");
+                return ResultService.NotFound("Editora não encontrada!");
 
             var booksAssociatedWithPublisher = await _booksRepository.GetByPublishersId(id);
 
             if (booksAssociatedWithPublisher.Count > 0)
-                return ResultService.Fail("A editora não pode ser excluída, pois está associada a livros!");
+                return ResultService.BadRequest("A editora não pode ser excluída, pois está associada a livros!");
 
             await _publishersRepository.Delete(publisher);
 

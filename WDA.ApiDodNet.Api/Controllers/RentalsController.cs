@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
+using System.Net;
 using WDA.ApiDotNet.Application.Helpers;
 using WDA.ApiDotNet.Application.Interfaces.IRepository;
 using WDA.ApiDotNet.Application.Interfaces.IServices;
@@ -30,9 +31,12 @@ namespace WDA.ApiDotNet.Api.Controllers
         {
             var result = await _service.CreateAsync(rentalsDTO);
 
-            if (result.IsSuccess)
+            if (result.HttpStatusCode == HttpStatusCode.Created)
                 return StatusCode(201, result);
-
+            else if (result.HttpStatusCode == HttpStatusCode.NotFound)
+            {
+                return NotFound(result);
+            }
             return BadRequest(result);
         }
 
@@ -45,14 +49,18 @@ namespace WDA.ApiDotNet.Api.Controllers
         {
             var rentals = await _repository.GetAll(queryHandler);
             var result = await _service.GetAsync(queryHandler);
-            if (result.IsSuccess)
+
+            if (result.HttpStatusCode == HttpStatusCode.OK)
             {
                 Response.AddPagination<RentalsDTO>(rentals.PageNumber, rentals.ItemsPerpage, rentals.TotalCount, rentals.TotalPages);
                 return Ok(result);
             }
-
-            return BadRequest(result);
+            else if (result.HttpStatusCode == HttpStatusCode.NotFound)
+            {
+                return NotFound(result);
             }
+            return BadRequest(result);
+        }
 
         [HttpGet("{id:int}")]
         [SwaggerOperation(Summary = "List Rental")]
@@ -62,10 +70,14 @@ namespace WDA.ApiDotNet.Api.Controllers
         public async Task<ActionResult> GetById(int id)
         {
             var result = await _service.GetByIdAsync(id);
-            if (result.IsSuccess)
-                return Ok(result);
 
-            return NotFound(result);
+            if (result.HttpStatusCode == HttpStatusCode.OK)
+                return Ok(result);
+            else if (result.HttpStatusCode == HttpStatusCode.NotFound)
+            {
+                return NotFound(result);
+            }
+            return BadRequest(result);
         }
 
         [HttpPut]
@@ -78,9 +90,12 @@ namespace WDA.ApiDotNet.Api.Controllers
 
             var result = await _service.UpdateAsync(rentalsUpdateDTO);
 
-            if (result.IsSuccess)
+            if (result.HttpStatusCode == HttpStatusCode.OK)
                 return Ok(result);
-
+            else if (result.HttpStatusCode == HttpStatusCode.NotFound)
+            {
+                return NotFound(result);
+            }
             return BadRequest(result);
         }
 
@@ -92,10 +107,14 @@ namespace WDA.ApiDotNet.Api.Controllers
         public async Task<ActionResult> Delete(int id)
         {
             var result = await _service.DeleteAsync(id);
-            if (result.IsSuccess)
-                return Ok(result);
 
-            return NotFound(result);
+            if (result.HttpStatusCode == HttpStatusCode.OK)
+                return Ok(result);
+            else if (result.HttpStatusCode == HttpStatusCode.NotFound)
+            {
+                return NotFound(result);
+            }
+            return BadRequest(result);
         }
     }
 }

@@ -27,28 +27,28 @@ namespace WDA.ApiDotNet.Application.Services
         public async Task<ResultService> CreateAsync(BooksCreateDTO bookDTO)
         {
             if (bookDTO == null)
-                return ResultService.Fail("Preencha todos os campos corretamente.");
+                return ResultService.BadRequest("Preencha todos os campos corretamente.");
 
             var mappedBook = _mapper.Map<Books>(bookDTO);
 
             var validation = new BooksCreateDTOValidator().Validate(bookDTO);
             if (!validation.IsValid)
-                return ResultService.RequestError(validation);
+                return ResultService.BadRequest(validation);
 
             var duplicateName = await _booksRepository.GetByName(mappedBook.Name);
             if (duplicateName.Count > 0)
-                return ResultService.Fail("Livro já existente");
+                return ResultService.BadRequest("Livro já existente");
 
             if (bookDTO.Release > DateTime.Now.Year)
-                return ResultService.Fail("O ano de lançamento deve ser anterior ao ano atual.");
+                return ResultService.BadRequest("O ano de lançamento deve ser anterior ao ano atual.");
 
             var publisher = await _publishersRepository.GetById(mappedBook.PublisherId);
             if (publisher == null)
-                return ResultService.Fail("Editora não encontrada!");
+                return ResultService.NotFound("Editora não encontrada!");
 
             await _booksRepository.Create(mappedBook);
 
-            return ResultService.Ok("Livro adicionado com sucesso.");
+            return ResultService.Created("Livro adicionado com sucesso.");
         }
 
         public async Task<ResultService<BooksDTO>> GetAsync(QueryHandler queryHandler)
@@ -76,7 +76,7 @@ namespace WDA.ApiDotNet.Application.Services
         {
             var book = await _booksRepository.GetById(id);
             if (book == null)
-                return ResultService.Fail("Livro não encontrado!");
+                return ResultService.NotFound("Livro não encontrado!");
 
             return ResultService.Ok(_mapper.Map<BooksDTO>(book));
 
@@ -92,14 +92,14 @@ namespace WDA.ApiDotNet.Application.Services
         public async Task<ResultService> UpdateAsync(BooksUpdateDTO bookDTO)
         {
             if (bookDTO == null)
-                return ResultService.Fail("Objeto deve ser informado corretamente!");
+                return ResultService.BadRequest("Objeto deve ser informado corretamente!");
 
             var validation = new BooksDTOValidator().Validate(bookDTO);
             if (!validation.IsValid)
-                return ResultService.RequestError(validation);
+                return ResultService.BadRequest(validation);
             var book = await _booksRepository.GetById(bookDTO.Id);
             if (book == null)
-                return ResultService.Fail("Livro não encontrado!");
+                return ResultService.NotFound("Livro não encontrado!");
 
             book = _mapper.Map(bookDTO, book);
             await _booksRepository.Update(book);
@@ -111,12 +111,12 @@ namespace WDA.ApiDotNet.Application.Services
         {
             var book = await _booksRepository.GetById(id);
             if (book == null)
-                return ResultService.Fail("Livro não encontrado!");
+                return ResultService.NotFound("Livro não encontrado!");
 
             var booksAssociatedWithPublisher = await _rentalsRepository.GetByBookId(id);
 
             if (booksAssociatedWithPublisher.Count > 0)
-                return ResultService.Fail("A Livro não pode ser excluída, pois está associada a aluguéis.");
+                return ResultService.BadRequest("A Livro não pode ser excluída, pois está associada a aluguéis.");
 
             await _booksRepository.Delete(book);
             return ResultService.Ok($"Livro com id: {id} foi deletado");

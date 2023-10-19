@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
+using System.Net;
 using WDA.ApiDotNet.Application.Helpers;
 using WDA.ApiDotNet.Application.Interfaces.IRepository;
 using WDA.ApiDotNet.Application.Interfaces.IServices;
@@ -29,9 +30,12 @@ namespace WDA.ApiDotNet.Api.Controllers
         {
             var result = await _service.CreateAsync(booksDTO);
 
-            if (result.IsSuccess)
+            if (result.HttpStatusCode == HttpStatusCode.Created)
                 return StatusCode(201, result);
-
+            else if (result.HttpStatusCode == HttpStatusCode.NotFound)
+            {
+                return NotFound(result);
+            }
             return BadRequest(result);
         }
 
@@ -45,10 +49,14 @@ namespace WDA.ApiDotNet.Api.Controllers
             var books = await _repository.GetAll(queryHandler);
             var result = await _service.GetAsync(queryHandler);
 
-            if (result.IsSuccess)
+            if (result.HttpStatusCode == HttpStatusCode.OK)
             {
                 Response.AddPagination<BooksDTO>(books.PageNumber, books.ItemsPerpage, books.TotalCount, books.TotalPages);
                 return Ok(result);
+            }
+            else if (result.HttpStatusCode == HttpStatusCode.NotFound)
+            {
+                return NotFound(result);
             }
             return BadRequest(result);
         }
@@ -60,9 +68,13 @@ namespace WDA.ApiDotNet.Api.Controllers
         public async Task<ActionResult> GetSummary()
         {
             var result = await _service.GetSummaryBooksAsync();
-            if (result.IsSuccess)
-                return Ok(result);
 
+            if (result.HttpStatusCode == HttpStatusCode.OK)
+                return Ok(result);
+            else if (result.HttpStatusCode == HttpStatusCode.NotFound)
+            {
+                return NotFound(result);
+            }
             return BadRequest(result);
         }
 
@@ -73,9 +85,13 @@ namespace WDA.ApiDotNet.Api.Controllers
         public async Task<ActionResult> GetSummaryAvailable()
         {
             var result = await _service.GetSummaryAvailableBooksAsync();
-            if (result.IsSuccess)
-                return Ok(result);
 
+            if (result.HttpStatusCode == HttpStatusCode.OK)
+                return Ok(result);
+            else if (result.HttpStatusCode == HttpStatusCode.NotFound)
+            {
+                return NotFound(result);
+            }
             return BadRequest(result);
         }
 
@@ -86,10 +102,14 @@ namespace WDA.ApiDotNet.Api.Controllers
         public async Task<ActionResult> GetByIdAsync(int id)
         {
             var result = await _service.GetByIdAsync(id);
-            if (result.IsSuccess)
-                return Ok(result);
 
-            return NotFound(result);
+            if (result.HttpStatusCode == HttpStatusCode.OK)
+                return Ok(result);
+            else if (result.HttpStatusCode == HttpStatusCode.NotFound)
+            {
+                return NotFound(result);
+            }
+            return BadRequest(result);
         }
 
         [HttpGet("MostRented")]
@@ -101,10 +121,13 @@ namespace WDA.ApiDotNet.Api.Controllers
         {
             var result = await _service.GetMostRentedBooks();
 
-            if (result.IsSuccess)
+            if (result.HttpStatusCode == HttpStatusCode.OK)
                 return Ok(result);
-
-            return NotFound(result);
+            else if (result.HttpStatusCode == HttpStatusCode.NotFound)
+            {
+                return NotFound(result);
+            }
+            return BadRequest(result);
         }
 
         [HttpPut]
@@ -116,9 +139,13 @@ namespace WDA.ApiDotNet.Api.Controllers
         {
             var result = await _service.UpdateAsync(booksDTO);
 
-            if (result.IsSuccess)
+            if (result.HttpStatusCode == HttpStatusCode.OK)
                 return Ok(result);
 
+            else if (result.HttpStatusCode == HttpStatusCode.NotFound)
+            {
+                return NotFound(result);
+            }
             return BadRequest(result);
         }
 
@@ -132,10 +159,13 @@ namespace WDA.ApiDotNet.Api.Controllers
 
             var result = await _service.DeleteAsync(id);
 
-            if (result.IsSuccess)
+            if (result.HttpStatusCode == HttpStatusCode.OK)
                 return Ok(result);
-
-            return NotFound(result);
+            else if (result.HttpStatusCode == HttpStatusCode.NotFound)
+            {
+                return NotFound(result);
+            }
+            return BadRequest(result);
         }
     }
 }

@@ -3,7 +3,6 @@ using WDA.ApiDotNet.Application.Helpers;
 using WDA.ApiDotNet.Application.Interfaces.IRepository;
 using WDA.ApiDotNet.Application.Interfaces.IServices;
 using WDA.ApiDotNet.Application.Models;
-using WDA.ApiDotNet.Application.Models.DTOs.BooksDTO;
 using WDA.ApiDotNet.Application.Models.DTOs.UsersDTO;
 using WDA.ApiDotNet.Application.Models.DTOs.Validations;
 using WDA.ApiDotNet.Application.Services;
@@ -28,16 +27,17 @@ namespace WDA.ApiDodNet.Application.Services
 
             var result = new UsersCreateDTOValidator().Validate(usersDTO);
             if (!result.IsValid)
-                return ResultService.RequestError(result);
+                return ResultService.BadRequest(result);
 
             var user = _mapper.Map<Users>(usersDTO);
             var email = await _usersRepository.GetByEmail(usersDTO.Email);
             if (email.Count > 0)
             {
-                return ResultService.Fail("Email já existente!");
+                return ResultService.BadRequest("Email já existente!");
             }
             await _usersRepository.Create(user);
-            return ResultService.Ok("Usuário adicionado com sucesso.");
+
+            return ResultService.Created("Usuário adicionado com sucesso.");
         }
 
         public async Task<ResultService<UsersDTO>> GetAsync(QueryHandler queryHandler)
@@ -67,7 +67,7 @@ namespace WDA.ApiDodNet.Application.Services
         {
             var user = await _usersRepository.GetById(id);
             if (user == null)
-                return ResultService.Fail("Usuário não encontrado!");
+                return ResultService.NotFound("Usuário não encontrado!");
 
             return ResultService.Ok(_mapper.Map<UsersDTO>(user));
         }
@@ -76,10 +76,10 @@ namespace WDA.ApiDodNet.Application.Services
         {
             var validation = new UsersDTOValidator().Validate(usersDTO);
             if (!validation.IsValid)
-                return ResultService.RequestError(validation);
+                return ResultService.BadRequest(validation);
             var user = await _usersRepository.GetById(usersDTO.Id);
             if (user == null)
-                return ResultService.Fail("Usuário não encontrado!");
+                return ResultService.NotFound("Usuário não encontrado!");
 
             user = _mapper.Map(usersDTO, user);
             await _usersRepository.Update(user);
@@ -90,13 +90,13 @@ namespace WDA.ApiDodNet.Application.Services
         {
             var user = await _usersRepository.GetById(id);
             if (user == null)
-                return ResultService.Fail("Usuário não encontrado!");
+                return ResultService.NotFound("Usuário não encontrado!");
 
             var booksAssociatedWithPublisher = await _rentalsRepository.GetByUserId(id);
 
             if (booksAssociatedWithPublisher.Count > 0)
             {
-                return ResultService.Fail("O usuário não pode ser excluída, pois está associada a aluguéis!");
+                return ResultService.BadRequest("O usuário não pode ser excluída, pois está associada a aluguéis!");
             }
 
             await _usersRepository.Delete(user);

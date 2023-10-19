@@ -78,7 +78,7 @@ namespace WDA.ApiDotNet.Infra.Data.Repository
 
                 query = queryHandler.OrderByProperty switch
                 {
-                    "ID" => query.OrderBy(p => p.Id),
+                    "ID" => queryHandler.OrderDesc ? query.OrderByDescending(p => p.Id) : query.OrderBy(p => p.Id),
                     "BOOK" => query.OrderBy(p => p.BookId),
                     "USER" => queryHandler.OrderDesc ? query.OrderByDescending(p => p.Id) : query.OrderBy(p => p.UserId),
                     "RENTALDATE" => queryHandler.OrderDesc ? query.OrderByDescending(p => p.Id) : query.OrderBy(p => p.RentalDate),
@@ -136,7 +136,12 @@ namespace WDA.ApiDotNet.Infra.Data.Repository
 
         public async Task<bool> GetStatus(DateTime forecastDate, DateTime returnDate)
         {
-            if (returnDate > forecastDate)
+            if (returnDate.Date == forecastDate.Date)
+            {
+                return true;
+            }
+
+            if (returnDate.Date > forecastDate.Date)
             {
                 return false;
             }

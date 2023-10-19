@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
+using System.Net;
 using WDA.ApiDotNet.Application.Helpers;
 using WDA.ApiDotNet.Application.Interfaces.IRepository;
 using WDA.ApiDotNet.Application.Interfaces.IServices;
@@ -29,9 +30,13 @@ namespace WDA.ApiDotNet.Api.Controllers
         {
             var result = await _service.CreateAsync(usersDTO);
 
-            if (result.IsSuccess)
-                return StatusCode(201, result);
 
+            if (result.HttpStatusCode == HttpStatusCode.Created)
+                return StatusCode(201, result);
+            else if (result.HttpStatusCode == HttpStatusCode.NotFound)
+            {
+                return NotFound(result);
+            }
             return BadRequest(result);
         }
 
@@ -44,15 +49,18 @@ namespace WDA.ApiDotNet.Api.Controllers
         {
             var users = await _repository.GetAll(queryHandler);
             var result = await _service.GetAsync(queryHandler);
-            if (result.IsSuccess)
+
+            if (result.HttpStatusCode == HttpStatusCode.OK)
             {
                 Response.AddPagination<UsersDTO>(users.PageNumber, users.ItemsPerpage, users.TotalCount, users.TotalPages);
                 return Ok(result);
             }
-
-            return BadRequest(result);
+            else if (result.HttpStatusCode == HttpStatusCode.NotFound)
+            {
+                return NotFound(result);
             }
-
+            return BadRequest(result);
+        }
         [HttpGet("SummaryData")]
         [SwaggerOperation(Summary = "List Summary Users")]
         [SwaggerResponse(200, "Ok")]
@@ -61,9 +69,13 @@ namespace WDA.ApiDotNet.Api.Controllers
         public async Task<ActionResult> GetSummary()
         {
             var result = await _service.GetSummaryUsersAsync();
-            if (result.IsSuccess)
-                return Ok(result);
 
+            if (result.HttpStatusCode == HttpStatusCode.OK)
+                return Ok(result);
+            else if (result.HttpStatusCode == HttpStatusCode.NotFound)
+            {
+                return NotFound(result);
+            }
             return BadRequest(result);
         }
 
@@ -75,10 +87,14 @@ namespace WDA.ApiDotNet.Api.Controllers
         public async Task<ActionResult> GetById(int id)
         {
             var result = await _service.GetByIdAsync(id);
-            if (result.IsSuccess)
-                return Ok(result);
 
-            return NotFound(result);
+            if (result.HttpStatusCode == HttpStatusCode.OK)
+                return Ok(result);
+            else if (result.HttpStatusCode == HttpStatusCode.NotFound)
+            {
+                return NotFound(result);
+            }
+            return BadRequest(result);
         }
 
         [HttpPut]
@@ -90,9 +106,12 @@ namespace WDA.ApiDotNet.Api.Controllers
         {
             var result = await _service.UpdateAsync(usersDTO);
 
-            if (result.IsSuccess)
+            if (result.HttpStatusCode == HttpStatusCode.OK)
                 return Ok(result);
-
+            else if (result.HttpStatusCode == HttpStatusCode.NotFound)
+            {
+                return NotFound(result);
+            }
             return BadRequest(result);
         }
 
@@ -104,10 +123,14 @@ namespace WDA.ApiDotNet.Api.Controllers
         public async Task<ActionResult> Delete(int id)
         {
             var result = await _service.DeleteAsync(id);
-            if (result.IsSuccess)
-                return Ok(result);
 
-            return NotFound(result);
+            if (result.HttpStatusCode == HttpStatusCode.OK)
+                return Ok(result);
+            else if (result.HttpStatusCode == HttpStatusCode.NotFound)
+            {
+                return NotFound(result);
+            }
+            return BadRequest(result);
         }
     }
 }
