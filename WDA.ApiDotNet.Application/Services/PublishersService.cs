@@ -49,6 +49,9 @@ namespace WDA.ApiDotNet.Application.Services
 
             var mappedPublishers = _mapper.Map<List<PublishersDTO>>(publishers.Data);
 
+            if (publishers.PageNumber <= 0 || publishers.ItemsPerpage <= 0 || publishers.Data.Count == 0)
+                return ResultService.NotFound<PublishersDTO>("Nunuhm registro encontrada!");
+
             var paginationHeader = new PaginationHeader<PublishersDTO>(
                 publishers.PageNumber,
                 publishers.ItemsPerpage,

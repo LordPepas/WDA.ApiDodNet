@@ -56,7 +56,14 @@ namespace WDA.ApiDotNet.Application.Services
             var books = await _booksRepository.GetAll(queryHandler);
             var mappedBooks = _mapper.Map<List<BooksDTO>>(books.Data);
 
-            var paginationHeader = new PaginationHeader<BooksDTO>(books.PageNumber, books.ItemsPerpage, books.TotalCount, books.TotalPages);
+            if (books.PageNumber <= 0 || books.ItemsPerpage <= 0 || books.Data.Count == 0)
+                return ResultService.NotFound<BooksDTO>("Nunuhm registro encontrada!");
+
+            var paginationHeader = new PaginationHeader<BooksDTO>(
+                books.PageNumber,
+                books.ItemsPerpage,
+                books.TotalCount,
+                books.TotalPages);
 
             return ResultService.OKPage<BooksDTO>(mappedBooks, paginationHeader);
         }

@@ -88,6 +88,20 @@ namespace WDA.ApiDotNet.Application.Services
                 Errors = errorMessages
             };
         }
+        public static ResultService<T> NotFound<T>(string errorMessage = null, ICollection<string> errors = null)
+        {
+            var errorMessages = errors != null ? errors.ToList() : new List<string>();
+            if (!string.IsNullOrEmpty(errorMessage))
+            {
+                errorMessages.Add(errorMessage);
+            }
+
+            return new ResultService<T>
+            {
+                HttpStatusCode = HttpStatusCode.NotFound,
+                Errors = errorMessages
+            };
+        }
     }
 
     public class ResultService<T> : ResultService

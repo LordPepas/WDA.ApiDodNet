@@ -72,6 +72,9 @@ namespace WDA.ApiDotNet.Application.Services
             var rentals = await _rentalsRepository.GetAll(queryHandler);
             var mappedRentals = _mapper.Map<List<RentalsDTO>>(rentals.Data);
 
+            if (rentals.PageNumber <= 0 || rentals.ItemsPerpage <= 0 || rentals.Data.Count == 0)
+                return ResultService.NotFound<RentalsDTO>("Nunuhm registro encontrada!");
+
             var paginationHeader = new PaginationHeader<RentalsDTO>(
                 rentals.PageNumber,
                 rentals.ItemsPerpage,

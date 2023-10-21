@@ -3,6 +3,7 @@ using WDA.ApiDotNet.Application.Helpers;
 using WDA.ApiDotNet.Application.Interfaces.IRepository;
 using WDA.ApiDotNet.Application.Interfaces.IServices;
 using WDA.ApiDotNet.Application.Models;
+using WDA.ApiDotNet.Application.Models.DTOs.BooksDTO;
 using WDA.ApiDotNet.Application.Models.DTOs.UsersDTO;
 using WDA.ApiDotNet.Application.Models.DTOs.Validations;
 using WDA.ApiDotNet.Application.Services;
@@ -44,6 +45,9 @@ namespace WDA.ApiDodNet.Application.Services
         {
             var users = await _usersRepository.GetAll(queryHandler);
             var mappedUsers = _mapper.Map<List<UsersDTO>>(users.Data);
+
+            if (users.PageNumber <= 0 || users.ItemsPerpage <= 0 || users.Data.Count == 0)
+                return ResultService.NotFound<UsersDTO>("Nunuhm registro encontrada!");
 
             var paginationHeader = new PaginationHeader<UsersDTO>(
                 users.PageNumber,

@@ -93,6 +93,11 @@ namespace WDA.ApiDotNet.Infra.Data.Repository
                 query = queryHandler.OrderDesc ? query.OrderByDescending(p => p.Id) : query.OrderBy(p => p.Id);
             }
 
+            if (queryHandler.PageNumber < 1 || queryHandler.ItemsPerpage < 1)
+            {
+                queryHandler.ItemsPerpage = 0;
+            }
+
             return await PageList<Rentals>.GetResponseAsync(query, queryHandler.PageNumber, queryHandler.ItemsPerpage);
         }
 
