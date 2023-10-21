@@ -3,7 +3,6 @@ using WDA.ApiDotNet.Application.Helpers;
 using WDA.ApiDotNet.Application.Interfaces.IRepository;
 using WDA.ApiDotNet.Application.Interfaces.IServices;
 using WDA.ApiDotNet.Application.Models;
-using WDA.ApiDotNet.Application.Models.DTOs.BooksDTO;
 using WDA.ApiDotNet.Application.Models.DTOs.UsersDTO;
 using WDA.ApiDotNet.Application.Models.DTOs.Validations;
 using WDA.ApiDotNet.Application.Services;
@@ -23,69 +22,72 @@ namespace WDA.ApiDodNet.Application.Services
             _mapper = mapper;
         }
 
-        public async Task<ResultService> CreateAsync(UsersCreateDTO usersDTO)
+        public async Task<ResultService> CreateAsync(UsersCreateDTO newUserDTO)
         {
+            if (newUserDTO == null)
+                return ResultService.BadRequest("Objeto deve ser informado corretamente!");
 
-            var result = new UsersCreateDTOValidator().Validate(usersDTO);
-            if (!result.IsValid)
-                return ResultService.BadRequest(result);
+            var mappedUser = _mapper.Map<Users>(newUserDTO);
 
-            var user = _mapper.Map<Users>(usersDTO);
-            var email = await _usersRepository.GetByEmail(usersDTO.Email);
-            if (email.Count > 0)
+            var validation = new UsersCreateDTOValidator().Validate(newUserDTO);
+            if (!validation.IsValid)
+                return ResultService.BadRequest(validation);
+
+            var duplicateEmail = await _usersRepository.GetByEmail(newUserDTO.Email);
+            if (duplicateEmail.Count > 0)
             {
                 return ResultService.BadRequest("Email já existente!");
             }
-            await _usersRepository.Create(user);
+            await _usersRepository.Create(mappedUser);
 
             return ResultService.Created("Usuário adicionado com sucesso.");
         }
 
         public async Task<ResultService<UsersDTO>> GetAsync(QueryHandler queryHandler)
         {
-            var users = await _usersRepository.GetAll(queryHandler);
-            var mappedUsers = _mapper.Map<List<UsersDTO>>(users.Data);
+            var result = await _usersRepository.GetAll(queryHandler);
+            var mappedUsers = _mapper.Map<List<UsersDTO>>(result.Data);
 
-            if (users.PageNumber <= 0 || users.ItemsPerpage <= 0 || users.Data.Count == 0)
-                return ResultService.NotFound<UsersDTO>("Nunuhm registro encontrada!");
+            if (result.PageNumber <= 0 || result.ItemsPerpage <= 0 || result.Data.Count == 0)
+                return ResultService.NotFound<UsersDTO>("Nenhum registro encontrada!");
 
             var paginationHeader = new PaginationHeader<UsersDTO>(
-                users.PageNumber,
-                users.ItemsPerpage,
-                users.TotalCount,
-                users.TotalPages
+                result.PageNumber,
+                result.ItemsPerpage,
+                result.TotalCount,
+                result.TotalPages
             );
 
-            var result = ResultService.OKPage<UsersDTO>(mappedUsers, paginationHeader);
-
-            return result;
+            return ResultService.OKPage<UsersDTO>(mappedUsers, paginationHeader);
         }
 
         public async Task<ResultService<List<UsersSummaryDTO>>> GetSummaryUsersAsync()
         {
-            var books = await _usersRepository.GetSummaryUsers();
-            return ResultService.Ok<List<UsersSummaryDTO>>(_mapper.Map<List<UsersSummaryDTO>>(books));
+            var result = await _usersRepository.GetSummaryUsers();
+            if (result.Count == 0)
+                return ResultService.NotFound<List<UsersSummaryDTO>>("Nenhum registro encontrada!");
+            return ResultService.Ok<List<UsersSummaryDTO>>(_mapper.Map<List<UsersSummaryDTO>>(result));
         }
 
         public async Task<ResultService> GetByIdAsync(int id)
         {
-            var user = await _usersRepository.GetById(id);
-            if (user == null)
+            var result = await _usersRepository.GetById(id);
+            if (result == null)
                 return ResultService.NotFound("Usuário não encontrado!");
 
-            return ResultService.Ok(_mapper.Map<UsersDTO>(user));
+            return ResultService.Ok(_mapper.Map<UsersDTO>(result));
         }
 
-        public async Task<ResultService> UpdateAsync(UsersUpdateDTO usersDTO)
+        public async Task<ResultService> UpdateAsync(UsersUpdateDTO updateUserDTO)
         {
-            var validation = new UsersDTOValidator().Validate(usersDTO);
+            var validation = new UsersDTOValidator().Validate(updateUserDTO);
             if (!validation.IsValid)
                 return ResultService.BadRequest(validation);
-            var user = await _usersRepository.GetById(usersDTO.Id);
+            var user = await _usersRepository.GetById(updateUserDTO.Id);
             if (user == null)
                 return ResultService.NotFound("Usuário não encontrado!");
 
-            user = _mapper.Map(usersDTO, user);
+            user = _mapper.Map(updateUserDTO, user);
             await _usersRepository.Update(user);
             return ResultService.Ok("Usuário atualizado.");
         }

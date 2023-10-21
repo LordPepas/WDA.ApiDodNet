@@ -24,14 +24,14 @@ namespace WDA.ApiDotNet.Application.Services
             _rentalsRepository = rentalsRepository;
             _mapper = mapper;
         }
-        public async Task<ResultService> CreateAsync(BooksCreateDTO bookDTO)
+        public async Task<ResultService> CreateAsync(BooksCreateDTO newBookDTO)
         {
-            if (bookDTO == null)
+            if (newBookDTO == null)
                 return ResultService.BadRequest("Preencha todos os campos corretamente.");
 
-            var mappedBook = _mapper.Map<Books>(bookDTO);
+            var mappedBook = _mapper.Map<Books>(newBookDTO);
 
-            var validation = new BooksCreateDTOValidator().Validate(bookDTO);
+            var validation = new BooksCreateDTOValidator().Validate(newBookDTO);
             if (!validation.IsValid)
                 return ResultService.BadRequest(validation);
 
@@ -39,7 +39,7 @@ namespace WDA.ApiDotNet.Application.Services
             if (duplicateName.Count > 0)
                 return ResultService.BadRequest("Livro já existente");
 
-            if (bookDTO.Release > DateTime.Now.Year)
+            if (newBookDTO.Release > DateTime.Now.Year)
                 return ResultService.BadRequest("O ano de lançamento deve ser anterior ao ano atual.");
 
             var publisher = await _publishersRepository.GetById(mappedBook.PublisherId);
@@ -51,67 +51,78 @@ namespace WDA.ApiDotNet.Application.Services
             return ResultService.Created("Livro adicionado com sucesso.");
         }
 
+
         public async Task<ResultService<BooksDTO>> GetAsync(QueryHandler queryHandler)
         {
-            var books = await _booksRepository.GetAll(queryHandler);
-            var mappedBooks = _mapper.Map<List<BooksDTO>>(books.Data);
+            var result = await _booksRepository.GetAll(queryHandler);
+            var mappedBooks = _mapper.Map<List<BooksDTO>>(result.Data);
 
-            if (books.PageNumber <= 0 || books.ItemsPerpage <= 0 || books.Data.Count == 0)
-                return ResultService.NotFound<BooksDTO>("Nunuhm registro encontrada!");
+            if (result.PageNumber <= 0 || result.ItemsPerpage <= 0 || result.Data.Count == 0)
+                return ResultService.NotFound<BooksDTO>("Nenhum registro encontrada!");
 
             var paginationHeader = new PaginationHeader<BooksDTO>(
-                books.PageNumber,
-                books.ItemsPerpage,
-                books.TotalCount,
-                books.TotalPages);
+                result.PageNumber,
+                result.ItemsPerpage,
+                result.TotalCount,
+                result.TotalPages);
 
             return ResultService.OKPage<BooksDTO>(mappedBooks, paginationHeader);
         }
 
         public async Task<ResultService<List<BooksSummaryDTO>>> GetSummaryBooksAsync()
         {
-            var books = await _booksRepository.GetSummaryBooks();
-            return ResultService.Ok<List<BooksSummaryDTO>>(_mapper.Map<List<BooksSummaryDTO>>(books));
+            var result = await _booksRepository.GetSummaryBooks();
+            if (result.Count == 0)
+                return ResultService.NotFound<List<BooksSummaryDTO>>("Nenhum registro encontrada!");
+
+            return ResultService.Ok<List<BooksSummaryDTO>>(_mapper.Map<List<BooksSummaryDTO>>(result));
         }
         public async Task<ResultService<List<BooksAvailableDTO>>> GetSummaryAvailableBooksAsync()
         {
-            var books = await _booksRepository.GetSummaryAvailableBooks();
-            return ResultService.Ok<List<BooksAvailableDTO>>(_mapper.Map<List<BooksAvailableDTO>>(books));
+            var result = await _booksRepository.GetSummaryAvailableBooks();
+            if (result.Count == 0)
+                return ResultService.NotFound<List<BooksAvailableDTO>>("Nenhum registro encontrada!");
+
+            return ResultService.Ok<List<BooksAvailableDTO>>(_mapper.Map<List<BooksAvailableDTO>>(result));
         }
 
         public async Task<ResultService> GetByIdAsync(int id)
         {
-            var book = await _booksRepository.GetById(id);
-            if (book == null)
+            var result = await _booksRepository.GetById(id);
+            if (result == null)
                 return ResultService.NotFound("Livro não encontrado!");
 
-            return ResultService.Ok(_mapper.Map<BooksDTO>(book));
+            return ResultService.Ok(_mapper.Map<BooksDTO>(result));
 
         }
 
         public async Task<ResultService<List<MostRentedBooksDTO>>> GetMostRentedBooks()
         {
-            var books = await _booksRepository.MostRentedBooks();
+            var result = await _booksRepository.MostRentedBooks();
+            if (result.Count == 0)
+                return ResultService.NotFound<List<MostRentedBooksDTO>>("Nenhum registro encontrada!");
 
-            return ResultService.Ok<List<MostRentedBooksDTO>>(_mapper.Map<List<MostRentedBooksDTO>>(books));
+            return ResultService.Ok<List<MostRentedBooksDTO>>(_mapper.Map<List<MostRentedBooksDTO>>(result));
         }
 
-        public async Task<ResultService> UpdateAsync(BooksUpdateDTO bookDTO)
+        public async Task<ResultService> UpdateAsync(BooksUpdateDTO updatedBookDTO)
         {
-            if (bookDTO == null)
+            if (updatedBookDTO == null)
                 return ResultService.BadRequest("Objeto deve ser informado corretamente!");
 
-            var validation = new BooksDTOValidator().Validate(bookDTO);
+            var validation = new BooksDTOValidator().Validate(updatedBookDTO);
             if (!validation.IsValid)
                 return ResultService.BadRequest(validation);
-            var book = await _booksRepository.GetById(bookDTO.Id);
+
+            var book = await _booksRepository.GetById(updatedBookDTO.Id);
+
             if (book == null)
                 return ResultService.NotFound("Livro não encontrado!");
 
-            book = _mapper.Map(bookDTO, book);
+            book = _mapper.Map(updatedBookDTO, book);
             await _booksRepository.Update(book);
-            return ResultService.Ok("Livro atualizado com sucesso.");
 
+            return ResultService.Ok("Livro atualizado com sucesso.");
         }
 
         public async Task<ResultService> DeleteAsync(int id)
