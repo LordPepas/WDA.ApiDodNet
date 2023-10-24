@@ -8,7 +8,6 @@ namespace WDA.ApiDotNet.Infra.Data.Maps
     {
         public void Configure(EntityTypeBuilder<Users> builder)
         {
-            builder.ToTable("Users");
 
 
             builder.HasKey(c => c.Id);
@@ -24,6 +23,8 @@ namespace WDA.ApiDotNet.Infra.Data.Maps
             builder.Property(c => c.Email)
                   .IsRequired()
                 .HasColumnType("text");
+
+            builder.ToTable("Users");
         }
     }
 }

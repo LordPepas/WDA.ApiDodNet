@@ -3,9 +3,9 @@ using WDA.ApiDotNet.Application.Models.DTOs.PublishersDTO;
 
 namespace WDA.ApiDotNet.Application.Models.DTOs.Validations
 {
-    public class PublishersCreateDTOValidator : AbstractValidator<PublishersCreateDTO>
+    public class PublishersCreateValidator : AbstractValidator<PublishersCreateDTO>
     {
-        public PublishersCreateDTOValidator()
+        public PublishersCreateValidator()
         {
             RuleFor(x => x.Name)
                    .NotEmpty().WithMessage("Name deve ser informado.")
@@ -16,9 +16,9 @@ namespace WDA.ApiDotNet.Application.Models.DTOs.Validations
                    .Length(3, 50).WithMessage("City: Necessário entre 3 e 50 caracteres.");
         }
     }
-    public class PublishersDTOValidator : AbstractValidator<PublishersUpdateDTO>
+    public class PublishersValidator : AbstractValidator<PublishersUpdateDTO>
     {
-        public PublishersDTOValidator()
+        public PublishersValidator()
         {
             RuleFor(x => x.Id)
             .GreaterThan(0).WithMessage("Id deve ser ser informado.");

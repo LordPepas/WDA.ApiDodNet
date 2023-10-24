@@ -24,10 +24,7 @@ namespace WDA.ApiDotNet.Application.Services
         }
         public async Task<ResultService> CreateAsync(RentalsCreateDTO newRentalDTO)
         {
-            if (newRentalDTO == null)
-                return ResultService.BadRequest("Objeto deve ser informado corretamente!");
-
-            var validation = new RentalsCreateDTOValidator().Validate(newRentalDTO);
+            var validation = new RentalsCreateValidator().Validate(newRentalDTO);
             if (!validation.IsValid)
                 return ResultService.BadRequest(validation);
 
@@ -92,16 +89,14 @@ namespace WDA.ApiDotNet.Application.Services
 
         public async Task<ResultService> UpdateAsync(RentalsUpdateDTO updateRentalDTO)
         {
-            if (updateRentalDTO == null)
-                return ResultService.BadRequest("Objeto deve ser informado corretamente!");
-
-            var result = new RentalsUpdateDTOValidator().Validate(updateRentalDTO);
-            if (!result.IsValid)
-                return ResultService.BadRequest(result);
-
             var rental = await _rentalsRepository.GetById(updateRentalDTO.Id);
             if (rental == null)
                 return ResultService.NotFound("Aluguel não encontrado!");
+
+
+            var result = new RentalsUpdateValidator().Validate(updateRentalDTO);
+            if (!result.IsValid)
+                return ResultService.BadRequest(result);
 
             if (rental.ReturnDate != null)
                 return ResultService.BadRequest("Aluguel já devolvido!");
@@ -128,6 +123,7 @@ namespace WDA.ApiDotNet.Application.Services
             var rental = await _rentalsRepository.GetById(id);
             if (rental == null)
                 return ResultService.NotFound("Aluguel não encontrado!");
+
             if (rental.Status != "Pendente")
                 return ResultService.BadRequest("Aluguel já devolvido!");
 

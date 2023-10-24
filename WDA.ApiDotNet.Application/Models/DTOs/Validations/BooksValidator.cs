@@ -3,9 +3,9 @@ using WDA.ApiDotNet.Application.Models.DTOs.BooksDTO;
 
 namespace WDA.ApiDotNet.Application.Models.DTOs.Validations
 {
-    public class BooksCreateDTOValidator : AbstractValidator<BooksCreateDTO>
+    public class BooksCreateValidator : AbstractValidator<BooksCreateDTO>
     {
-        public BooksCreateDTOValidator()
+        public BooksCreateValidator()
         {
             When(x => x != null, () =>
             {
@@ -31,9 +31,9 @@ namespace WDA.ApiDotNet.Application.Models.DTOs.Validations
             });
         }
     }
-    public class BooksDTOValidator : AbstractValidator<BooksUpdateDTO>
+    public class BooksValidator : AbstractValidator<BooksUpdateDTO>
     {
-        public BooksDTOValidator()
+        public BooksValidator()
 
         {
             RuleFor(x => x.Id)

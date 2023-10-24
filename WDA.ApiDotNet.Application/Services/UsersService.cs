@@ -24,12 +24,9 @@ namespace WDA.ApiDodNet.Application.Services
 
         public async Task<ResultService> CreateAsync(UsersCreateDTO newUserDTO)
         {
-            if (newUserDTO == null)
-                return ResultService.BadRequest("Objeto deve ser informado corretamente!");
-
             var mappedUser = _mapper.Map<Users>(newUserDTO);
 
-            var validation = new UsersCreateDTOValidator().Validate(newUserDTO);
+            var validation = new UsersCreateValidator().Validate(newUserDTO);
             if (!validation.IsValid)
                 return ResultService.BadRequest(validation);
 
@@ -46,6 +43,7 @@ namespace WDA.ApiDodNet.Application.Services
         public async Task<ResultService<UsersDTO>> GetAsync(QueryHandler queryHandler)
         {
             var result = await _usersRepository.GetAll(queryHandler);
+
             var mappedUsers = _mapper.Map<List<UsersDTO>>(result.Data);
 
             if (result.PageNumber <= 0 || result.ItemsPerpage <= 0 || result.Data.Count == 0)
@@ -80,12 +78,13 @@ namespace WDA.ApiDodNet.Application.Services
 
         public async Task<ResultService> UpdateAsync(UsersUpdateDTO updateUserDTO)
         {
-            var validation = new UsersDTOValidator().Validate(updateUserDTO);
-            if (!validation.IsValid)
-                return ResultService.BadRequest(validation);
             var user = await _usersRepository.GetById(updateUserDTO.Id);
             if (user == null)
                 return ResultService.NotFound("Usuário não encontrado!");
+
+            var validation = new UsersValidator().Validate(updateUserDTO);
+            if (!validation.IsValid)
+                return ResultService.BadRequest(validation);
 
             user = _mapper.Map(updateUserDTO, user);
             await _usersRepository.Update(user);
@@ -102,7 +101,7 @@ namespace WDA.ApiDodNet.Application.Services
 
             if (booksAssociatedWithPublisher.Count > 0)
             {
-                return ResultService.BadRequest("O usuário não pode ser excluída, pois está associada a aluguéis!");
+                return ResultService.BadRequest("Usuário está associada a aluguéis!");
             }
 
             await _usersRepository.Delete(user);

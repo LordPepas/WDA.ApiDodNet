@@ -3,9 +3,9 @@ using WDA.ApiDotNet.Application.Models.DTOs.UsersDTO;
 
 namespace WDA.ApiDotNet.Application.Models.DTOs.Validations
 {
-    public class UsersCreateDTOValidator : AbstractValidator<UsersCreateDTO>
+    public class UsersCreateValidator : AbstractValidator<UsersCreateDTO>
     {
-        public UsersCreateDTOValidator()
+        public UsersCreateValidator()
         {
             RuleFor(x => x.Name)
                    .NotEmpty().WithMessage("Nome deve ser informado.")
@@ -24,9 +24,9 @@ namespace WDA.ApiDotNet.Application.Models.DTOs.Validations
                     .EmailAddress().WithMessage("Email inválido!");
         }
     }
-    public class UsersDTOValidator : AbstractValidator<UsersUpdateDTO>
+    public class UsersValidator : AbstractValidator<UsersUpdateDTO>
     {
-        public UsersDTOValidator()
+        public UsersValidator()
         {
             RuleFor(x => x.Id)
                 .NotEmpty().WithMessage("Id deve ser informado!");

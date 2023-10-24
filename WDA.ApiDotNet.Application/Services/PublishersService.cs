@@ -25,12 +25,9 @@ namespace WDA.ApiDotNet.Application.Services
 
         public async Task<ResultService> CreateAsync(PublishersCreateDTO newPublisherDTO)
         {
-            if (newPublisherDTO == null)
-                return ResultService.BadRequest("Objeto deve ser informado corretamente!");
-
             var mappedPublisher = _mapper.Map<Publishers>(newPublisherDTO);
 
-            var validation = new PublishersCreateDTOValidator().Validate(newPublisherDTO);
+            var validation = new PublishersCreateValidator().Validate(newPublisherDTO);
             if (!validation.IsValid)
                 return ResultService.BadRequest(validation);
 
@@ -81,16 +78,14 @@ namespace WDA.ApiDotNet.Application.Services
 
         public async Task<ResultService> UpdateAsync(PublishersUpdateDTO updatePublisherDTO)
         {
-            if (updatePublisherDTO == null)
-                return ResultService.BadRequest("Objeto deve ser informado corretamente!");
-
-            var validation = new PublishersDTOValidator().Validate(updatePublisherDTO);
-            if (!validation.IsValid)
-                return ResultService.BadRequest(validation);
-
             var publisher = await _publishersRepository.GetById(updatePublisherDTO.Id);
             if (publisher == null)
                 return ResultService.NotFound("Editora não encontrado!");
+
+            var validation = new PublishersValidator().Validate(updatePublisherDTO);
+            if (!validation.IsValid)
+                return ResultService.BadRequest(validation);
+
 
             publisher = _mapper.Map(updatePublisherDTO, publisher);
             await _publishersRepository.Update(publisher);

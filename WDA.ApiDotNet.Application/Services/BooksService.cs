@@ -31,7 +31,7 @@ namespace WDA.ApiDotNet.Application.Services
 
             var mappedBook = _mapper.Map<Books>(newBookDTO);
 
-            var validation = new BooksCreateDTOValidator().Validate(newBookDTO);
+            var validation = new BooksCreateValidator().Validate(newBookDTO);
             if (!validation.IsValid)
                 return ResultService.BadRequest(validation);
 
@@ -107,17 +107,15 @@ namespace WDA.ApiDotNet.Application.Services
 
         public async Task<ResultService> UpdateAsync(BooksUpdateDTO updatedBookDTO)
         {
-            if (updatedBookDTO == null)
-                return ResultService.BadRequest("Objeto deve ser informado corretamente!");
-
-            var validation = new BooksDTOValidator().Validate(updatedBookDTO);
-            if (!validation.IsValid)
-                return ResultService.BadRequest(validation);
-
             var book = await _booksRepository.GetById(updatedBookDTO.Id);
 
             if (book == null)
                 return ResultService.NotFound("Livro não encontrado!");
+
+            var validation = new BooksValidator().Validate(updatedBookDTO);
+            if (!validation.IsValid)
+                return ResultService.BadRequest(validation);
+
 
             book = _mapper.Map(updatedBookDTO, book);
             await _booksRepository.Update(book);
@@ -134,7 +132,7 @@ namespace WDA.ApiDotNet.Application.Services
             var booksAssociatedWithPublisher = await _rentalsRepository.GetByBookId(id);
 
             if (booksAssociatedWithPublisher.Count > 0)
-                return ResultService.BadRequest("A Livro não pode ser excluída, pois está associada a aluguéis.");
+                return ResultService.BadRequest("Livro está associada a aluguéis.");
 
             await _booksRepository.Delete(book);
             return ResultService.Ok($"Livro com id: {id} foi deletado");

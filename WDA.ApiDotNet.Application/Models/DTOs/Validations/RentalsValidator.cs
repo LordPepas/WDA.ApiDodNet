@@ -3,7 +3,7 @@ using WDA.ApiDotNet.Application.Models.DTOs.RentalsDTO;
 
 namespace WDA.ApiDotNet.Application.Models.DTOs.Validations
 {
-    public class RentalsCreateDTOValidator : AbstractValidator<RentalsCreateDTO>
+    public class RentalsCreateValidator : AbstractValidator<RentalsCreateDTO>
     {
         public RentalsCreateDTOValidator()
         {
@@ -23,9 +23,9 @@ namespace WDA.ApiDotNet.Application.Models.DTOs.Validations
 
         }
     }
-    public class RentalsUpdateDTOValidator : AbstractValidator<RentalsUpdateDTO>
+    public class RentalsUpdateValidator : AbstractValidator<RentalsUpdateDTO>
     {
-        public RentalsUpdateDTOValidator()
+        public RentalsUpdateValidator()
         {
             RuleFor(x => x.Id)
                 .GreaterThan(0).WithMessage("Id deve ser ser informado.");

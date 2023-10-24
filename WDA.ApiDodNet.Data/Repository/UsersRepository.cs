@@ -35,22 +35,20 @@ namespace WDA.ApiDotNet.Infra.Data.Repository
 
         public async Task<PageList<Users>> GetAll(QueryHandler queryHandler)
         {
-            IQueryable<Users> query = _db.Users
-                .AsNoTracking();
+            IQueryable<Users> query = _db.Users.AsNoTracking();
 
             if (!string.IsNullOrWhiteSpace(queryHandler.SearchValue))
             {
                 queryHandler.SearchValue = queryHandler.SearchValue.ToUpper();
 
                 query = query.Where(p =>
-                p.Id.ToString().Contains(queryHandler.SearchValue) ||
-                p.Name.Contains(queryHandler.SearchValue) ||
-                p.City.Contains(queryHandler.SearchValue) ||
-                p.Address.Contains(queryHandler.SearchValue) ||
-                p.Email.Contains(queryHandler.SearchValue)
+                    p.Id.ToString().Contains(queryHandler.SearchValue) ||
+                    p.Name.ToUpper().Contains(queryHandler.SearchValue) ||
+                    p.City.ToUpper().Contains(queryHandler.SearchValue) ||
+                    p.Address.ToUpper().Contains(queryHandler.SearchValue) ||
+                    p.Email.ToUpper().Contains(queryHandler.SearchValue)
                 );
-            };
-
+            }
             if (!string.IsNullOrWhiteSpace(queryHandler.OrderByProperty))
             {
                 queryHandler.OrderByProperty = queryHandler.OrderByProperty.ToUpper();
@@ -69,7 +67,6 @@ namespace WDA.ApiDotNet.Infra.Data.Repository
             {
                 query = queryHandler.OrderDesc ? query.OrderByDescending(p => p.Id) : query.OrderBy(p => p.Id);
             }
-
             if (queryHandler.PageNumber < 1 || queryHandler.ItemsPerpage < 1)
             {
                 queryHandler.ItemsPerpage = 0;

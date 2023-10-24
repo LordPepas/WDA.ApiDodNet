@@ -40,14 +40,15 @@ namespace WDA.ApiDotNet.Infra.Data.Repository
 
             if (!string.IsNullOrWhiteSpace(queryHandler.SearchValue))
             {
-                queryHandler.SearchValue = queryHandler.SearchValue.ToUpper();
+                string searchValueUpper = queryHandler.SearchValue.ToUpper();
 
                 query = query.Where(p =>
-                    p.Id.ToString().ToUpper().Contains(queryHandler.SearchValue) ||
-                    p.Name.Contains(queryHandler.SearchValue) ||
-                    p.City.Contains(queryHandler.SearchValue)
+                    p.Id.ToString().Contains(searchValueUpper) ||
+                    p.Name.ToUpper().Contains(searchValueUpper) ||
+                    p.City.ToUpper().Contains(searchValueUpper)
                 );
             }
+
             if (!string.IsNullOrWhiteSpace(queryHandler.OrderByProperty))
             {
                 queryHandler.OrderByProperty = queryHandler.OrderByProperty.ToUpper();
@@ -55,8 +56,8 @@ namespace WDA.ApiDotNet.Infra.Data.Repository
                 query = queryHandler.OrderByProperty switch
                 {
                     "ID" => queryHandler.OrderDesc ? query.OrderByDescending(p => p.Id) : query.OrderBy(p => p.Id),
-                    "NAME" => queryHandler.OrderDesc ? query.OrderByDescending(p => p.Id) : query.OrderBy(p => p.Name),
-                    "CITY" => queryHandler.OrderDesc ? query.OrderByDescending(p => p.Id) : query.OrderBy(p => p.City),
+                    "NAME" => queryHandler.OrderDesc ? query.OrderByDescending(p => p.Name) : query.OrderBy(p => p.Name),
+                    "CITY" => queryHandler.OrderDesc ? query.OrderByDescending(p => p.City) : query.OrderBy(p => p.City),
                     _ => queryHandler.OrderDesc ? query.OrderByDescending(p => p.Id) : query.OrderBy(p => p.Id),
                 };
             }
@@ -64,10 +65,12 @@ namespace WDA.ApiDotNet.Infra.Data.Repository
             {
                 query = queryHandler.OrderDesc ? query.OrderByDescending(p => p.Id) : query.OrderBy(p => p.Id);
             }
+
             if (queryHandler.PageNumber < 1 || queryHandler.ItemsPerpage < 1)
             {
                 queryHandler.ItemsPerpage = 0;
             }
+
             return await PageList<Publishers>.GetResponseAsync(query, queryHandler.PageNumber, queryHandler.ItemsPerpage);
         }
 

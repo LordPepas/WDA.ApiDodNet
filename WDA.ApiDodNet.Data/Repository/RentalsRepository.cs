@@ -66,9 +66,10 @@ namespace WDA.ApiDotNet.Infra.Data.Repository
                 p.Book.Name.ToUpper().Contains(queryHandler.SearchValue) ||
                 p.UserId.ToString().Contains(queryHandler.SearchValue) ||
                 p.User.Name.ToUpper().Contains(queryHandler.SearchValue) ||
-                p.RentalDate.ToString().Contains(queryHandler.SearchValue) ||
-                p.PrevisionDate.ToString().Contains(queryHandler.SearchValue) ||
-                p.ReturnDate.ToString().Contains(queryHandler.SearchValue)
+                p.RentalDate.Date.ToString().Contains(queryHandler.SearchValue) ||
+                p.PrevisionDate.Date.ToString().Contains(queryHandler.SearchValue) ||
+                (p.ReturnDate != null && p.ReturnDate.Value.Date.ToString().Contains(queryHandler.SearchValue))
+
                 );
             };
 
@@ -103,7 +104,7 @@ namespace WDA.ApiDotNet.Infra.Data.Repository
 
         public async Task<List<Rentals>> GetByBookId(int bookId)
         {
-            return await _db.Rentals.Where(x => x.UserId == bookId).ToListAsync();
+            return await _db.Rentals.Where(x => x.BookId == bookId).ToListAsync();
         }
 
         public async Task<List<Rentals>> GetByUserId(int userId)
