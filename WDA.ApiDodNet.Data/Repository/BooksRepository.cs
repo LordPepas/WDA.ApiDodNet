@@ -105,9 +105,9 @@ namespace WDA.ApiDotNet.Infra.Data.Repository
                     .ToListAsync();
         }
 
-        public async Task<List<Books>> GetByName(string name)
+        public async Task<List<Books>> GetByNameAndPublisher(string name,int? publisherId)
         {
-            return await _db.Books.Where(x => x.Name == name).ToListAsync();
+            return await _db.Books.Where(x => x.Name == name && x.PublisherId == publisherId).ToListAsync();
         }
         async Task<List<Books>> IBooksRepository.GetByPublishersId(int publisherId)
         {

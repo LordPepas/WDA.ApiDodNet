@@ -12,8 +12,10 @@ namespace WDA.ApiDotNet.Application.Interfaces.IRepository
         Task<PageList<Rentals>> GetAll(QueryHandler queryHandler);
         Task<List<Rentals>> GetByUserId(int userId);
         Task<List<Rentals>> GetByBookId(int bookId);
+        Task<List<Rentals>> GetRentalByUserIdandBookId(int bookId, int userId);
         Task<bool> CheckDate(DateTime rentalDate);
         Task<bool?> CheckPrevisionDate(DateTime forecastDate, DateTime rentalDate);
         Task<bool> GetStatus(DateTime forecastDate, DateTime returnDate);
+
     }
 }

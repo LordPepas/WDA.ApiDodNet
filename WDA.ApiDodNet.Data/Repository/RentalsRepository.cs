@@ -112,6 +112,11 @@ namespace WDA.ApiDotNet.Infra.Data.Repository
             return await _db.Rentals.Where(x => x.UserId == userId).ToListAsync();
         }
 
+        public async Task<List<Rentals>> GetRentalByUserIdandBookId(int bookId, int userId)
+        {
+            return await _db.Rentals.Where(r => r.BookId == bookId && r.UserId == userId && r.ReturnDate == null).ToListAsync();
+        }
+
         public async Task<bool> CheckDate(DateTime date)
         {
             DateTime today = DateTime.Now;

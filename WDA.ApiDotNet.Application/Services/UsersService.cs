@@ -26,7 +26,7 @@ namespace WDA.ApiDodNet.Application.Services
         {
             var mappedUser = _mapper.Map<Users>(newUserDTO);
 
-            var validation = new UsersCreateValidator().Validate(newUserDTO);
+            var validation = new UserCreationValidator().Validate(newUserDTO);
             if (!validation.IsValid)
                 return ResultService.BadRequest(validation);
 
@@ -76,17 +76,27 @@ namespace WDA.ApiDodNet.Application.Services
             return ResultService.Ok(_mapper.Map<UsersDTO>(result));
         }
 
-        public async Task<ResultService> UpdateAsync(UsersUpdateDTO updateUserDTO)
+        public async Task<ResultService> UpdateAsync(UsersUpdateDTO updatedUserDTO)
         {
-            var user = await _usersRepository.GetById(updateUserDTO.Id);
+            var user = await _usersRepository.GetById(updatedUserDTO.Id);
             if (user == null)
                 return ResultService.NotFound("Usuário não encontrado!");
 
-            var validation = new UsersValidator().Validate(updateUserDTO);
+            var validation = new UserCreationValidator().Validate(updatedUserDTO);
             if (!validation.IsValid)
                 return ResultService.BadRequest(validation);
 
-            user = _mapper.Map(updateUserDTO, user);
+            if (user.Name != updatedUserDTO.Name)
+            {
+                var duplicateEmail = await _usersRepository.GetByEmail(updatedUserDTO.Email);
+                if (duplicateEmail.Count > 0)
+                {
+                    return ResultService.BadRequest("Email já existente!");
+                }
+
+            }
+
+            user = _mapper.Map(updatedUserDTO, user);
             await _usersRepository.Update(user);
             return ResultService.Ok("Usuário atualizado.");
         }

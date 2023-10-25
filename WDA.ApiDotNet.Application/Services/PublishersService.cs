@@ -27,7 +27,7 @@ namespace WDA.ApiDotNet.Application.Services
         {
             var mappedPublisher = _mapper.Map<Publishers>(newPublisherDTO);
 
-            var validation = new PublishersCreateValidator().Validate(newPublisherDTO);
+            var validation = new PublisherCreationValidator().Validate(newPublisherDTO);
             if (!validation.IsValid)
                 return ResultService.BadRequest(validation);
 
@@ -76,18 +76,25 @@ namespace WDA.ApiDotNet.Application.Services
             return ResultService.Ok(_mapper.Map<PublishersDTO>(result));
         }
 
-        public async Task<ResultService> UpdateAsync(PublishersUpdateDTO updatePublisherDTO)
+        public async Task<ResultService> UpdateAsync(PublishersUpdateDTO updatedPublisherDTO)
         {
-            var publisher = await _publishersRepository.GetById(updatePublisherDTO.Id);
+            var publisher = await _publishersRepository.GetById(updatedPublisherDTO.Id);
             if (publisher == null)
                 return ResultService.NotFound("Editora não encontrado!");
+            if(publisher.Name != updatedPublisherDTO.Name)
+            {
+            var duplicateName = await _publishersRepository.GetByName(updatedPublisherDTO.Name);
+            if (duplicateName.Count > 0)
+                return ResultService.BadRequest("Editora já existente!");
 
-            var validation = new PublishersValidator().Validate(updatePublisherDTO);
+            }
+
+            var validation = new PublisherUpdateValidator().Validate(updatedPublisherDTO);
             if (!validation.IsValid)
                 return ResultService.BadRequest(validation);
 
 
-            publisher = _mapper.Map(updatePublisherDTO, publisher);
+            publisher = _mapper.Map(updatedPublisherDTO, publisher);
             await _publishersRepository.Update(publisher);
             return ResultService.Ok("Editora atualizado com sucesso.");
 

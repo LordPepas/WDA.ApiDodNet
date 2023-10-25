@@ -3,9 +3,9 @@ using WDA.ApiDotNet.Application.Models.DTOs.RentalsDTO;
 
 namespace WDA.ApiDotNet.Application.Models.DTOs.Validations
 {
-    public class RentalsCreateValidator : AbstractValidator<RentalsCreateDTO>
+    public class RentalCreationValidator : AbstractValidator<RentalsCreateDTO>
     {
-        public RentalsCreateDTOValidator()
+        public RentalCreationValidator()
         {
             RuleFor(x => x.BookId)
                 .NotEmpty().WithMessage("Livro deve ser informado.")
@@ -21,17 +21,6 @@ namespace WDA.ApiDotNet.Application.Models.DTOs.Validations
             RuleFor(x => x.PrevisionDate)
                 .NotEmpty().WithMessage("Data de previsão deve ser informado!");
 
-        }
-    }
-    public class RentalsUpdateValidator : AbstractValidator<RentalsUpdateDTO>
-    {
-        public RentalsUpdateValidator()
-        {
-            RuleFor(x => x.Id)
-                .GreaterThan(0).WithMessage("Id deve ser ser informado.");
-
-            RuleFor(x => x.ReturnDate)
-                .NotEmpty().WithMessage("Data de devolução deve ser informado!");
         }
     }
 }

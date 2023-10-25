@@ -26,25 +26,23 @@ namespace WDA.ApiDotNet.Application.Services
         }
         public async Task<ResultService> CreateAsync(BooksCreateDTO newBookDTO)
         {
-            if (newBookDTO == null)
-                return ResultService.BadRequest("Preencha todos os campos corretamente.");
-
             var mappedBook = _mapper.Map<Books>(newBookDTO);
 
-            var validation = new BooksCreateValidator().Validate(newBookDTO);
+            var validation = new BookCreationValidator().Validate(newBookDTO);
             if (!validation.IsValid)
                 return ResultService.BadRequest(validation);
 
-            var duplicateName = await _booksRepository.GetByName(mappedBook.Name);
+            var duplicateName = await _booksRepository.GetByNameAndPublisher(mappedBook.Name,mappedBook.PublisherId);
             if (duplicateName.Count > 0)
-                return ResultService.BadRequest("Livro já existente");
+                return ResultService.BadRequest("Livro com essa editora já existente");
+
+            var publisher = await _publishersRepository.GetById(mappedBook.PublisherId);
+            if (publisher == null)
+                return ResultService.NotFound("Editora não encontrada.");
 
             if (newBookDTO.Release > DateTime.Now.Year)
                 return ResultService.BadRequest("O ano de lançamento deve ser anterior ao ano atual.");
 
-            var publisher = await _publishersRepository.GetById(mappedBook.PublisherId);
-            if (publisher == null)
-                return ResultService.NotFound("Editora não encontrada!");
 
             await _booksRepository.Create(mappedBook);
 
@@ -58,7 +56,7 @@ namespace WDA.ApiDotNet.Application.Services
             var mappedBooks = _mapper.Map<List<BooksDTO>>(result.Data);
 
             if (result.PageNumber <= 0 || result.ItemsPerpage <= 0 || result.Data.Count == 0)
-                return ResultService.NotFound<BooksDTO>("Nenhum registro encontrada!");
+                return ResultService.NotFound<BooksDTO>("Nenhum registro encontrada.");
 
             var paginationHeader = new PaginationHeader<BooksDTO>(
                 result.PageNumber,
@@ -73,7 +71,7 @@ namespace WDA.ApiDotNet.Application.Services
         {
             var result = await _booksRepository.GetSummaryBooks();
             if (result.Count == 0)
-                return ResultService.NotFound<List<BooksSummaryDTO>>("Nenhum registro encontrada!");
+                return ResultService.NotFound<List<BooksSummaryDTO>>("Nenhum registro encontrada.");
 
             return ResultService.Ok<List<BooksSummaryDTO>>(_mapper.Map<List<BooksSummaryDTO>>(result));
         }
@@ -81,7 +79,7 @@ namespace WDA.ApiDotNet.Application.Services
         {
             var result = await _booksRepository.GetSummaryAvailableBooks();
             if (result.Count == 0)
-                return ResultService.NotFound<List<BooksAvailableDTO>>("Nenhum registro encontrada!");
+                return ResultService.NotFound<List<BooksAvailableDTO>>("Nenhum registro encontrada.");
 
             return ResultService.Ok<List<BooksAvailableDTO>>(_mapper.Map<List<BooksAvailableDTO>>(result));
         }
@@ -90,7 +88,7 @@ namespace WDA.ApiDotNet.Application.Services
         {
             var result = await _booksRepository.GetById(id);
             if (result == null)
-                return ResultService.NotFound("Livro não encontrado!");
+                return ResultService.NotFound("Livro não encontrado.");
 
             return ResultService.Ok(_mapper.Map<BooksDTO>(result));
 
@@ -100,7 +98,7 @@ namespace WDA.ApiDotNet.Application.Services
         {
             var result = await _booksRepository.MostRentedBooks();
             if (result.Count == 0)
-                return ResultService.NotFound<List<MostRentedBooksDTO>>("Nenhum registro encontrada!");
+                return ResultService.NotFound<List<MostRentedBooksDTO>>("Nenhum registro encontrada.");
 
             return ResultService.Ok<List<MostRentedBooksDTO>>(_mapper.Map<List<MostRentedBooksDTO>>(result));
         }
@@ -111,8 +109,18 @@ namespace WDA.ApiDotNet.Application.Services
 
             if (book == null)
                 return ResultService.NotFound("Livro não encontrado!");
+            if(book.Name != updatedBookDTO.Name || book.Publisher.Id != updatedBookDTO.PublisherId)
+            {
+            var duplicateName = await _booksRepository.GetByNameAndPublisher(updatedBookDTO.Name, updatedBookDTO.PublisherId);
+            if (duplicateName.Count > 0)
+                return ResultService.BadRequest("Livro com essa editora já existente");
+            }
 
-            var validation = new BooksValidator().Validate(updatedBookDTO);
+            if (updatedBookDTO.Release > DateTime.Now.Year)
+                return ResultService.BadRequest("O ano de lançamento deve ser anterior ao ano atual.");
+
+
+            var validation = new BookUpdateValidator().Validate(updatedBookDTO);
             if (!validation.IsValid)
                 return ResultService.BadRequest(validation);
 
@@ -127,7 +135,7 @@ namespace WDA.ApiDotNet.Application.Services
         {
             var book = await _booksRepository.GetById(id);
             if (book == null)
-                return ResultService.NotFound("Livro não encontrado!");
+                return ResultService.NotFound("Livro não encontrado.");
 
             var booksAssociatedWithPublisher = await _rentalsRepository.GetByBookId(id);
 
