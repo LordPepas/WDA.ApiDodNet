@@ -33,7 +33,7 @@ namespace WDA.ApiDodNet.Application.Services
             var duplicateEmail = await _usersRepository.GetByEmail(newUserDTO.Email);
             if (duplicateEmail.Count > 0)
             {
-                return ResultService.BadRequest("Email já existente!");
+                return ResultService.BadRequest("Email já existente.");
             }
             await _usersRepository.Create(mappedUser);
 
@@ -47,7 +47,7 @@ namespace WDA.ApiDodNet.Application.Services
             var mappedUsers = _mapper.Map<List<UsersDTO>>(result.Data);
 
             if (result.PageNumber <= 0 || result.ItemsPerpage <= 0 || result.Data.Count == 0)
-                return ResultService.NotFound<UsersDTO>("Nenhum registro encontrada!");
+                return ResultService.NotFound<UsersDTO>("Nenhum registro encontrada.");
 
             var paginationHeader = new PaginationHeader<UsersDTO>(
                 result.PageNumber,
@@ -63,7 +63,7 @@ namespace WDA.ApiDodNet.Application.Services
         {
             var result = await _usersRepository.GetSummaryUsers();
             if (result.Count == 0)
-                return ResultService.NotFound<List<UsersSummaryDTO>>("Nenhum registro encontrada!");
+                return ResultService.NotFound<List<UsersSummaryDTO>>("Nenhum registro encontrada.");
             return ResultService.Ok<List<UsersSummaryDTO>>(_mapper.Map<List<UsersSummaryDTO>>(result));
         }
 
@@ -71,7 +71,7 @@ namespace WDA.ApiDodNet.Application.Services
         {
             var result = await _usersRepository.GetById(id);
             if (result == null)
-                return ResultService.NotFound("Usuário não encontrado!");
+                return ResultService.NotFound("Usuário não encontrado.");
 
             return ResultService.Ok(_mapper.Map<UsersDTO>(result));
         }
@@ -80,24 +80,25 @@ namespace WDA.ApiDodNet.Application.Services
         {
             var user = await _usersRepository.GetById(updatedUserDTO.Id);
             if (user == null)
-                return ResultService.NotFound("Usuário não encontrado!");
+                return ResultService.NotFound("Usuário não encontrado.");
+
+
+            if (user.Email != updatedUserDTO.Email)
+            {
+                var duplicateEmail = await _usersRepository.GetByEmail(updatedUserDTO.Email);
+                if (duplicateEmail.Count > 0)
+                {
+                    return ResultService.BadRequest("Email já existente.");
+                }
+            }
 
             var validation = new UserUpdateValidator().Validate(updatedUserDTO);
             if (!validation.IsValid)
                 return ResultService.BadRequest(validation);
 
-            if (user.Name != updatedUserDTO.Name)
-            {
-                var duplicateEmail = await _usersRepository.GetByEmail(updatedUserDTO.Email);
-                if (duplicateEmail.Count > 0)
-                {
-                    return ResultService.BadRequest("Email já existente!");
-                }
-
-            }
-
             user = _mapper.Map(updatedUserDTO, user);
             await _usersRepository.Update(user);
+
             return ResultService.Ok("Usuário atualizado.");
         }
 
@@ -105,13 +106,13 @@ namespace WDA.ApiDodNet.Application.Services
         {
             var user = await _usersRepository.GetById(id);
             if (user == null)
-                return ResultService.NotFound("Usuário não encontrado!");
+                return ResultService.NotFound("Usuário não encontrado.");
 
             var booksAssociatedWithPublisher = await _rentalsRepository.GetByUserId(id);
 
             if (booksAssociatedWithPublisher.Count > 0)
             {
-                return ResultService.BadRequest("Usuário está associada a aluguéis!");
+                return ResultService.BadRequest("Usuário está associada a aluguéis.");
             }
 
             await _usersRepository.Delete(user);

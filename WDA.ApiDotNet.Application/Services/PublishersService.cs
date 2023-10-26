@@ -33,7 +33,7 @@ namespace WDA.ApiDotNet.Application.Services
 
             var duplicateName = await _publishersRepository.GetByName(newPublisherDTO.Name);
             if (duplicateName.Count > 0)
-                return ResultService.BadRequest("Editora já existente!");
+                return ResultService.BadRequest("Editora já existente.");
 
             await _publishersRepository.Create(mappedPublisher);
             return ResultService.Created("Editora adicionado com sucesso.");
@@ -46,7 +46,7 @@ namespace WDA.ApiDotNet.Application.Services
             var mappedPublishers = _mapper.Map<List<PublishersDTO>>(result.Data);
 
             if (result.PageNumber <= 0 || result.ItemsPerpage <= 0 || result.Data.Count == 0)
-                return ResultService.NotFound<PublishersDTO>("Nenhum registro encontrada!");
+                return ResultService.NotFound<PublishersDTO>("Nenhum registro encontrada.");
 
             var paginationHeader = new PaginationHeader<PublishersDTO>(
                 result.PageNumber,
@@ -62,7 +62,7 @@ namespace WDA.ApiDotNet.Application.Services
         {
             var result = await _publishersRepository.GetSummaryPublishers();
             if (result.Count == 0)
-                return ResultService.NotFound<List<PublishersSummaryDTO>>("Nenhum registro encontrada!");
+                return ResultService.NotFound<List<PublishersSummaryDTO>>("Nenhum registro encontrada.");
 
             return ResultService.Ok<List<PublishersSummaryDTO>>(_mapper.Map<List<PublishersSummaryDTO>>(result));
         }
@@ -71,7 +71,7 @@ namespace WDA.ApiDotNet.Application.Services
         {
             var result = await _publishersRepository.GetById(id);
             if (result == null)
-                return ResultService.NotFound("Editora não encontrado!");
+                return ResultService.NotFound("Editora não encontrado.");
 
             return ResultService.Ok(_mapper.Map<PublishersDTO>(result));
         }
@@ -80,12 +80,12 @@ namespace WDA.ApiDotNet.Application.Services
         {
             var publisher = await _publishersRepository.GetById(updatedPublisherDTO.Id);
             if (publisher == null)
-                return ResultService.NotFound("Editora não encontrado!");
+                return ResultService.NotFound("Editora não encontrado.");
             if(publisher.Name != updatedPublisherDTO.Name)
             {
             var duplicateName = await _publishersRepository.GetByName(updatedPublisherDTO.Name);
             if (duplicateName.Count > 0)
-                return ResultService.BadRequest("Editora já existente!");
+                return ResultService.BadRequest("Editora já existente.");
 
             }
 
@@ -105,12 +105,12 @@ namespace WDA.ApiDotNet.Application.Services
             var publisher = await _publishersRepository.GetById(id);
 
             if (publisher == null)
-                return ResultService.NotFound("Editora não encontrada!");
+                return ResultService.NotFound("Editora não encontrada.");
 
             var booksAssociatedWithPublisher = await _booksRepository.GetByPublishersId(id);
 
             if (booksAssociatedWithPublisher.Count > 0)
-                return ResultService.BadRequest("A editora não pode ser excluída, pois está associada a livros!");
+                return ResultService.BadRequest("A editora não pode ser excluída, pois está associada a livros.");
 
             await _publishersRepository.Delete(publisher);
 

@@ -108,7 +108,7 @@ namespace WDA.ApiDotNet.Application.Services
             var book = await _booksRepository.GetById(updatedBookDTO.Id);
 
             if (book == null)
-                return ResultService.NotFound("Livro não encontrado!");
+                return ResultService.NotFound("Livro não encontrado.");
             if(book.Name != updatedBookDTO.Name || book.Publisher.Id != updatedBookDTO.PublisherId)
             {
             var duplicateName = await _booksRepository.GetByNameAndPublisher(updatedBookDTO.Name, updatedBookDTO.PublisherId);

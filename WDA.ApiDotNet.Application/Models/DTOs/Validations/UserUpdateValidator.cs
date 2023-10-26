@@ -23,8 +23,8 @@ namespace WDA.ApiDotNet.Application.Models.DTOs.Validations
                    .Length(3, 50).WithMessage("Endreço: Necessário entre 3 e 50 caracteres.");
 
             RuleFor(x => x.Email)
-                   .NotEmpty().WithMessage("Email deve ser informado!")
-                   .EmailAddress().WithMessage("Email inválido!");
+                   .NotEmpty().WithMessage("Email deve ser informado.")
+                   .EmailAddress().WithMessage("Email inválido.");
         }
     }
 }

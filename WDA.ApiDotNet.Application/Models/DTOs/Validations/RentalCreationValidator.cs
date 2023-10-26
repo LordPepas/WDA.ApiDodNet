@@ -16,10 +16,10 @@ namespace WDA.ApiDotNet.Application.Models.DTOs.Validations
                 .GreaterThanOrEqualTo(1).WithMessage("Usuário deve ser informado.");
 
             RuleFor(x => x.RentalDate)
-                .NotEmpty().WithMessage("Data de aluguel deve ser informado!");
+                .NotEmpty().WithMessage("Data de aluguel deve ser informado.");
 
             RuleFor(x => x.PrevisionDate)
-                .NotEmpty().WithMessage("Data de previsão deve ser informado!");
+                .NotEmpty().WithMessage("Data de previsão deve ser informado.");
 
         }
     }
