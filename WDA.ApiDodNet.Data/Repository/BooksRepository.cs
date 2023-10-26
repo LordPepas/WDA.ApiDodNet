@@ -48,10 +48,11 @@ namespace WDA.ApiDotNet.Infra.Data.Repository
                     p.Id.ToString().Contains(queryHandler.SearchValue) ||
                     p.Name.ToUpper().Contains(queryHandler.SearchValue) ||
                     p.Author.ToUpper().Contains(queryHandler.SearchValue) ||
+                    p.PublisherId.ToString().Contains(queryHandler.SearchValue) ||
+                    p.Publisher.Name.ToUpper().Contains(queryHandler.SearchValue) ||
                     p.Quantity.ToString().Contains(queryHandler.SearchValue) ||
                     p.Release.ToString().Contains(queryHandler.SearchValue) ||
-                    p.Rented.ToString().Contains(queryHandler.SearchValue) ||
-                    p.Publisher.Name.ToUpper().Contains(queryHandler.SearchValue)
+                    p.Rented.ToString().Contains(queryHandler.SearchValue)
                 );
             }
 

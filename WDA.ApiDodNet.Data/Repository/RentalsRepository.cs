@@ -66,6 +66,7 @@ namespace WDA.ApiDotNet.Infra.Data.Repository
                 p.Book.Name.ToUpper().Contains(queryHandler.SearchValue) ||
                 p.UserId.ToString().Contains(queryHandler.SearchValue) ||
                 p.User.Name.ToUpper().Contains(queryHandler.SearchValue) ||
+                p.Status.ToUpper().Contains(queryHandler.SearchValue) ||
                 p.RentalDate.Date.ToString().Contains(queryHandler.SearchValue) ||
                 p.PrevisionDate.Date.ToString().Contains(queryHandler.SearchValue) ||
                 (p.ReturnDate != null && p.ReturnDate.Value.Date.ToString().Contains(queryHandler.SearchValue))

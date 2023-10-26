@@ -82,7 +82,7 @@ namespace WDA.ApiDodNet.Application.Services
             if (user == null)
                 return ResultService.NotFound("Usuário não encontrado!");
 
-            var validation = new UserCreationValidator().Validate(updatedUserDTO);
+            var validation = new UserUpdateValidator().Validate(updatedUserDTO);
             if (!validation.IsValid)
                 return ResultService.BadRequest(validation);
 
