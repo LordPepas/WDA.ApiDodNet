@@ -6,11 +6,11 @@ namespace WDA.ApiDotNet.Application.Models{
     public class Books
     {
         public Books() { }
-        public Books(int id, int publisherId, string name, string author, int release, int quantity,int rented)
+        public Books(int id, string name, int publisherId, string author, int release, int quantity,int rented)
         {
             Id = id;
-            PublisherId = publisherId;
             Name = name;
+            PublisherId = publisherId;
             Author = author;
             Release = release;
             Quantity = quantity;
