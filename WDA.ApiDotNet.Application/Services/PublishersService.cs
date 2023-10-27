@@ -86,7 +86,6 @@ namespace WDA.ApiDotNet.Application.Services
             var duplicateName = await _publishersRepository.GetByName(updatedPublisherDTO.Name);
             if (duplicateName.Count > 0)
                 return ResultService.BadRequest("Editora já existente.");
-
             }
 
             var validation = new PublisherUpdateValidator().Validate(updatedPublisherDTO);

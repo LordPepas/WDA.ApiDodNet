@@ -9,7 +9,7 @@ namespace WDA.ApiDotNet.Application.Interfaces.IServices
         Task<ResultService> CreateAsync(RentalsCreateDTO rentalsDTO);
         Task<ResultService<RentalsDTO>> GetAsync(QueryHandler queryHandler);
         Task<ResultService<RentalsDTO>> GetByIdAsync(int id);
-        Task<ResultService> UpdateAsync(RentalsUpdateDTO rentalsUpdateDTO);
+        Task<ResultService> UpdateAsync(int id);
         Task<ResultService> DeleteAsync(int id);
     }
 }

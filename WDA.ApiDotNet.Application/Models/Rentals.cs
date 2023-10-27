@@ -25,7 +25,7 @@ namespace WDA.ApiDotNet.Application.Models
         public Users User { get; private set; }
         public DateTime RentalDate { get; private set; }
         public DateTime PrevisionDate { get; private set; }
-        public DateTime? ReturnDate { get; private set; }
+        public DateTime? ReturnDate { get; set; }
         public string Status { get; set; }
     }
 }

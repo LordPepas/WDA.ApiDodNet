@@ -91,31 +91,22 @@ namespace WDA.ApiDotNet.Application.Services
             return ResultService.Ok(_mapper.Map<RentalsDTO>(result));
         }
 
-        public async Task<ResultService> UpdateAsync(RentalsUpdateDTO updatedRentalDTO)
+        public async Task<ResultService> UpdateAsync(int id)
         {
-            var rental = await _rentalsRepository.GetById(updatedRentalDTO.Id);
+            var rental = await _rentalsRepository.GetById(id);
             if (rental == null)
                 return ResultService.NotFound("Aluguel não encontrado.");
-
-
-            var result = new RentalUpdateValidator().Validate(updatedRentalDTO);
-            if (!result.IsValid)
-                return ResultService.BadRequest(result);
 
             if (rental.ReturnDate != null)
                 return ResultService.BadRequest("Aluguel já devolvido.");
 
-            bool dateValidate = await _rentalsRepository.CheckDate(updatedRentalDTO.ReturnDate);
-            if (dateValidate == false)
-                return ResultService.BadRequest("Data de devolução não pode ser diferente da data de Hoje.");
-
-            bool status = await _rentalsRepository.GetStatus(rental.PrevisionDate, updatedRentalDTO.ReturnDate);
+            bool status = await _rentalsRepository.GetStatus(rental.PrevisionDate, DateTime.Now.Date);
             if (status == true)
                 rental.Status = "No prazo";
             else
                 rental.Status = "Atrasado";
 
-            rental = _mapper.Map(updatedRentalDTO, rental);
+            rental.ReturnDate = DateTime.Now.Date;
 
             await _rentalsRepository.Update(rental);
 

@@ -85,10 +85,10 @@ namespace WDA.ApiDotNet.Api.Controllers
         [SwaggerResponse(200, "Ok")]
         [SwaggerResponse(400, "Bad Request")]
         [SwaggerResponse(404, "Not Found")]
-        public async Task<ActionResult> Put([FromBody] RentalsUpdateDTO rentalsUpdateDTO)
+        public async Task<ActionResult> Put(int id)
         {
 
-            var result = await _service.UpdateAsync(rentalsUpdateDTO);
+            var result = await _service.UpdateAsync(id);
 
             if (result.HttpStatusCode == HttpStatusCode.OK)
                 return Ok(result);
