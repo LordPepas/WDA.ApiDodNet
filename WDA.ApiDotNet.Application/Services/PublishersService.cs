@@ -109,7 +109,7 @@ namespace WDA.ApiDotNet.Application.Services
             var booksAssociatedWithPublisher = await _booksRepository.GetByPublishersId(id);
 
             if (booksAssociatedWithPublisher.Count > 0)
-                return ResultService.BadRequest("A editora não pode ser excluída, pois está associada a livros.");
+                return ResultService.BadRequest("Editora está associada a livros.");
 
             await _publishersRepository.Delete(publisher);
 

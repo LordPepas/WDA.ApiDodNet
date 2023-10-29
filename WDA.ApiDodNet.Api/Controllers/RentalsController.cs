@@ -80,7 +80,7 @@ namespace WDA.ApiDotNet.Api.Controllers
             return BadRequest(result);
         }
 
-        [HttpPut]
+        [HttpPut("{id:int}")]
         [SwaggerOperation(Summary = "Update rental")]
         [SwaggerResponse(200, "Ok")]
         [SwaggerResponse(400, "Bad Request")]
