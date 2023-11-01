@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WDA.ApiDotNet.Business", "W
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WDA.ApiDodNet.Data", "WDA.ApiDodNet.Data\WDA.ApiDodNet.Data.csproj", "{CEADCD85-94F9-4A67-B359-C34CA73ABBE2}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{11BC0555-E02F-43F7-95DA-3DDFCAFC4EC0}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{04360644-EFEF-4C6A-A586-C1A02A9B1985}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 	EndProjectSection

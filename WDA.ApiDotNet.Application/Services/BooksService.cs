@@ -6,7 +6,8 @@ using WDA.ApiDotNet.Application.Interfaces.IRepository;
 using WDA.ApiDotNet.Application.Interfaces.IServices;
 using WDA.ApiDotNet.Application.Models;
 using WDA.ApiDotNet.Application.Models.DTOs.BooksDTO;
-using WDA.ApiDotNet.Application.Models.DTOs.Validations;
+using WDA.ApiDotNet.Business.Models.DTOs.Validations.CreationValidations;
+using WDA.ApiDotNet.Business.Models.DTOs.Validations.UpdateValidations;
 
 namespace WDA.ApiDotNet.Application.Services
 {
@@ -32,9 +33,9 @@ namespace WDA.ApiDotNet.Application.Services
             if (!validation.IsValid)
                 return ResultService.BadRequest(validation);
 
-            var duplicateName = await _booksRepository.GetByNameAndPublisher(mappedBook.Name,mappedBook.PublisherId);
+            var duplicateName = await _booksRepository.GetByNameAndPublisher(mappedBook.Name, mappedBook.PublisherId);
             if (duplicateName.Count > 0)
-                return ResultService.BadRequest("Livro com essa editora já existente");
+                return ResultService.BadRequest("Livro com essa editora já cadastrado");
 
             var publisher = await _publishersRepository.GetById(mappedBook.PublisherId);
             if (publisher == null)
@@ -79,7 +80,7 @@ namespace WDA.ApiDotNet.Application.Services
         {
             var result = await _booksRepository.GetSummaryAvailableBooks();
             if (result.Count == 0)
-                return ResultService.NotFound<List<BooksAvailableDTO>>("Nenhum registro encontrada.");
+                return ResultService.NotFound<List<BooksAvailableDTO>>("Nenhum livro disponivel.");
 
             return ResultService.Ok<List<BooksAvailableDTO>>(_mapper.Map<List<BooksAvailableDTO>>(result));
         }
@@ -109,12 +110,15 @@ namespace WDA.ApiDotNet.Application.Services
 
             if (book == null)
                 return ResultService.NotFound("Livro não encontrado.");
-            if(book.Name != updatedBookDTO.Name || book.Publisher.Id != updatedBookDTO.PublisherId)
+            if (book.Name != updatedBookDTO.Name || book.Publisher.Id != updatedBookDTO.PublisherId)
             {
-            var duplicateName = await _booksRepository.GetByNameAndPublisher(updatedBookDTO.Name, updatedBookDTO.PublisherId);
-            if (duplicateName.Count > 0)
-                return ResultService.BadRequest("Livro com essa editora já existente");
+                var duplicateName = await _booksRepository.GetByNameAndPublisher(updatedBookDTO.Name, updatedBookDTO.PublisherId);
+                if (duplicateName.Count > 0)
+                    return ResultService.BadRequest("Livro com essa editora já cadastrado");
             }
+            var publisher = await _publishersRepository.GetById(updatedBookDTO.PublisherId);
+            if (publisher == null)
+                return ResultService.NotFound("Editora não encontrada.");
 
             if (updatedBookDTO.Release > DateTime.Now.Year)
                 return ResultService.BadRequest("O ano de lançamento deve ser anterior ao ano atual.");

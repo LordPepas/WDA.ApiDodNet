@@ -29,7 +29,6 @@ namespace WDA.ApiDotNet.Application.Profiles
             CreateMap<Users, UsersSummaryDTO>().ReverseMap();
 
             CreateMap<Rentals, RentalsCreateDTO>().ReverseMap();
-            CreateMap<Rentals, RentalsUpdateDTO>().ReverseMap();
             CreateMap<Rentals, RentalsDTO>().ReverseMap();
 
         }

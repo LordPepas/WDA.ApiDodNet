@@ -118,49 +118,6 @@ namespace WDA.ApiDotNet.Infra.Data.Repository
             return await _db.Rentals.Where(r => r.BookId == bookId && r.UserId == userId && r.ReturnDate == null).ToListAsync();
         }
 
-        public async Task<bool> CheckDate(DateTime date)
-        {
-            DateTime today = DateTime.Now;
-
-            if (date != today)
-            {
-                return await Task.FromResult(true);
-            }
-
-            return await Task.FromResult(false);
-        }
-
-        public async Task<bool?> CheckPrevisionDate(DateTime previsionDate, DateTime rentalDate)
-        {
-            if (previsionDate < rentalDate)
-            {
-                return await Task.FromResult<bool?>(false);
-            }
-
-            var diff = previsionDate - rentalDate;
-            if (diff.Days > 30)
-            {
-                return await Task.FromResult<bool?>(true);
-            }
-
-            return await Task.FromResult<bool?>(null);
-        }
-
-        public async Task<bool> GetStatus(DateTime forecastDate, DateTime returnDate)
-        {
-            if (returnDate.Date == forecastDate.Date)
-            {
-                return true;
-            }
-
-            if (returnDate.Date > forecastDate.Date)
-            {
-                return false;
-            }
-            else
-            {
-                return true;
-            }
-        }
+      
     }
 }

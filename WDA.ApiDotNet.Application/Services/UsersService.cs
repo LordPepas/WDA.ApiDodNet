@@ -4,8 +4,9 @@ using WDA.ApiDotNet.Application.Interfaces.IRepository;
 using WDA.ApiDotNet.Application.Interfaces.IServices;
 using WDA.ApiDotNet.Application.Models;
 using WDA.ApiDotNet.Application.Models.DTOs.UsersDTO;
-using WDA.ApiDotNet.Application.Models.DTOs.Validations;
 using WDA.ApiDotNet.Application.Services;
+using WDA.ApiDotNet.Business.Models.DTOs.Validations.CreationValidations;
+using WDA.ApiDotNet.Business.Models.DTOs.Validations.UpdateValidations;
 
 namespace WDA.ApiDodNet.Application.Services
 {
@@ -33,7 +34,7 @@ namespace WDA.ApiDodNet.Application.Services
             var duplicateEmail = await _usersRepository.GetByEmail(newUserDTO.Email);
             if (duplicateEmail.Count > 0)
             {
-                return ResultService.BadRequest("Email já existente.");
+                return ResultService.BadRequest("Email já cadastrado.");
             }
             await _usersRepository.Create(mappedUser);
 
@@ -88,7 +89,7 @@ namespace WDA.ApiDodNet.Application.Services
                 var duplicateEmail = await _usersRepository.GetByEmail(updatedUserDTO.Email);
                 if (duplicateEmail.Count > 0)
                 {
-                    return ResultService.BadRequest("Email já existente.");
+                    return ResultService.BadRequest("Email já cadastrado.");
                 }
             }
 
@@ -99,7 +100,7 @@ namespace WDA.ApiDodNet.Application.Services
             user = _mapper.Map(updatedUserDTO, user);
             await _usersRepository.Update(user);
 
-            return ResultService.Ok("Usuário atualizado.");
+            return ResultService.Ok("Usuário atualizado com sucesso.");
         }
 
         public async Task<ResultService> DeleteAsync(int id)

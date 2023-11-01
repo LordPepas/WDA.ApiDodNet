@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
 using WDA.ApiDotNet.Application.Models.DTOs.BooksDTO;
 
-namespace WDA.ApiDotNet.Application.Models.DTOs.Validations
+namespace WDA.ApiDotNet.Business.Models.DTOs.Validations.CreationValidations
 {
     public class BookCreationValidator : AbstractValidator<BooksCreateDTO>
     {

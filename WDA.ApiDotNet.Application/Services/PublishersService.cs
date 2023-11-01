@@ -6,7 +6,8 @@ using WDA.ApiDotNet.Application.Interfaces.IRepository;
 using WDA.ApiDotNet.Application.Interfaces.IServices;
 using WDA.ApiDotNet.Application.Models;
 using WDA.ApiDotNet.Application.Models.DTOs.PublishersDTO;
-using WDA.ApiDotNet.Application.Models.DTOs.Validations;
+using WDA.ApiDotNet.Business.Models.DTOs.Validations.CreationValidations;
+using WDA.ApiDotNet.Business.Models.DTOs.Validations.UpdateValidations;
 
 namespace WDA.ApiDotNet.Application.Services
 {
@@ -33,7 +34,7 @@ namespace WDA.ApiDotNet.Application.Services
 
             var duplicateName = await _publishersRepository.GetByName(newPublisherDTO.Name);
             if (duplicateName.Count > 0)
-                return ResultService.BadRequest("Editora já existente.");
+                return ResultService.BadRequest("Editora já cadastrado.");
 
             await _publishersRepository.Create(mappedPublisher);
             return ResultService.Created("Editora adicionado com sucesso.");
@@ -81,11 +82,11 @@ namespace WDA.ApiDotNet.Application.Services
             var publisher = await _publishersRepository.GetById(updatedPublisherDTO.Id);
             if (publisher == null)
                 return ResultService.NotFound("Editora não encontrado.");
-            if(publisher.Name != updatedPublisherDTO.Name)
+            if (publisher.Name != updatedPublisherDTO.Name)
             {
-            var duplicateName = await _publishersRepository.GetByName(updatedPublisherDTO.Name);
-            if (duplicateName.Count > 0)
-                return ResultService.BadRequest("Editora já existente.");
+                var duplicateName = await _publishersRepository.GetByName(updatedPublisherDTO.Name);
+                if (duplicateName.Count > 0)
+                    return ResultService.BadRequest("Editora já cadastrado.");
             }
 
             var validation = new PublisherUpdateValidator().Validate(updatedPublisherDTO);

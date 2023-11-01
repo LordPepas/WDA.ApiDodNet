@@ -4,7 +4,7 @@ using WDA.ApiDotNet.Application.Interfaces.IRepository;
 using WDA.ApiDotNet.Application.Interfaces.IServices;
 using WDA.ApiDotNet.Application.Models;
 using WDA.ApiDotNet.Application.Models.DTOs.RentalsDTO;
-using WDA.ApiDotNet.Application.Models.DTOs.Validations;
+using WDA.ApiDotNet.Business.Models.DTOs.Validations.CreationValidations;
 
 namespace WDA.ApiDotNet.Application.Services
 {
@@ -40,10 +40,6 @@ namespace WDA.ApiDotNet.Application.Services
             if (userRental.Count > 0)
                 return ResultService.BadRequest("Usuário já possui aluguel desse livro.");
 
-            bool dateValidate = await _rentalsRepository.CheckDate(newRentalDTO.RentalDate);
-            if (dateValidate == false)
-                return ResultService.BadRequest("Data de aluguel não pode ser diferente da data de Hoje.");
-
             var bookQuantity = await _booksRepository.GetById(newRentalDTO.BookId);
             if (bookQuantity.Quantity == 0)
             {
@@ -51,12 +47,14 @@ namespace WDA.ApiDotNet.Application.Services
             }
 
 
-            bool? forecastValidate = await _rentalsRepository.CheckPrevisionDate(newRentalDTO.PrevisionDate, newRentalDTO.RentalDate);
-            if (forecastValidate == true)
-                return ResultService.BadRequest("Previsão maxima de 30 dias.");
+            DateTime rentalDate = DateTime.Now.Date;
 
-            else if (forecastValidate == false)
-                return ResultService.BadRequest("Data de Previsão não pode ser anterior à Data do Aluguel.");
+            DateTime previsionDate = newRentalDTO.PrevisionDate.Value.Date;
+
+            if ((previsionDate - rentalDate).Days > 30)
+            {
+                return ResultService.BadRequest("A data de previsão deve ser no máximo 30 dias após a data de aluguel.");
+            }
 
             var rental = _mapper.Map<Rentals>(newRentalDTO);
 
@@ -100,8 +98,7 @@ namespace WDA.ApiDotNet.Application.Services
             if (rental.ReturnDate != null)
                 return ResultService.BadRequest("Aluguel já devolvido.");
 
-            bool status = await _rentalsRepository.GetStatus(rental.PrevisionDate, DateTime.Now.Date);
-            if (status == true)
+            if (rental.PrevisionDate.Date >= DateTime.Now.Date)
                 rental.Status = "No prazo";
             else
                 rental.Status = "Atrasado";
@@ -110,7 +107,7 @@ namespace WDA.ApiDotNet.Application.Services
 
             await _rentalsRepository.Update(rental);
 
-            return ResultService.Ok("Aluguel atualizado com sucesso.");
+            return ResultService.Ok("Aluguel devolvido com sucesso.");
         }
 
         public async Task<ResultService> DeleteAsync(int id)

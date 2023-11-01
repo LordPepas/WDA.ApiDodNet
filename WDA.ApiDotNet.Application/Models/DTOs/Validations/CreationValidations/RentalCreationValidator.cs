@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
 using WDA.ApiDotNet.Application.Models.DTOs.RentalsDTO;
 
-namespace WDA.ApiDotNet.Application.Models.DTOs.Validations
+namespace WDA.ApiDotNet.Business.Models.DTOs.Validations.CreationValidations
 {
     public class RentalCreationValidator : AbstractValidator<RentalsCreateDTO>
     {
@@ -15,8 +15,8 @@ namespace WDA.ApiDotNet.Application.Models.DTOs.Validations
                 .NotEmpty().WithMessage("Usuário deve ser informado.")
                 .GreaterThanOrEqualTo(1).WithMessage("Usuário deve ser informado.");
 
-            RuleFor(x => x.RentalDate)
-                .NotEmpty().WithMessage("Data de aluguel deve ser informado.");
+            //RuleFor(x => x.RentalDate)
+            //    .NotEmpty().WithMessage("Data de aluguel deve ser informado.");
 
             RuleFor(x => x.PrevisionDate)
                 .NotEmpty().WithMessage("Data de previsão deve ser informado.");

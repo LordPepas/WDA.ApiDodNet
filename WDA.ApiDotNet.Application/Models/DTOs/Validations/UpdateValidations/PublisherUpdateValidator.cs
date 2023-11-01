@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
 using WDA.ApiDotNet.Application.Models.DTOs.PublishersDTO;
 
-namespace WDA.ApiDotNet.Application.Models.DTOs.Validations
+namespace WDA.ApiDotNet.Business.Models.DTOs.Validations.UpdateValidations
 {
     public class PublisherUpdateValidator : AbstractValidator<PublishersUpdateDTO>
     {
