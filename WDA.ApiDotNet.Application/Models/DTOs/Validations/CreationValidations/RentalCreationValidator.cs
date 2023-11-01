@@ -15,9 +15,6 @@ namespace WDA.ApiDotNet.Business.Models.DTOs.Validations.CreationValidations
                 .NotEmpty().WithMessage("Usuário deve ser informado.")
                 .GreaterThanOrEqualTo(1).WithMessage("Usuário deve ser informado.");
 
-            //RuleFor(x => x.RentalDate)
-            //    .NotEmpty().WithMessage("Data de aluguel deve ser informado.");
-
             RuleFor(x => x.PrevisionDate)
                 .NotEmpty().WithMessage("Data de previsão deve ser informado.");
 
