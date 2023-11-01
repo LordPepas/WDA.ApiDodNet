@@ -1,6 +1,5 @@
 ﻿#pragma warning disable CS8602
 #pragma warning disable CS8603
-#pragma warning disable CS1998 
 
 using Microsoft.EntityFrameworkCore;
 using WDA.ApiDotNet.Application.Helpers;
