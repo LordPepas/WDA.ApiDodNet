@@ -24,6 +24,8 @@ namespace WDA.ApiDotNet.Application.Services
         }
         public async Task<ResultService> CreateAsync(RentalsCreateDTO newRentalDTO)
         {
+            var rental = _mapper.Map<Rentals>(newRentalDTO);
+
             var validation = new RentalCreationValidator().Validate(newRentalDTO);
             if (!validation.IsValid)
                 return ResultService.BadRequest(validation);
@@ -46,17 +48,12 @@ namespace WDA.ApiDotNet.Application.Services
                 return ResultService.BadRequest("Livro sem estoque.");
             }
 
-
-            DateTime rentalDate = DateTime.Now.Date;
-
-            DateTime previsionDate = newRentalDTO.PrevisionDate.Value.Date;
-
-            if ((previsionDate - rentalDate).Days > 30)
+            var diff = rental.PrevisionDate.Subtract(DateTime.Now.Date);
+            if (diff.Days > 30)
             {
                 return ResultService.BadRequest("A data de previsão deve ser no máximo 30 dias após a data de aluguel.");
             }
 
-            var rental = _mapper.Map<Rentals>(newRentalDTO);
 
             rental.Status = "Pendente";
             await _rentalsRepository.Create(rental);
