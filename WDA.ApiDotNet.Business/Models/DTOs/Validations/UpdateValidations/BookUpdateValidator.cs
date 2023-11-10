@@ -27,10 +27,6 @@ namespace WDA.ApiDotNet.Business.Models.DTOs.Validations.UpdateValidations
                  .NotEmpty().WithMessage("Lançamento deve ser informado.")
                 .GreaterThanOrEqualTo(1).WithMessage("Lançamento deve ser informado.");
 
-            RuleFor(x => x.Quantity)
-                .NotEmpty().WithMessage("Quantidade deve ser informada.")
-                .GreaterThanOrEqualTo(1).WithMessage("Quantidade deve ser informada.");
-
         }
     }
 }
