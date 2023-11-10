@@ -37,6 +37,8 @@ namespace WDA.ApiDotNet.Data.Repository
         }
         public async Task Delete(Rentals rental)
         {
+            var book = await _db.Books.FindAsync(rental.BookId);
+            book.Rented--;
             _db.Remove(rental);
             await _db.SaveChangesAsync();
         }
