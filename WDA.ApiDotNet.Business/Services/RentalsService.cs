@@ -53,11 +53,14 @@ namespace WDA.ApiDotNet.Business.Services
             {
                 return ResultService.BadRequest("A data de previsão deve ser máximo 30 dias.");
             }
-
+            if (rental.PrevisionDate < rental.RentalDate)
+            {
+                return ResultService.BadRequest("Data de Previsão não pode ser anterior à Data do Aluguel!");
+            }
             rental.Status = "Pendente";
             await _rentalsRepository.Create(rental);
 
-            return ResultService.Created("Aluguel adicionado com sucesso.");
+            return ResultService.Created("Aluguel adicionado com Fsucesso.");
         }
 
         public async Task<ResultService<RentalsDTO>> GetAsync(QueryHandler queryHandler)
