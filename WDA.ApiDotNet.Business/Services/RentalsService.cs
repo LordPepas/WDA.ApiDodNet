@@ -55,7 +55,7 @@ namespace WDA.ApiDotNet.Business.Services
             }
             if (rental.PrevisionDate < rental.RentalDate)
             {
-                return ResultService.BadRequest("Data de Previsão não pode ser anterior à Data do Aluguel!");
+                return ResultService.BadRequest("Data de Previsão não pode ser anterior à data de hoje!");
             }
             rental.Status = "Pendente";
             await _rentalsRepository.Create(rental);
